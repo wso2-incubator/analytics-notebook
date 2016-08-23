@@ -1,0 +1,20 @@
+*.class
+target/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+#idea files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+#eclipse files
+.project
+.settings/
+
+# Mac OS temp files
+.DS_Store
