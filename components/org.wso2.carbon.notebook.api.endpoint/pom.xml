@@ -6,19 +6,15 @@
 
     <parent>
         <groupId>org.wso2.carbon.notebook</groupId>
-        <artifactId>notebook-ui-support</artifactId>
+        <artifactId>notebook</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../..</relativePath>
     </parent>
 
-    <artifactId>org.wso2.carbon.notebook.ui.support.endpoint</artifactId>
-    <packaging>war</packaging>
-    <name>Notebook - UI Support for Data Sources</name>
+    <artifactId>org.wso2.carbon.notebook.api.endpoint</artifactId>
+    <name>Notebook - REST API</name>
 
     <dependencies>
-        <!--<dependency>-->
-            <!--<groupId>org.wso2.carbon</groupId>-->
-            <!--<artifactId>org.wso2.carbon.core</artifactId>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
@@ -43,6 +39,6 @@
     </dependencies>
 
     <build>
-        <finalName>notebook-support</finalName>
+        <finalName>notebook-rest-api</finalName>
     </build>
 </project>

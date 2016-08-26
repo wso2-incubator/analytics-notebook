@@ -17,17 +17,13 @@
     <name>Notebook</name>
 
     <modules>
-        <module>components/notebook-ui</module>
+        <module>components/org.wso2.carbon.notebook.api.endpoint</module>
+        <module>components/org.wso2.carbon.notebook.frontend</module>
+        <module>components/org.wso2.carbon.notebook.distribution</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <!--<dependency>-->
-                <!--<groupId>org.wso2.carbon</groupId>-->
-                <!--<artifactId>org.wso2.carbon.core</artifactId>-->
-                <!--<version>${carbon.kernel.version}</version>-->
-            <!--</dependency>-->
-
             <dependency>
                 <groupId>javax.ws.rs</groupId>
                 <artifactId>javax.ws.rs-api</artifactId>
@@ -72,7 +68,6 @@
     </repositories>
 
     <properties>
-        <carbon.kernel.version>4.4.7</carbon.kernel.version>
         <carbon.analytics.common.version.event.receiver.core>5.1.2-alpha</carbon.analytics.common.version.event.receiver.core>
         <apache.httpcore.version>4.3.3</apache.httpcore.version>
 

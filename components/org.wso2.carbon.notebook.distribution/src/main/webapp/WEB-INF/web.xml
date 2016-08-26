@@ -3,9 +3,9 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-    <display-name>Notebook UI Support</display-name>
+    <display-name>Notebook REST API</display-name>
     <servlet>
-        <servlet-name>NotebookUISupport</servlet-name>
+        <servlet-name>NotebookRESTAPI</servlet-name>
         <servlet-class>
             org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet
         </servlet-class>
@@ -15,11 +15,11 @@
                 org.wso2.carbon.servlet.EventReceiverInformationRetrievalEndpoint
             </param-value>
         </init-param>
-        <load-on-startup>10</load-on-startup>
+        <load-on-startup>1</load-on-startup>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>NotebookUISupport</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>NotebookRESTAPI</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 </web-app>
