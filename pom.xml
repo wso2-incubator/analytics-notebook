@@ -67,6 +67,18 @@
         </repository>
     </repositories>
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${maven-war-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
     <properties>
         <carbon.analytics.common.version.event.receiver.core>5.1.2-alpha</carbon.analytics.common.version.event.receiver.core>
         <apache.httpcore.version>4.3.3</apache.httpcore.version>
@@ -74,5 +86,7 @@
         <javax.version>2.0</javax.version>
         <cxf.version>2.6.1</cxf.version>
         <gson.version>2.5</gson.version>
+
+        <maven-war-plugin.version>2.6</maven-war-plugin.version>
     </properties>
 </project>
