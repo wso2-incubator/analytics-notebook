@@ -24,6 +24,17 @@
     <script src="js/sign-in.js"></script>
 </head>
 <body>
+    <header class="header header-default">
+        <div class="container-fluid">
+            <div class="pull-left brand float-remove-xs text-center-xs">
+                <a href="#">
+                    <img src="libs/theme-wso2_1.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
+                    <h1 class="display-block-xs"><script>document.write(constants.PRODUCT_NAME);</script></h1>
+                </a>
+            </div>
+        </div>
+    </header>
+
     <div class="page-content-wrapper">
         <div class="container">
             <div class="login-form-wrapper">
@@ -36,12 +47,6 @@
                                 </div>
                             </div>
                             <h2 class="text-center-sm text-center-xs text-center-md text-right"><script>document.write(constants.PRODUCT_NAME);</script></h2>
-                        </div>
-                        <div class="social-container hidden-sm hidden-xs">
-                            <p>Also sign in with</p>
-                            <a href=""><img class="img-responsive" src="images/googleplus.jpg" alt="Sign in with google"></a>
-                            <a href=""><img class="img-responsive" src="images/twitter.jpg" alt="Sign in with twitter"></a>
-                            <a href=""><img class="img-responsive" src="images/facebook.jpg" alt="Sign in with facebook"></a>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 login">
@@ -70,7 +75,7 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="form-group">APIResponseConstants.SUCCESS
+                                <div class="form-group">
                                     <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
                                         <button type="button" id="sign-in" class="btn btn-default btn-primary add-margin-right-2x">Sign In</button>
                                         <button type="button" class="btn btn-default btn-secondary hidden-xs hidden-sm">Go Back</button>
@@ -80,25 +85,11 @@
                                 <p class="hidden-xs hidden-sm">Don't have an account? <a href="#">Register Now</a></p>
                             </form>
                         </div>
-                        <div class="social-container visible-sm visible-xs">
-                            <p>Also sign in with</p>
-                            <a href="#"><img class="img-responsive" src="images/googleplus.jpg" alt="Sign in with google"></a>
-                            <a href="#"><img class="img-responsive" src="images/twitter.jpg" alt="Sign in with twitter"></a>
-                            <a href="#"><img class="img-responsive" src="images/facebook.jpg" alt="Sign in with facebook"></a>
-                        </div>
                         <p class="visible-xs visible-sm add-margin-2x text-center">Don't have an account? <a href="#">Register Now</a></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <footer class="footer">
-        <div class="container-fluid">
-            <p>
-                WSO2 <script>document.write(constants.PRODUCT_NAME);</script> <script>document.write(constants.PRODUCT_VERSION);</script> | &copy; <script>document.write((new Date().getFullYear()).toString());</script> <a href="http://wso2.com/" target="_blank"><i class="icon fw fw-wso2"></i> Inc</a>.
-            </p>
-        </div>
-    </footer>
 </body>
 </html>
