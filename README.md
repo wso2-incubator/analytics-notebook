@@ -1,2 +1,2 @@
-# NotebookRESTAPI
-Rest API for providing endpoints for the notebook frontend
+# Notebook
+Notebook designed for the WSO2 Data Analytics Server
