@@ -1,21 +1,19 @@
 function onDataSourceDefinitionDataSourceTypeChange(selectElement) {
-    // TODO : implement fetching the datasource names
+    // TODO : implement fetching the table names
     var type;
     var url;
     var authHeader;
     switch (selectElement.value) {
         case "Database" :
             type = "GET";
-            url = serverURI + "analytics/tables";
-            authHeader = "YWRtaW46YWRtaW4=";
+            url = "/tables";
             break;
         case "CSV File" :
             break;
     }
     $.ajax({
         type: type,
-        url : url,
-        headers : { "Authorization" : "Basic_" + authHeader },
+        url : constants.REST_API_URI + url,
         success: function(data) {
             inputTableSelectElement = $(selectElement).closest(".source").find(".table-name > select");
             inputTableSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
@@ -27,7 +25,7 @@ function onDataSourceDefinitionDataSourceTypeChange(selectElement) {
     $(selectElement).closest(".source").find(".table-name").fadeIn();
 }
 
-function onDataSourceDefinitionInputTableChange(selectElement) {
+function onDataSourceDefinitionTableChange(selectElement) {
     $(selectElement).closest(".source").find(".output-table").fadeIn();
 }
 

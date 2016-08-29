@@ -2,7 +2,7 @@ function loadEventReceiverNames(paragraph) {
     var eventReceiverSelectElement = $(paragraph).find(".event-receiver-name > select");
     $.ajax({
         type: "GET",
-        url : "../notebook-support/event-receiver",
+        url : constants.REST_API_URI + "/event-receivers",
         success: function(data) {
             eventReceiverSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
             $.each(data, function(index, eventReceiver) {

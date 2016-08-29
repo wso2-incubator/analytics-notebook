@@ -1,4 +1,8 @@
-var serverURI = "../";
+var note = {
+    name : "Note_1",
+    path : "Main/Note_1"
+};
+
 
 // Events for the note
 function onRunAllParagraphsButtonClick() {
@@ -20,20 +24,14 @@ function toggleVisibilityOfMultipleViews(type) {
     var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views");
     var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view");
     if (toggleAllSourceOrOutputViewsButton.html().indexOf("Show") != -1) {
-        toggleAllSourceOrOutputViewsButton.html(
-            toggleAllSourceOrOutputViewsButton.html().replace("Show", "Hide")
-        );
-        toggleSourceOrOutputViewButton.html(
-            toggleSourceOrOutputViewButton.html().replace("Show", "Hide")
-        );
+        var buttonTemplate = "<i class='fw fw-hide'></i> Hide " + type;
+        toggleAllSourceOrOutputViewsButton.html(buttonTemplate);
+        toggleSourceOrOutputViewButton.html(buttonTemplate);
         $("." + type).slideDown();
     } else {
-        toggleAllSourceOrOutputViewsButton.html(
-            toggleAllSourceOrOutputViewsButton.html().replace("Hide", "Show")
-        );
-        toggleSourceOrOutputViewButton.html(
-            toggleSourceOrOutputViewButton.html().replace("Hide", "Show")
-        );
+        var buttonTemplate = "<i class='fw fw-view'></i> Show " + type;
+        toggleAllSourceOrOutputViewsButton.html(buttonTemplate);
+        toggleSourceOrOutputViewButton.html(buttonTemplate);
         $("." + type).slideUp();
     }
 }
@@ -131,10 +129,10 @@ function toggleVisibilityOfSingleView(toggleButton, type) {
     var view = toggleButton.closest(".paragraph").find("." + type);
     var toggleButtonInnerHTML = toggleButton.html();
     if (toggleButton.html().indexOf("Show") != -1) {
-        toggleButtonInnerHTML = toggleButtonInnerHTML.replace("Show", "Hide");
+        toggleButtonInnerHTML = "<i class='fw fw-hide'></i> Hide " + type;
         view.slideDown();
     } else {
-        toggleButtonInnerHTML = toggleButtonInnerHTML.replace("Hide", "Show");
+        toggleButtonInnerHTML = "<i class='fw fw-view'></i> Show " + type;
         view.slideUp();
     }
     toggleButton.html(toggleButtonInnerHTML);

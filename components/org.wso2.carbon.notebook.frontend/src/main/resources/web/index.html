@@ -10,7 +10,9 @@
     <link href="libs/theme-wso2_1.0/css/default/theme.min.css" rel="stylesheet" type="text/css" />
 
     <script src="libs/jquery_1.11.0/jquery-1.11.3.min.js"></script>
+    <script src="libs/bootstrap_3.3.5/js/bootstrap.min.js"></script>
     <script src="libs/theme-wso2_1.0/js/theme-wso2.min.js"></script>
+    <script src="libs/respond_1.4.2/respond.min.js"></script>
 
     <!-- Custom -->
     <script src="js/main.js"></script>
@@ -31,10 +33,10 @@
                            <i class="fw fw-circle fw-stack-2x"></i>
                            <i class="fw fw-user fw-stack-1x fw-inverse"></i>
                         </span>
-                        <span id= class="hidden-xs"><script>document.write(global.username);</script> <span class="caret"></span></span>
+                        <span class="hidden-xs"><span class="username"></span> <span class="caret"></span></span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown" role="menu">
-                        <li class="dropdown-header visible-xs"><script>document.write(global.username);</script> <span class="caret"></span></li>
+                        <li class="dropdown-header visible-xs"> <span class="username"></span> <span class="caret"></span></li>
                         <li class="divider visible-xs"></li>
                         <li><a href="#">Profile Settings</a></li>
                         <li><a href="#">Sign out</a></li>
@@ -48,13 +50,13 @@
         <nav class="navbar navbar-default affix-top" data-spy="affix" data-offset-top="50" data-offset-bottom="40">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-menu-toggle collapsed" data-toggle="collapse" data-target="#navbar2" aria-expanded="false" aria-controls="navbar2">
-                        <span class="icon fw-stack">
-                            <i class="fw fw-down fw-stack-1x toggle-icon-up"></i>
-                        </span>
-                    </a>
+                    <!--<a class="navbar-menu-toggle collapsed" data-toggle="collapse" data-target="#navbar2" aria-expanded="false" aria-controls="navbar2">-->
+                        <!--<span class="icon fw-stack">-->
+                            <!--<i class="fw fw-down fw-stack-1x toggle-icon-up"></i>-->
+                        <!--</span>-->
+                    <!--</a>-->
                     <ol class="breadcrumb navbar-brand">
-                        <li><a href="index.html"><i class="icon fw fw-home"></i> <span class="hidden-xs">Home</span></a></li>
+                        <li><i class="icon fw fw-home"></i> <span class="hidden-xs">Home</span></li>
                     </ol>
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
@@ -90,13 +92,13 @@
                     <!--</ul>-->
                 </div><!--/.nav-collapse -->
             </div>
-            <div id="navbar2" class="collapse navbar-collapse dropdown tiles"><!-- nav-collapse -->
-                <ul class="nav navbar-nav">
-                    <li><a href="#"><i class="fw fw-user"></i>User Management</a></li>
-                    <li><a href="#"><i class="fw fw-settings"></i>Profile Management</a></li>
-                    <li><a href="#"><i class="fw fw-policy"></i>Policy Management</a></li>
-                </ul>
-            </div><!--/ .nav-collapse -->
+            <!--<div id="navbar2" class="collapse navbar-collapse dropdown tiles">&lt;!&ndash; nav-collapse &ndash;&gt;-->
+                <!--<ul class="nav navbar-nav">-->
+                    <!--<li><a href="#"><i class="fw fw-user"></i>User Management</a></li>-->
+                    <!--<li><a href="#"><i class="fw fw-settings"></i>Profile Management</a></li>-->
+                    <!--<li><a href="#"><i class="fw fw-policy"></i>Policy Management</a></li>-->
+                <!--</ul>-->
+            <!--</div>&lt;!&ndash;/ .nav-collapse &ndash;&gt;-->
         </nav>
     </div>
 
@@ -136,8 +138,8 @@
                     <ul id="note-tree" class="tree-view tree-view-lines">
                         <li class="branch" aria-expanded="true">Main
                             <ul>
-                                <li><a href="note.html?note=main/income">Income</a></li>
-                                <li><a href="note.html?note=main/expenses">Expenses</a></li>
+                                <li><a href="note.html?note=Main/Note_1">Note_1</a></li>
+                                <li><a href="note.html?note=Main/Note_2">Note_2</a></li>
                             </ul>
                         </li>
                     </ul>
