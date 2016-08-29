@@ -1,0 +1,35 @@
+<div class="row">
+    <div class="form-group col-sm-3 input-table">
+        <label>Table</label>
+        <select class="form-control" onfocus="loadAvailableParagraphOutputsToInputElement(this, 'table')">
+            <option disabled selected value> -- select an option -- </option>
+        </select>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="form-group output-model">
+            <label>Model Name</label>
+            <input type="text" class="form-control">
+        </div>
+    </div>
+
+    <div class="col-sm-3">
+        <div class="form-group algorithm">
+            <label>Algorithm</label>
+            <select class="form-control" onchange="onDataSourceDefinitionInputTableChange(this)">
+                <option disabled selected value> -- select an option -- </option>
+                <option>EMPLOYEES</option>
+                <option>EXPENSES</option>
+                <option>INCOME</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row algorithm">
+
+</div>
+
+<div class="row parameters">
+
+</div>

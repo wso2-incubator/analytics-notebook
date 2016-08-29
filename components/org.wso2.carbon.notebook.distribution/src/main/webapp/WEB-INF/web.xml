@@ -3,7 +3,46 @@
         "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-    <display-name>Notebook REST API</display-name>
+    <display-name>Notebook API</display-name>
+
+    <!-- Filters start here -->
+    <filter>
+        <filter-name>AccessControlFilter</filter-name>
+        <filter-class>org.wso2.carbon.filter.APIAccessFilter</filter-class>
+        <init-param>
+            <param-name>my-param</param-name>
+            <param-value>my-param-value</param-value>
+        </init-param>
+    </filter>
+    <!-- Filters end here -->
+
+    <!-- Filter mappings start here -->
+    <filter-mapping>
+        <filter-name>AccessControlFilter</filter-name>
+        <url-pattern>/rest/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>AccessControlFilter</filter-name>
+        <url-pattern>*.html</url-pattern>
+    </filter-mapping>
+    <!-- Filter mappings end here -->
+
+    <!-- Servlets start here -->
+    <servlet>
+        <servlet-name>NotebookAuthorizationAPI</servlet-name>
+        <servlet-class>
+            org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet
+        </servlet-class>
+        <init-param>
+            <param-name>jaxrs.serviceClasses</param-name>
+            <param-value>
+                org.wso2.carbon.servlet.auth.AuthorizationEndpoint
+            </param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
     <servlet>
         <servlet-name>NotebookRESTAPI</servlet-name>
         <servlet-class>
@@ -16,11 +55,19 @@
                 org.wso2.carbon.servlet.DataSourceInformationRetrievalEndPoints
             </param-value>
         </init-param>
-        <load-on-startup>1</load-on-startup>
+        <load-on-startup>2</load-on-startup>
     </servlet>
+    <!-- Servlets end here -->
+
+    <!-- Servlet mappings start here -->
+    <servlet-mapping>
+        <servlet-name>NotebookAuthorizationAPI</servlet-name>
+        <url-pattern>/auth/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>NotebookRESTAPI</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
+    <!-- Servlet mappings end here -->
 </web-app>

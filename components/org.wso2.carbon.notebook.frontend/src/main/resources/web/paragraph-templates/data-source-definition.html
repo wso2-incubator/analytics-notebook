@@ -1,0 +1,28 @@
+<div class="row">
+    <div class="form-group col-sm-3 data-source-type">
+        <label>Data Source Type</label>
+        <select class="form-control" onchange="onDataSourceDefinitionDataSourceTypeChange(this)">
+            <option disabled selected value> -- select an option -- </option>
+            <option>Database</option>
+            <option>CSV File</option>
+        </select>
+    </div>
+    <!--<div class="form-group col-sm-3 collapse data-source-name">-->
+        <!--<label>Data Source Name</label>-->
+        <!--<select class="form-control" onchange="onDataSourceDefinitionDataSourceNameChange(this)">-->
+            <!--<option disabled selected value> &#45;&#45; select an option &#45;&#45; </option>-->
+            <!--<option>COMPANY</option>-->
+            <!--<option>BANK</option>-->
+        <!--</select>-->
+    <!--</div>-->
+    <div class="form-group col-sm-3 collapse table-name">
+        <label>Table</label>
+        <select class="form-control" onchange="onDataSourceDefinitionInputTableChange(this)">
+            <option disabled selected value> -- select an option -- </option>
+        </select>
+    </div>
+    <div class="form-group col-sm-3 collapse output-table">
+        <label>Save as Temporary Table</label>
+        <input type="text" class="form-control" onkeyup="onDataSourceDefinitionOutputTableKeyUp(this)">
+    </div>
+</div>

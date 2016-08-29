@@ -1,0 +1,88 @@
+<html>
+<head>
+    <title>Notebook - Note</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+\
+    <script type="text/javascript" src="js/note.js"></script>
+
+    <script type="text/javascript" src="js/paragraph/data-source-definition.js"></script>
+    <script type="text/javascript" src="js/paragraph/data-visualization.js"></script>
+    <script type="text/javascript" src="js/paragraph/batch-analytics.js"></script>
+    <script type="text/javascript" src="js/paragraph/interactive-analytics.js"></script>
+    <script type="text/javascript" src="js/paragraph/event-receiver-definition.js"></script>
+    <script type="text/javascript" src="js/paragraph/real-time-analytics.js"></script>
+    <script type="text/javascript" src="js/paragraph/preprocessor.js"></script>
+    <script type="text/javascript" src="js/paragraph/model-definition.js"></script>
+    <script type="text/javascript" src="js/paragraph/prediction.js"></script>
+    <script type="text/javascript" src="js/paragraph/custom.js"></script>
+    <script type="text/javascript" src="js/paragraph/event-simulation.js"></script>
+</head>
+<body>
+    <header class="header header-default">
+        <div class="container-fluid">
+            <div class="pull-left brand float-remove-xs text-center-xs">
+                <a href="#">
+                    <img src="libs/theme-wso2_1.0.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
+                    <h1 class="display-block-xs">Notebook</h1>
+                </a>
+            </div>
+            <ul class="nav navbar-right float-remove-xs text-center-xs">
+                <li class="visible-inline-block">
+                    <a class="dropdown" data-toggle="dropdown">
+                                <span class="icon fw-stack fw-lg">
+                                   <i class="fw fw-circle fw-stack-2x"></i>
+                                   <i class="fw fw-user fw-stack-1x fw-inverse"></i>
+                                </span>
+                        <span id= class="hidden-xs">administrator <span class="caret"></span></span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown" role="menu">
+                        <li class="dropdown-header visible-xs">administrator <span class="caret"></span></li>
+                        <li class="divider visible-xs"></li>
+                        <li><a href="#">Profile Settings</a></li>
+                        <li><a href="#">Sign out</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Note -->
+    <div id="main">
+        <!-- Note Title Panel -->
+        <div id="note-title">
+            <div class="fluid-container">
+                <div class="row">
+                    <span id="note-heading">Note</span>
+                    <!-- Note Controls -->
+                    <div class="btn-group">
+                        <button id="run-all-paragraphs" class="btn btn-default" onclick="onRunAllParagraphsButtonClick()">
+                            <span class="glyphicon glyphicon-play-circle"></span> Run All
+                        </button>
+                        <button id="toggle-all-source-views" class="btn btn-default" onclick="onToggleAllSourceViewsButtonClick()">
+                            <span class="glyphicon glyphicon-fullscreen"></span> Hide Source
+                        </button>
+                        <button id="toggle-all-output-views" class="btn btn-default" onclick="onToggleAllOutputViewsButtonClick()">
+                            <span class="glyphicon glyphicon-list-alt"></span> Hide Output
+                        </button>
+                    </div>
+                    <button id="add-paragraph" class="btn btn-default" onclick="onAddParagraphButtonClick()">
+                        <span class="glyphicon glyphicon-plus"></span> Add Paragraph
+                    </button>
+                    <button id="delete-note" class="btn btn-default" onclick="onDeleteNoteButtonClick()">
+                        <span class="glyphicon glyphicon-trash"></span> Delete Note
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Note Body -->
+        <div id="paragraphs"></div>
+    </div>
+</body>
+</html>

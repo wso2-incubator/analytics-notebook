@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Automatically changed by main.js -->
+    <title>Notebook</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="libs/theme-wso2_1.0.0/images/favicon.png" rel="icon" type="image/png" sizes="16x16">
+
+    <link href="libs/font-wso2_1.0.0/css/font-wso2.min.css" rel="stylesheet" type="text/css" />
+    <link href="libs/theme-wso2_1.0/css/default/theme.min.css" rel="stylesheet" type="text/css" />
+
+    <script src="libs/jquery_1.11.0/jquery-1.11.3.min.js"></script>
+    <script src="libs/bootstrap_3.3.5/js/bootstrap.min.js"></script>
+    <script src="libs/theme-wso2_1.0/js/theme-wso2.min.js"></script>
+
+    <script src="libs/html5shiv_3.7.2/html5shiv.min.js"></script>
+    <script src="libs/respond_1.4.2/respond.min.js"></script>
+
+    <!-- Custom -->
+    <script src="js/main.js"></script>
+    <link href="css/sign-in.css" rel="stylesheet" type="text/css" />
+    <script src="js/sign-in.js"></script>
+</head>
+<body>
+    <header class="header header-default">
+        <div class="container-fluid">
+            <div class="pull-left brand float-remove-xs text-center-xs">
+                <a href="#">
+                    <img src="libs/theme-wso2_1.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
+                    <h1 class="display-block-xs"><script>document.write(constants.PRODUCT_NAME);</script></h1>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="page-content-wrapper">
+        <div class="container">
+            <div class="login-form-wrapper">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+                        <div class="brand-container add-margin-bottom-5x">
+                            <div class="row">
+                                <div class="col-xs-6 col-sm-3 col-md-9 col-lg-9 center-block float-remove-sm float-remove-xs pull-right-md pull-right-lg">
+                                    <img class="img-responsive brand-spacer" src="libs/theme-wso2_1.0/images/logo.svg" alt="wso2-logo">
+                                </div>
+                            </div>
+                            <h2 class="text-center-sm text-center-xs text-center-md text-right"><script>document.write(constants.PRODUCT_NAME);</script></h2>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 login">
+                        <div class="data-container">
+                            <form class="form-horizontal">
+                                <h3>Sign in to your account</h3>
+                                <div class="form-group">
+                                    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                        <div class="input-group input-wrap">
+                                            <input id="username" type="text" class="form-control" placeholder="Username">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                        <div class="input-group input-wrap">
+                                            <input id="password" type="password" class="form-control" placeholder="Password">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group hidden-xs hidden-sm add-margin-bottom-5x">
+                                    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                        <label class="checkbox">
+                                            <input id="keep-signed-in" type="checkbox" checked="">
+                                            <span class="helper">Keep me signed in</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                        <button type="button" id="sign-in" class="btn btn-default btn-primary add-margin-right-2x">Sign In</button>
+                                        <button type="button" class="btn btn-default btn-secondary hidden-xs hidden-sm">Go Back</button>
+                                    </div>
+                                </div>
+                                <a href="#" class="add-margin-bottom-5x remove-margin-lg remove-margin-md">Forgot Password</a>
+                                <p class="hidden-xs hidden-sm">Don't have an account? <a href="#">Register Now</a></p>
+                            </form>
+                        </div>
+                        <p class="visible-xs visible-sm add-margin-2x text-center">Don't have an account? <a href="#">Register Now</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

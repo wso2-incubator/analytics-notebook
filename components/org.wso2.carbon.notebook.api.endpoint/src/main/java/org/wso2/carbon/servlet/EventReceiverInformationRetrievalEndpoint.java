@@ -39,7 +39,6 @@ public class EventReceiverInformationRetrievalEndpoint {
         }
         String jsonString = new Gson().toJson(eventReceiverNames);
 
-        return Response.ok(jsonString, MediaType.APPLICATION_JSON).header("Access-Control-Allow-Origin",
-                "*").build();
+        return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }
