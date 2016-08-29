@@ -13,6 +13,7 @@
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
                 org.wso2.carbon.servlet.EventReceiverInformationRetrievalEndpoint
+                org.wso2.carbon.servlet.DataSourceInformationRetrievalEndPoints
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>

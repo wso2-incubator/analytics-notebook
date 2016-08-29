@@ -46,11 +46,23 @@
                 <version>${carbon.analytics.common.version.event.receiver.core}</version>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.dataservice.core</artifactId>
+                <version>${carbon.analytics.dataservice.core.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpcore</artifactId>
                 <version>${apache.httpcore.version}</version>
                 <scope>provided</scope>
             </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
+                <version>${carbon.analytics.datasource.commons.version}</version>
+
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -69,6 +81,8 @@
 
     <properties>
         <carbon.analytics.common.version.event.receiver.core>5.1.2-alpha</carbon.analytics.common.version.event.receiver.core>
+        <carbon.analytics.dataservice.core.version>1.2.3-SNAPSHOT</carbon.analytics.dataservice.core.version>
+        <carbon.analytics.datasource.commons.version>1.2.4-SNAPSHOT</carbon.analytics.datasource.commons.version>
         <apache.httpcore.version>4.3.3</apache.httpcore.version>
 
         <javax.version>2.0</javax.version>
