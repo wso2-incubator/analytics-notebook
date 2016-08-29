@@ -1,4 +1,4 @@
-package org.wso2.carbon.servlet.response;
+package org.wso2.carbon.notebook.util.response;
 
 /**
  * Used for storing the constants used in returning responses from the REST API

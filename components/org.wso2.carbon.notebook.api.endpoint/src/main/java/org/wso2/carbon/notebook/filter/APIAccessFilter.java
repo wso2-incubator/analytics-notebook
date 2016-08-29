@@ -1,4 +1,4 @@
-package org.wso2.carbon.filter;
+package org.wso2.carbon.notebook.filter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

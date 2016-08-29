@@ -1,8 +1,8 @@
-package org.wso2.carbon.servlet.auth;
+package org.wso2.carbon.notebook.servlet.auth;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.servlet.response.APIResponse;
-import org.wso2.carbon.servlet.response.APIResponseConstants;
+import org.wso2.carbon.notebook.util.response.APIResponse;
+import org.wso2.carbon.notebook.util.response.APIResponseConstants;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
