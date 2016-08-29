@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Perform OSGi services to access event receiver information
  */
-public class EventService {
+public class EventReceiverServiceAccess {
     private static EventReceiverService eventReceiverService;
 
     static  {

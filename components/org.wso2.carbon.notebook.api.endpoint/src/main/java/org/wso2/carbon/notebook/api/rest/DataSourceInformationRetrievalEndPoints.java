@@ -1,7 +1,7 @@
-package org.wso2.carbon.notebook.servlet;
+package org.wso2.carbon.notebook.api.rest;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.notebook.serviceaccess.DataService;
+import org.wso2.carbon.notebook.serviceaccess.AnalyticsDataServiceAccess;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -25,7 +25,7 @@ public class DataSourceInformationRetrievalEndPoints {
      */
     @GET()
     public  Response listTableName(){
-        List<String> tableNames = DataService.listTableNames();
+        List<String> tableNames = AnalyticsDataServiceAccess.listTableNames();
         String jsonString = new Gson().toJson(tableNames);
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).header("Access-Control-Allow-Origin",
@@ -40,7 +40,7 @@ public class DataSourceInformationRetrievalEndPoints {
     @GET
     @Path("/columns/{tableName}")
     public Response getColumns(@PathParam("tableName") String tableName){
-        List<String> columnNames = DataService.listColumnNames(tableName);
+        List<String> columnNames = AnalyticsDataServiceAccess.listColumnNames(tableName);
         String jsonString = new Gson().toJson(columnNames);
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).header("Access-Control-Allow-Origin",

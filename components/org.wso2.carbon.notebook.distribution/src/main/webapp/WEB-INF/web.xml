@@ -37,7 +37,7 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                org.wso2.carbon.notebook.servlet.auth.AuthorizationEndpoint
+                org.wso2.carbon.notebook.api.auth.AuthorizationEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
@@ -51,8 +51,8 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                org.wso2.carbon.notebook.servlet.EventReceiverInformationRetrievalEndpoint
-                org.wso2.carbon.notebook.servlet.DataSourceInformationRetrievalEndPoints
+                org.wso2.carbon.notebook.api.rest.EventReceiverInformationRetrievalEndpoint
+                org.wso2.carbon.notebook.api.rest.DataSourceInformationRetrievalEndPoints
             </param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>

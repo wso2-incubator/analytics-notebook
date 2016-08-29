@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Perform OSGi services to retrieve data set information
  */
-public class DataService {
+public class AnalyticsDataServiceAccess {
     private static AnalyticsDataService analyticsDataService;
 
     static {

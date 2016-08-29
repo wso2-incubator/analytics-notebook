@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.servlet.auth;
+package org.wso2.carbon.notebook.api.auth;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.notebook.util.response.APIResponse;
