@@ -8,7 +8,7 @@
     <!-- Filters start here -->
     <filter>
         <filter-name>AccessControlFilter</filter-name>
-        <filter-class>org.wso2.carbon.filter.APIAccessFilter</filter-class>
+        <filter-class>org.wso2.carbon.notebook.filter.APIAccessFilter</filter-class>
         <init-param>
             <param-name>my-param</param-name>
             <param-value>my-param-value</param-value>
@@ -37,7 +37,7 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                org.wso2.carbon.servlet.auth.AuthorizationEndpoint
+                org.wso2.carbon.notebook.servlet.auth.AuthorizationEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
@@ -51,7 +51,8 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                org.wso2.carbon.servlet.EventReceiverInformationRetrievalEndpoint
+                org.wso2.carbon.notebook.servlet.EventReceiverInformationRetrievalEndpoint
+                org.wso2.carbon.notebook.servlet.DataSourceInformationRetrievalEndPoints
             </param-value>
         </init-param>
         <load-on-startup>2</load-on-startup>
