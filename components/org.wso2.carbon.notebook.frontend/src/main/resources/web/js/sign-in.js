@@ -17,7 +17,7 @@ signInUtil.singIn = function() {
     if (credentials.username.length > 0 && credentials.password.length > 0) {
         $.ajax({
             type: "POST",
-            url : "auth/sign-in",
+            url : constants.API_URI + "auth/sign-in",
             data : credentials,
             success: function(data) {
                 console.log(data);

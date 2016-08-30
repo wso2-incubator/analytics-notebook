@@ -1,12 +1,14 @@
 package org.wso2.carbon.notebook.api.rest;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.notebook.serviceaccess.EventReceiverServiceAccess;
+import org.wso2.carbon.event.receiver.core.config.EventReceiverConfiguration;
+import org.wso2.carbon.notebook.ServiceHolder;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -22,9 +24,14 @@ public class EventReceiverInformationRetrievalEndpoint {
      */
     @GET
     public Response retrieveEventReceiverNames() {
-        List <String> eventReceiverNames = EventReceiverServiceAccess.retrieveEventReceiverNames();
-        String jsonString = new Gson().toJson(eventReceiverNames);
+        List <String> eventReceiverNames =new ArrayList<String>();
+        List<EventReceiverConfiguration> eventReceiverConfigurations =
+                ServiceHolder.getEventReceiverService().getAllActiveEventReceiverConfigurations();
+        for (EventReceiverConfiguration eventReceiverConfiguration : eventReceiverConfigurations) {
+            eventReceiverNames.add(eventReceiverConfiguration.getEventReceiverName());
+        }
 
+        String jsonString = new Gson().toJson(eventReceiverNames);
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }

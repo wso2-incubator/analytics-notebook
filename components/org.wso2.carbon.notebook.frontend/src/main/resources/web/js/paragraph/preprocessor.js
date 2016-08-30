@@ -4,7 +4,7 @@ preprocessorParagraph.init = function(paragraph) {
     var inputTableSelectElement = paragraph.find(".preprocessor-input.input-table");
     $.ajax({
         type: "GET",
-        url : constants.REST_API_URI + "/tables",
+        url : constants.API_URI + "tables",
         success: function(data) {
             inputTableSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
             $.each(data, function(index, table) {
@@ -20,7 +20,7 @@ preprocessorParagraph.loadPreprocessorParameters = function(selectElement) {
     preprocessorTable.html("");
     $.ajax({
         type: "GET",
-        url : constants.REST_API_URI + "/tables/" + selectElement.val() + "/columns",
+        url : constants.API_URI + "tables/" + selectElement.val() + "/columns",
         success: function (data) {
             $.each(data, function (index, columnName) {
                 preprocessorTable.append($("<tr>" +

@@ -7,14 +7,14 @@ dataSourceDefinitionParagraph.onTypeSelect = function(selectElement) {
     switch (selectElement.val()) {
         case "Database" :
             type = "GET";
-            url = "/tables";
+            url = "tables";
             break;
         case "CSV File" :
             break;
     }
     $.ajax({
         type: type,
-        url : constants.REST_API_URI + url,
+        url : constants.API_URI + url,
         success: function(data) {
             var tablesSelectElement = selectElement.closest(".source").find(".data-source-table");
             tablesSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));

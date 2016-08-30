@@ -5,8 +5,7 @@ var constants = {
     response : {
         SUCCESS : "SUCCESS"
     },
-    REST_API_URI : "rest",
-    AUTH_API_URI : "auth"
+    API_URI : "api/"
 };
 
 
