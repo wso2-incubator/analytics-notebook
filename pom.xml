@@ -49,17 +49,26 @@
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
                 <artifactId>org.wso2.carbon.event.receiver.core</artifactId>
-                <version>${carbon.analytics.common.version.event.receiver.core}</version>
+                <version>${carbon.analytics.common.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.analytics</groupId>
                 <artifactId>org.wso2.carbon.analytics.dataservice.core</artifactId>
                 <version>${carbon.analytics.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon.analytics</groupId>
                 <artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
                 <version>${carbon.analytics.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.identity.authentication</artifactId>
+                <version>${carbon.commons.version}</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -90,14 +99,17 @@
     </build>
 
     <properties>
-        <carbon.analytics.common.version.event.receiver.core>5.1.2-alpha</carbon.analytics.common.version.event.receiver.core>
+        <!-- Dependency versions -->
+        <carbon.commons.version>4.3.4</carbon.commons.version>
+        <carbon.analytics.common.version>5.1.2-alpha</carbon.analytics.common.version>
         <carbon.analytics.version>1.2.4-SNAPSHOT</carbon.analytics.version>
-        <apache.httpcore.version>4.3.3</apache.httpcore.version>
 
+        <apache.httpcore.version>4.3.3</apache.httpcore.version>
         <javax.version>2.0</javax.version>
         <cxf.version>2.6.1</cxf.version>
         <gson.version>2.5</gson.version>
 
+        <!-- Plugin versions -->
         <maven-war-plugin.version>2.6</maven-war-plugin.version>
     </properties>
 </project>

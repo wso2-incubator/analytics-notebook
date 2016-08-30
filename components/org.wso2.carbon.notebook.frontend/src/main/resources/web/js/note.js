@@ -1,26 +1,20 @@
-var note = {
-    name : "Note_1",
-    path : "Main/Note_1"
+// Functionality for the whole note
+var note = {};
+
+note.init = function() {
+    var parameters = util.getQueryParameters();
+    $("#note-name").html("Note_1");
+    $("#note-path").html(parameters.note);
 };
 
-
-// Events for the note
-function onRunAllParagraphsButtonClick() {
+note.runAllParagraphs = function() {
     // Looping through the paragraphs and running them
     $(".paragraph").each(function(index, paragraph) {
         runParagraph($(paragraph));
     });
-}
+};
 
-function onToggleAllSourceViewsButtonClick() {
-    toggleVisibilityOfMultipleViews("source");
-}
-
-function onToggleAllOutputViewsButtonClick() {
-    toggleVisibilityOfMultipleViews("output");
-}
-
-function toggleVisibilityOfMultipleViews(type) {
+note.toggleVisibilityOfMultipleViews = function(type) {
     var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views");
     var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view");
     if (toggleAllSourceOrOutputViewsButton.html().indexOf("Show") != -1) {
@@ -34,78 +28,89 @@ function toggleVisibilityOfMultipleViews(type) {
         toggleSourceOrOutputViewButton.html(buttonTemplate);
         $("." + type).slideUp();
     }
-}
+};
 
-function onAddParagraphButtonClick() {
+note.addParagraph = function() {
     var paragraph = $("<div class='paragraph well fluid-container'>");
     paragraph.css({ display : "none" });
     paragraph.load('paragraph.html', function() {
         $("#paragraphs").append(paragraph);
         paragraph.slideDown();
     });
-}
+};
 
-function onDeleteNoteButtonClick() {
+note.delete = function() {
     // TODO : send the request to delete the note to the notebook server
-}
+};
 
-// Event functions for individual paragraphs
-function onRunParagraphButtonClick(runButton) {
-    runParagraph($(runButton).closest(".paragraph"));
-}
+// Functionality for paragraphs
+var paragraphUtil = {};
 
-function runParagraph(paragraph) {  // TODO : This method needs to be changed after deciding on the architecture
+paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be changed after deciding on the architecture
     var paragraphType = paragraph.find("select[name='paragraph-type']").val();
     var outputView = paragraph.find(".output");
-    var runParagraphTask = function() { // The function for running the run paragraph task
-        var newOutputView = $("<div class='output fluid-container' style='display: none;'>");
-        var callbackFunction = function(output) {
-            newOutputView.append($("<p>Output</p>"));
 
-            var outputViewContent = $("<div class='row'>");   // TODO : modify this line after the server side REST API is connected
-            outputViewContent.append(output);
-            newOutputView.append(outputViewContent);
+    /*
+     * The function for running the run paragraph task
+     * This is called later after checking if the output view is empty or not
+     */
+    var runParagraphTask = function() {
+        /*
+         * Callback function to be passed to paragraph run methods
+         * This generates the output tags and adds the content passed into it
+         * This is called from inside the relevant paragraph run method
+         */
+        var callbackFunction = function(output) {
+            var newOutputView = $("<div class='output fluid-container' style='display: none;'>");
+            newOutputView.append($("<p>Output</p>"));
+            var newOutputViewContent = $("<div class='row'>");
+            newOutputViewContent.append(output);
+            newOutputView.append(newOutputViewContent);
             paragraph.find(".paragraph-content").append(newOutputView);
 
             newOutputView.slideDown();
             paragraph.find(".toggle-output-view").prop('disabled', false);
         };
+
+        var paragraph;
         switch (paragraphType) {
             case "Data Source Definition" :
-                runDataSourceDefinitionParagraph(paragraph);
+                paragraph = dataSourceDefinitionParagraph;
                 break;
             case "Preprocessor" :
-                runPreprocessorParagraph(paragraph);
+                paragraph = preprocessorParagraph;
                 break;
             case "Data Visualization" :
-                runDataVisualizationParagraph(paragraph, callbackFunction);
+                paragraph = dataVisualizationParagraph;
                 break;
             case "Batch Analytics" :
-                runBatchAnalyticsParagraph(paragraph, callbackFunction);
+                paragraph = batchAnalyticsParagraph;
                 break;
             case "Interactive Analytics" :
-                runInteractiveAnalyticsParagraph(paragraph, callbackFunction);
+                paragraph = interactiveAnalyticsParagraph;
                 break;
             case "Event Receiver Definition" :
-                runEventReceiverParagraph(paragraph, callbackFunction);
+                paragraph = eventReceiverParagraph;
                 break;
             case "Real Time Analytics" :
-                runRealTimeAnalyticsParagraph(paragraph, callbackFunction);
+                paragraph = realTimeAnalyticsParagraph;
                 break;
             case "Model Definition" :
-                runModelDefinitionParagraph(paragraph, callbackFunction);
+                paragraph = modelDefinitionParagraph;
                 break;
             case "Prediction" :
-                runPredictionParagraph(paragraph, callbackFunction);
+                paragraph = predictionParagraph;
                 break;
             case "Event Simulation":
-                runEvenSimulationParagraph(paragraph,callbackFunction);
+                paragraph = evenSimulationParagraph;
                 break;
             case "Custom" :
-                runCustomParagraph(paragraph, callbackFunction);
+                paragraph = customParagraph;
                 break;
         }
+        paragraph.run(paragraph, callbackFunction);
     };
+
     if (outputView.length > 0) {
         outputView.slideUp(function() {
             outputView.remove();
@@ -114,18 +119,9 @@ function runParagraph(paragraph) {  // TODO : This method needs to be changed af
     } else {
         runParagraphTask();
     }
-}
+};
 
-function onToggleSourceViewButtonClick(toggleButton) {
-    toggleVisibilityOfSingleView(toggleButton, "source");
-}
-
-function onToggleOutputViewButtonClick(toggleButton) {
-    toggleVisibilityOfSingleView(toggleButton, "output");
-}
-
-function toggleVisibilityOfSingleView(toggleButton, type) {
-    toggleButton = $(toggleButton);
+paragraphUtil.toggleVisibilityOfSingleView = function(toggleButton, type) {
     var view = toggleButton.closest(".paragraph").find("." + type);
     var toggleButtonInnerHTML = toggleButton.html();
     if (toggleButton.html().indexOf("Show") != -1) {
@@ -136,26 +132,25 @@ function toggleVisibilityOfSingleView(toggleButton, type) {
         view.slideUp();
     }
     toggleButton.html(toggleButtonInnerHTML);
-}
+};
 
-function onDeleteParagraph(deleteButton) {
+paragraphUtil.delete = function(paragraph) {
     // TODO : send the relevant query to the notebook server to delete
-    var paragraph = $(deleteButton).closest(".paragraph");
     paragraph.slideUp(function() {
         paragraph.remove();
     });
 }
 
-function onParagraphTypeSelect(selectElement) {
-    var paragraph = $(selectElement).closest(".paragraph");
+paragraphUtil.loadSourceViewByType = function(selectElement) {
+    var paragraph = selectElement.closest(".paragraph");
     var paragraphContent = paragraph.find(".paragraph-content");
     paragraphContent.slideUp(function() {
         paragraphContent.children().remove();
 
         var sourceViewContent = $("<div>");
         var paragraphTemplateLink;
-        var initParagraphTask;
-        switch ($(selectElement).val()) {
+        var paragraphInitTask;
+        switch (selectElement.val()) {
             case "Data Source Definition" :
                 paragraphTemplateLink = "paragraph-templates/data-source-definition.html";
                 break;
@@ -173,8 +168,8 @@ function onParagraphTypeSelect(selectElement) {
                 break;
             case "Event Receiver Definition" :
                 paragraphTemplateLink = "paragraph-templates/event-receiver-definition.html";
-                initParagraphTask = function() {
-                    loadEventReceiverNames(paragraph);
+                paragraphInitTask = function() {
+                    eventReceiverDefinitionParagraph.init(paragraph);
                 };
                 break;
             case "Real Time Analytics" :
@@ -193,6 +188,7 @@ function onParagraphTypeSelect(selectElement) {
                 paragraphTemplateLink = "paragraph-templates/custom.html";
                 break;
         }
+
         sourceViewContent.load(paragraphTemplateLink, function() {
             var sourceView = $("<div class='source fluid-container'>");
             sourceView.append($("<p>Source</p>"));
@@ -204,20 +200,20 @@ function onParagraphTypeSelect(selectElement) {
             paragraph.find(".toggle-source-view").prop('disabled', false);
             paragraph.find(".toggle-output-view").prop('disabled', true);
 
-            if (initParagraphTask != undefined) {
-                initParagraphTask();
+            if (paragraphInitTask != undefined) {
+                paragraphInitTask();
             }
         });
     });
-}
+};
 
-function loadAvailableParagraphOutputsToInputElement(selectElement, type) {
+paragraphUtil.loadAvailableParagraphOutputsToInputElement = function(selectElement, type) {
     var inputSelectElement = $(selectElement);
     inputSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
 
-    $(".output-" + type + " > input").each(function (index, selectElement) {
+    $(".output-" + type).each(function (index, selectElement) {
         if (selectElement.value.length > 0) {
             inputSelectElement.append($("<option>" + selectElement.value + "</option>"));
         }
     });
-}
+};

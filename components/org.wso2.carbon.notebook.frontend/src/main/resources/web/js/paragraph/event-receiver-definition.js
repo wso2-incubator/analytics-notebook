@@ -1,5 +1,8 @@
-function loadEventReceiverNames(paragraph) {
-    var eventReceiverSelectElement = $(paragraph).find(".event-receiver-name > select");
+var eventReceiverDefinitionParagraph = {};
+
+eventReceiverDefinitionParagraph.init(paragraph, callback) {
+    // Loading event receiver names into the  event receiver select element
+    var eventReceiverSelectElement = $(paragraph).find(".event-receiver-name");
     $.ajax({
         type: "GET",
         url : constants.REST_API_URI + "/event-receivers",
@@ -10,9 +13,9 @@ function loadEventReceiverNames(paragraph) {
             });
         }
     });
-}
+};
 
-function runEventReceiverParagraph(paragraph, callback) {
+eventReceiverDefinitionParagraph.run = function(paragraph, callback) {
     // TODO : run data visualization paragraph
     callback();
-}
+};

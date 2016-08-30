@@ -1,22 +1,22 @@
 <div class="row">
-    <div class="form-group col-sm-3 input-table">
+    <div class="form-group col-sm-3">
         <label>Table</label>
-        <select class="form-control" onfocus="loadAvailableParagraphOutputsToInputElement(this, 'table')">
+        <select class="form-control input-table">
             <option disabled selected value> -- select an option -- </option>
         </select>
     </div>
 
     <div class="col-sm-3">
         <div class="form-group output-model">
-            <label>Model Name</label>
+            <label>Output Model</label>
             <input type="text" class="form-control">
         </div>
     </div>
 
     <div class="col-sm-3">
-        <div class="form-group algorithm">
+        <div class="form-group">
             <label>Algorithm</label>
-            <select class="form-control" onchange="onDataSourceDefinitionInputTableChange(this)">
+            <select class="form-control algorithm">
                 <option disabled selected value> -- select an option -- </option>
                 <option>EMPLOYEES</option>
                 <option>EXPENSES</option>
@@ -33,3 +33,11 @@
 <div class="row parameters">
 
 </div>
+
+<script>
+    $(document).ready(function() {
+        $(".input-table").focusin(function() {
+            paragraphUtil.loadAvailableParagraphOutputsToInputElement($(event.target) ,'table');
+        });
+    });
+</script>

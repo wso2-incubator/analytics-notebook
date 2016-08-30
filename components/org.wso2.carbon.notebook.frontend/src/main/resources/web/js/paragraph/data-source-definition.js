@@ -1,9 +1,10 @@
-function onDataSourceDefinitionDataSourceTypeChange(selectElement) {
-    // TODO : implement fetching the table names
+var dataSourceDefinitionParagraph = {};
+
+dataSourceDefinitionParagraph.onTypeSelect = function(selectElement) {
     var type;
     var url;
     var authHeader;
-    switch (selectElement.value) {
+    switch (selectElement.val()) {
         case "Database" :
             type = "GET";
             url = "/tables";
@@ -15,34 +16,28 @@ function onDataSourceDefinitionDataSourceTypeChange(selectElement) {
         type: type,
         url : constants.REST_API_URI + url,
         success: function(data) {
-            inputTableSelectElement = $(selectElement).closest(".source").find(".table-name > select");
-            inputTableSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
+            var tablesSelectElement = selectElement.closest(".source").find(".data-source-table");
+            tablesSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
             $.each(data, function(index, table) {
-                 inputTableSelectElement.append($("<option>" + table + "</option>"));
+                 tablesSelectElement.append($("<option>" + table + "</option>"));
             });
+            tablesSelectElement.parent().fadeIn();
         }
     });
-    $(selectElement).closest(".source").find(".table-name").fadeIn();
-}
+};
 
-function onDataSourceDefinitionTableChange(selectElement) {
-    $(selectElement).closest(".source").find(".output-table").fadeIn();
-}
+dataSourceDefinitionParagraph.onTableChange = function(selectElement) {
+    selectElement.closest(".source").find(".output-table").parent().fadeIn();
+};
 
-function onDataSourceDefinitionOutputTableKeyUp(inputElement) {
-    var sourceView = $(inputElement).closest(".source");
-    var checkBox = sourceView.find(".output-table > label > input");
-    if (inputElement.value.length != 0) {
-        checkBox.prop('checked', true);
-        checkBox.prop('disabled', false);
+dataSourceDefinitionParagraph.onOutputTableKeyUp = function(inputElement) {
+    if (inputElement.val().length != 0) {
 //        sourceView.closest(".paragraph").find(".run").prop('disabled', false);
     } else {
-        checkBox.prop('checked', false);
-        checkBox.prop('disabled', true);
 //        sourceView.closest(".paragraph").find(".run").prop('disabled', true);
     }
-}
+};
 
-function runDataSourceDefinitionParagraph(paragraph) {
+dataSourceDefinitionParagraph.run = function(paragraph, callback) {
     // TODO : run data source definition paragraph
-}
+};

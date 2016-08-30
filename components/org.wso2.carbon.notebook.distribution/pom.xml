@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.wso2.carbon.notebook</groupId>
             <artifactId>org.wso2.carbon.notebook.api.endpoint</artifactId>
-            <version>${version}</version>
+            <version>${pom.version}</version>
         </dependency>
     </dependencies>
 

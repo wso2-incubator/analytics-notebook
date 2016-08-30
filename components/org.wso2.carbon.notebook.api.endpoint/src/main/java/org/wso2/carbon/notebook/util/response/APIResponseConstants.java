@@ -5,4 +5,5 @@ package org.wso2.carbon.notebook.util.response;
  */
 public class APIResponseConstants {
     public static String SUCCESS = "SUCCESS";
+    public static String CANNOT_LOGIN = "CANNOT_LOGIN";
 }

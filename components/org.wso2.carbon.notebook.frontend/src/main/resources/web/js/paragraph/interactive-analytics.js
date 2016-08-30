@@ -1,5 +1,6 @@
-function runInteractiveAnalyticsParagraph(paragraph, callback) {
+var interactiveAnalyticsParagraph = {};
+
+interactiveAnalyticsParagraph.run = function(paragraph, callback) {
     // TODO : run interactive analytics paragraph
-    var output = "test";
-    callback();
-}
+    callback("Test");
+};

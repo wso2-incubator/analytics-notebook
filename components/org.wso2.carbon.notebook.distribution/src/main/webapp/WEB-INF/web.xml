@@ -37,7 +37,7 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                org.wso2.carbon.notebook.api.auth.AuthorizationEndpoint
+                org.wso2.carbon.notebook.api.auth.AuthenticationEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>

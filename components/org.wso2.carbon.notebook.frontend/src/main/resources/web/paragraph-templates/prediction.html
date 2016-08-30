@@ -1,8 +1,8 @@
 <div class="row">
     <div class="col-sm-3">
-        <div class="form-group output-table">
-            <label>Model</label>
-            <select class="form-control" onfocus="loadAvailableParagraphOutputsToInputElement(this, 'model')">
+        <div class="form-group">
+            <label>Input Model</label>
+            <select class="form-control input-model">
                 <option disabled selected value> -- select an option -- </option>
             </select>
         </div>
@@ -11,3 +11,11 @@
 <div class="row parameters">
 
 </div>
+
+<script>
+    $(document).ready(function() {
+        $(".input-model").focusin(function() {
+            paragraphUtil.loadAvailableParagraphOutputsToInputElement($(event.target) ,'model');
+        });
+    });
+</script>

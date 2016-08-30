@@ -30,21 +30,22 @@
         <dependency>
             <groupId>org.wso2.carbon.analytics-common</groupId>
             <artifactId>org.wso2.carbon.event.receiver.core</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.analytics</groupId>
             <artifactId>org.wso2.carbon.analytics.dataservice.core</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.analytics</groupId>
             <artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.commons</groupId>
+            <artifactId>org.wso2.carbon.identity.authentication</artifactId>
         </dependency>
     </dependencies>
 

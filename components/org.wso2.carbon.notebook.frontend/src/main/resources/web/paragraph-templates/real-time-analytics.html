@@ -1,24 +1,32 @@
 <div class="row">
     <div class="col-sm-3">
-        <div class="form-group output-table">
+        <div class="form-group">
             <label>Input Stream</label>
-            <select class="form-control" onfocus="loadAvailableParagraphOutputsToInputElement(this, 'stream')">
+            <select class="form-control input-stream">
                 <option disabled selected value> -- select an option -- </option>
             </select>
         </div>
     </div>
 
     <div class="col-sm-3">
-        <div class="form-group output-stream">
+        <div class="form-group">
             <label>Output Stream</label>
-            <input type="text" class="form-control">
+            <input type="text" class="form-control output-stream">
         </div>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-sm-12 form-group query">
+    <div class="col-sm-12 form-group">
         <label>Query</label>
-        <textarea class="form-control" rows="5"></textarea>
+        <textarea class="form-control query" rows="5"></textarea>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $(".input-table").focusin(function() {
+            paragraphUtil.loadAvailableParagraphOutputsToInputElement($(event.target) ,'stream');
+        });
+    });
+</script>
