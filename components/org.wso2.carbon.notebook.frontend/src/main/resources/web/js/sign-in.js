@@ -18,13 +18,12 @@ signInUtil.singIn = function() {
         $.ajax({
             type: "POST",
             url : constants.API_URI + "auth/sign-in",
-            data : credentials,
-            success: function(data) {
-                console.log(data);
+            data : JSON.stringify(credentials),
+            success : function(data) {
                 if (data.status == constants.response.SUCCESS) {
-                    window.location.href = "./";
-                } else {
-                    setError("Error !", "Invalid Credentials");
+                    window.location.href = "index.html";
+                } else if (data.status == constants.response.LOGIN_ERROR) {
+                    setError("Login Error !", "Invalid Credentials");
                 }
             }
         });

@@ -8,6 +8,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -30,11 +31,17 @@ public class APIAccessFilter implements Filter {
         String homePageURI = request.getContextPath() + "/index.html";
         String signInPageURI = request.getContextPath() + "/sign-in.html";
         String signUpPageURI = request.getContextPath() + "/sign-up.html";
-        String signInURI = request.getContextPath() + "/sign-in";
-        String signUpURI = request.getContextPath() + "/sign-up";
+        String signInURI = request.getContextPath() + "/api/auth/sign-in";
+        String signUpURI = request.getContextPath() + "/api/auth/sign-up";
 
-        boolean loggedIn = true;
-        // TODO : check if the user had logged in and change loggedIn variable if needed
+        boolean loggedIn = false;
+        HttpSession session = request.getSession();
+        if (session != null &&
+                session.getAttribute("username") != null &&
+                session.getAttribute("tenantDomain") != null &&
+                session.getAttribute("tenantID") != null)  {
+            loggedIn = true;
+        }
 
         boolean signInPageRequest = request.getRequestURI().equals(signInPageURI);
         boolean signUpPageRequest = request.getRequestURI().equals(signUpPageURI);
