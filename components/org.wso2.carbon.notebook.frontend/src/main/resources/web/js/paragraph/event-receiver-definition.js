@@ -1,6 +1,6 @@
 var eventReceiverDefinitionParagraph = {};
 
-eventReceiverDefinitionParagraph.init(paragraph, callback) {
+eventReceiverDefinitionParagraph.init = function(paragraph, callback) {
     // Loading event receiver names into the  event receiver select element
     var eventReceiverSelectElement = $(paragraph).find(".event-receiver-name");
     $.ajax({

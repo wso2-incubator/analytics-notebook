@@ -38,7 +38,7 @@ public class DataSourceInformationRetrievalEndPoints {
      * @return response
      */
     @GET
-    @Path("/columns/{tableName}")
+    @Path("/{tableName}/columns")
     public Response getColumns(@PathParam("tableName") String tableName){
         List<String> columnNames = AnalyticsDataServiceAccess.listColumnNames(tableName);
         String jsonString = new Gson().toJson(columnNames);

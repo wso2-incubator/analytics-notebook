@@ -156,6 +156,9 @@ paragraphUtil.loadSourceViewByType = function(selectElement) {
                 break;
             case "Preprocessor" :
                 paragraphTemplateLink = "paragraph-templates/preprocessor.html";
+                paragraphInitTask = function() {
+                    preprocessorParagraph.init(paragraph);
+                };
                 break;
             case "Data Visualization" :
                 paragraphTemplateLink = "paragraph-templates/data-visualization.html";
