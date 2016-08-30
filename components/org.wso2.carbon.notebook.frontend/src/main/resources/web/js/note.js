@@ -161,6 +161,9 @@ function onParagraphTypeSelect(selectElement) {
                 break;
             case "Preprocessor" :
                 paragraphTemplateLink = "paragraph-templates/preprocessor.html";
+                initParagraphTask = function() {
+                    loadTableNames(paragraph);
+                };
                 break;
             case "Data Visualization" :
                 paragraphTemplateLink = "paragraph-templates/data-visualization.html";
@@ -220,4 +223,6 @@ function loadAvailableParagraphOutputsToInputElement(selectElement, type) {
             inputSelectElement.append($("<option>" + selectElement.value + "</option>"));
         }
     });
+
+    $(selectElement).closest(".source").find(".preprocessor-table").fadeIn();
 }
