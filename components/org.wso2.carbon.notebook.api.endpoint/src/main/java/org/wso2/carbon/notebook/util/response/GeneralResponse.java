@@ -6,11 +6,11 @@ package org.wso2.carbon.notebook.util.response;
 public class GeneralResponse {
     private String status;
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getStatus() {
         return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

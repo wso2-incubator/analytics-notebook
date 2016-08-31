@@ -1,7 +1,7 @@
 var preprocessorParagraph = {};
 
 preprocessorParagraph.init = function(paragraph) {
-    var inputTableSelectElement = paragraph.find(".preprocessor-input.input-table");
+    var inputTableSelectElement = paragraph.find(".input-table");
     $.ajax({
         type: "GET",
         url : constants.API_URI + "tables",

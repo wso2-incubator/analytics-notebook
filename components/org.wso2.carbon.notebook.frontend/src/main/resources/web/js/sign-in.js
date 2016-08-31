@@ -6,13 +6,7 @@ signInUtil.singIn = function() {
         password : $("#password").val()
     };
     var setError = function(title, message) {
-        $("#error-msg").html("<div id='login-error' class='alert alert-danger' role='alert'>" +
-            "<i class='icon fw fw-error'></i>" +
-                "<strong>" + title + "</strong> " + message +
-                "<button type='button' class='close' aria-label='close' data-dismiss='alert'>" +
-                    "<span aria-hidden='true'><i class='fw fw-cancel'></i></span>" +
-                "</button>" +
-            "</div>");
+        $("#error-msg").html();
     };
     if (credentials.username.length > 0 && credentials.password.length > 0) {
         $.ajax({

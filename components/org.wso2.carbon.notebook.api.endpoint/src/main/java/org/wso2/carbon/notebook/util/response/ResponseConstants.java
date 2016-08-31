@@ -6,4 +6,5 @@ package org.wso2.carbon.notebook.util.response;
 public class ResponseConstants {
     public static String SUCCESS = "SUCCESS";
     public static String LOGIN_ERROR = "LOGIN_ERROR";
+    public static String QUERY_ERROR = "QUERY_ERROR";
 }

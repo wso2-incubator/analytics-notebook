@@ -168,6 +168,9 @@ paragraphUtil.loadSourceViewByType = function(selectElement) {
                 break;
             case "Interactive Analytics" :
                 paragraphTemplateLink = "paragraph-templates/interactive-analytics.html";
+                paragraphInitTask = function() {
+                    interactiveAnalyticsParagraph.init(paragraph);
+                };
                 break;
             case "Event Receiver Definition" :
                 paragraphTemplateLink = "paragraph-templates/event-receiver-definition.html";

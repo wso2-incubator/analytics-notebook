@@ -21,15 +21,13 @@ import java.util.List;
 
 @Path("/tables")
 public class DataSourceInformationRetrievalEndPoints {
-
-
     /**
      * List the set of tables available in the system
      *
      * @return response
      */
-    @GET()
-    public  Response listTableName(){
+    @GET
+    public Response listTableName() {
         List<String> tableNames = new ArrayList<String>();
         try {
             tableNames = ServiceHolder.getAnalyticsDataService().listTables(MultitenantConstants.SUPER_TENANT_ID);
@@ -48,15 +46,15 @@ public class DataSourceInformationRetrievalEndPoints {
      */
     @GET
     @Path("/{tableName}/columns")
-    public Response getColumns(@PathParam("tableName") String tableName){
+    public Response getColumns(@PathParam("tableName") String tableName) {
         Collection<ColumnDefinition> columns = null;
         List<String> columnNames = new ArrayList<String>();
         try {
-            columns = ServiceHolder.getAnalyticsDataService().getTableSchema(MultitenantConstants.SUPER_TENANT_ID , tableName).getColumns().values();
+            columns = ServiceHolder.getAnalyticsDataService().getTableSchema(MultitenantConstants.SUPER_TENANT_ID, tableName).getColumns().values();
         } catch (AnalyticsException e) {
             e.printStackTrace();
         }
-        if (columns !=null){
+        if (columns != null) {
             for (ColumnDefinition column : columns) {
                 columnNames.add(column.getName());
             }
@@ -65,5 +63,4 @@ public class DataSourceInformationRetrievalEndPoints {
         String jsonString = new Gson().toJson(columnNames);
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
-
 }

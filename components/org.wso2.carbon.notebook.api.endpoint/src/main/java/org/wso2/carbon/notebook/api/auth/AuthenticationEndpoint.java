@@ -6,7 +6,6 @@ import org.wso2.carbon.notebook.ServiceHolder;
 import org.wso2.carbon.notebook.util.request.auth.Credentials;
 import org.wso2.carbon.notebook.util.response.GeneralResponse;
 import org.wso2.carbon.notebook.util.response.ResponseConstants;
-import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,8 +32,8 @@ public class AuthenticationEndpoint {
      */
     @POST
     @Path("/sign-in")
-    public Response signIn(@Context HttpServletRequest request, String userCredentials) {
-        Credentials credentials = new Gson().fromJson(userCredentials, Credentials.class);
+    public Response signIn(@Context HttpServletRequest request, String credentialsString) {
+        Credentials credentials = new Gson().fromJson(credentialsString, Credentials.class);
         HttpSession session = request.getSession();
 
         GeneralResponse generalResponse = new GeneralResponse();

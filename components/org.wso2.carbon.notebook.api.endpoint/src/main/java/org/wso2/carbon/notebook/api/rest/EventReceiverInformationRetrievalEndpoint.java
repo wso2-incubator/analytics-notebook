@@ -16,7 +16,6 @@ import java.util.List;
  */
 @Path("/event-receivers")
 public class EventReceiverInformationRetrievalEndpoint {
-
     /**
      * Retrieve names of the event receivers available in the system
      *
@@ -24,7 +23,7 @@ public class EventReceiverInformationRetrievalEndpoint {
      */
     @GET
     public Response retrieveEventReceiverNames() {
-        List <String> eventReceiverNames =new ArrayList<String>();
+        List<String> eventReceiverNames = new ArrayList<String>();
         List<EventReceiverConfiguration> eventReceiverConfigurations =
                 ServiceHolder.getEventReceiverService().getAllActiveEventReceiverConfigurations();
         for (EventReceiverConfiguration eventReceiverConfiguration : eventReceiverConfigurations) {
