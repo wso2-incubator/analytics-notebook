@@ -47,7 +47,7 @@ note.delete = function() {
 var paragraphUtil = {};
 
 paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be changed after deciding on the architecture
-    var paragraphType = paragraph.find("select[name='paragraph-type']").val();
+    var paragraphType = paragraph.find(".paragraph-type-select").val();
     var outputView = paragraph.find(".output");
 
     /*
@@ -72,43 +72,43 @@ paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be cha
             paragraph.find(".toggle-output-view").prop('disabled', false);
         };
 
-        var paragraph;
+        var selectedParagraph;
         switch (paragraphType) {
             case "Data Source Definition" :
-                paragraph = dataSourceDefinitionParagraph;
+                selectedParagraph = dataSourceDefinitionParagraph;
                 break;
             case "Preprocessor" :
-                paragraph = preprocessorParagraph;
+                selectedParagraph = preprocessorParagraph;
                 break;
             case "Data Visualization" :
-                paragraph = dataVisualizationParagraph;
+                selectedParagraph = dataVisualizationParagraph;
                 break;
             case "Batch Analytics" :
-                paragraph = batchAnalyticsParagraph;
+                selectedParagraph = batchAnalyticsParagraph;
                 break;
             case "Interactive Analytics" :
-                paragraph = interactiveAnalyticsParagraph;
+                selectedParagraph = interactiveAnalyticsParagraph;
                 break;
             case "Event Receiver Definition" :
-                paragraph = eventReceiverParagraph;
+                selectedParagraph = eventReceiverParagraph;
                 break;
             case "Real Time Analytics" :
-                paragraph = realTimeAnalyticsParagraph;
+                selectedParagraph = realTimeAnalyticsParagraph;
                 break;
             case "Model Definition" :
-                paragraph = modelDefinitionParagraph;
+                selectedParagraph = modelDefinitionParagraph;
                 break;
             case "Prediction" :
-                paragraph = predictionParagraph;
+                selectedParagraph = predictionParagraph;
                 break;
             case "Event Simulation":
-                paragraph = evenSimulationParagraph;
+                selectedParagraph = evenSimulationParagraph;
                 break;
             case "Custom" :
-                paragraph = customParagraph;
+                selectedParagraph = customParagraph;
                 break;
         }
-        paragraph.run(paragraph, callbackFunction);
+        selectedParagraph.run(paragraph, callbackFunction);
     };
 
     if (outputView.length > 0) {
