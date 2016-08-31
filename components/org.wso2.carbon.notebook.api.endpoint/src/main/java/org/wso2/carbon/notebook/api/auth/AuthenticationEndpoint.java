@@ -1,18 +1,26 @@
 package org.wso2.carbon.notebook.api.auth;
 
+import com.google.gson.Gson;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.notebook.ServiceHolder;
+import org.wso2.carbon.notebook.util.request.auth.Credentials;
 import org.wso2.carbon.notebook.util.response.GeneralResponse;
+import org.wso2.carbon.notebook.util.response.ResponseConstants;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
-import javax.ws.rs.Consumes;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /*
  * For handling user management
  */
-@Path("/")
+@Path("/auth")
 public class AuthenticationEndpoint {
     public AuthenticationEndpoint() {
 
@@ -25,20 +33,30 @@ public class AuthenticationEndpoint {
      */
     @POST
     @Path("/sign-in")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response signIn(String username) {
-        GeneralResponse generalResponse = new GeneralResponse();
-//        return authenticationService.authenticate(username, password);
-//        MultitenantUtils.getTenantAwareUsername( )Domain()
+    public Response signIn(@Context HttpServletRequest request, String userCredentials) {
+        Credentials credentials = new Gson().fromJson(userCredentials, Credentials.class);
+        HttpSession session = request.getSession();
 
-//        if (AuthenticationServiceAccess.login(username, password)) {
-//            apiResponse.setStatus(APIResponseConstants.SUCCESS);
-//        } else {
-//            apiResponse.setStatus(APIResponseConstants.CANNOT_LOGIN);
-//        }
-//
-//        String jsonString = new Gson().toJson(apiResponse);
-        return Response.ok(username, MediaType.APPLICATION_JSON).build();
+        GeneralResponse generalResponse = new GeneralResponse();
+        if (ServiceHolder.getAuthenticationService()
+                .authenticate(credentials.getUsername(), credentials.getPassword())) {
+            String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(credentials.getUsername());
+            String tenantDomain = MultitenantUtils.getTenantDomain(credentials.getPassword());
+
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, false);
+            int tenantID = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+            PrivilegedCarbonContext.endTenantFlow();
+
+            session.setAttribute("username", tenantAwareUsername);
+            session.setAttribute("tenantDomain", tenantDomain);
+            session.setAttribute("tenantID", tenantID);
+            generalResponse.setStatus(ResponseConstants.SUCCESS);
+        } else {
+            generalResponse.setStatus(ResponseConstants.LOGIN_ERROR);
+        }
+
+        String jsonString = new Gson().toJson(generalResponse);
+        return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }

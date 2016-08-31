@@ -3,7 +3,8 @@ var constants = {
     PRODUCT_NAME : "Notebook",
     PRODUCT_VERSION : "1.0-SNAPSHOT",
     response : {
-        SUCCESS : "SUCCESS"
+        SUCCESS : "SUCCESS",
+        LOGIN_ERROR : "LOGIN_ERROR"
     },
     API_URI : "api/"
 };

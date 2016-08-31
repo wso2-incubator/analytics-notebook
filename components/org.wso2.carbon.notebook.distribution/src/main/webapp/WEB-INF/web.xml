@@ -15,7 +15,12 @@
     <!-- Filter mappings start here -->
     <filter-mapping>
         <filter-name>AccessControlFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>AccessControlFilter</filter-name>
+        <url-pattern>*.html</url-pattern>
     </filter-mapping>
     <!-- Filter mappings end here -->
 
