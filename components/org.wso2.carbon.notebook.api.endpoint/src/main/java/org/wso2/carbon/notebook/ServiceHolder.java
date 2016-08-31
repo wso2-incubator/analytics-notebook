@@ -4,6 +4,8 @@ import org.wso2.carbon.analytics.dataservice.core.AnalyticsDataService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.event.receiver.core.EventReceiverService;
 import org.wso2.carbon.identity.authentication.AuthenticationService;
+import org.wso2.carbon.analytics.spark.core.AnalyticsProcessorService;
+
 
 public class ServiceHolder {
     private ServiceHolder() {
@@ -13,6 +15,7 @@ public class ServiceHolder {
     private static AuthenticationService authenticationService;
     private static AnalyticsDataService analyticsDataService;
     private static EventReceiverService eventReceiverService;
+    private static AnalyticsProcessorService analyticsProcessorService;
 
     public static AuthenticationService getAuthenticationService() {
         if (authenticationService == null) {
@@ -36,5 +39,13 @@ public class ServiceHolder {
                     .getOSGiService(EventReceiverService.class, null);
         }
         return eventReceiverService;
+    }
+
+    public static AnalyticsProcessorService getAnalyticsProcessorService(){
+        if (analyticsProcessorService == null){
+            analyticsProcessorService =(AnalyticsProcessorService)PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                    .getOSGiService(AnalyticsProcessorService.class, null);
+        }
+        return analyticsProcessorService;
     }
 }
