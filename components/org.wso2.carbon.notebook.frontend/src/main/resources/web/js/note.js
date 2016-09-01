@@ -17,13 +17,14 @@ note.runAllParagraphs = function() {
 note.toggleVisibilityOfMultipleViews = function(type) {
     var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views");
     var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view");
+    var buttonTemplate;
     if (toggleAllSourceOrOutputViewsButton.html().indexOf("Show") != -1) {
-        var buttonTemplate = "<i class='fw fw-hide'></i> Hide " + type;
+        buttonTemplate = "<i class='fw fw-hide'></i> Hide " + type;
         toggleAllSourceOrOutputViewsButton.html(buttonTemplate);
         toggleSourceOrOutputViewButton.html(buttonTemplate);
         $("." + type).slideDown();
     } else {
-        var buttonTemplate = "<i class='fw fw-view'></i> Show " + type;
+        buttonTemplate = "<i class='fw fw-view'></i> Show " + type;
         toggleAllSourceOrOutputViewsButton.html(buttonTemplate);
         toggleSourceOrOutputViewButton.html(buttonTemplate);
         $("." + type).slideUp();
@@ -63,7 +64,7 @@ paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be cha
         var callbackFunction = function(output) {
             var newOutputView = $("<div class='output fluid-container' style='display: none;'>");
             newOutputView.append($("<p>Output</p>"));
-            var newOutputViewContent = $("<div class='row'>");
+            var newOutputViewContent = $("<div class='fluid-container'>");
             newOutputViewContent.append(output);
             newOutputView.append(newOutputViewContent);
             paragraph.find(".paragraph-content").append(newOutputView);
@@ -90,7 +91,7 @@ paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be cha
                 selectedParagraph = interactiveAnalyticsParagraph;
                 break;
             case "Event Receiver Definition" :
-                selectedParagraph = eventReceiverParagraph;
+                selectedParagraph = eventReceiverDefinitionParagraph;
                 break;
             case "Real Time Analytics" :
                 selectedParagraph = realTimeAnalyticsParagraph;
@@ -102,7 +103,7 @@ paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be cha
                 selectedParagraph = predictionParagraph;
                 break;
             case "Event Simulation":
-                selectedParagraph = evenSimulationParagraph;
+                selectedParagraph = eventSimulationParagraph;
                 break;
             case "Custom" :
                 selectedParagraph = customParagraph;
@@ -139,7 +140,7 @@ paragraphUtil.delete = function(paragraph) {
     paragraph.slideUp(function() {
         paragraph.remove();
     });
-}
+};
 
 paragraphUtil.loadSourceViewByType = function(selectElement) {
     var paragraph = selectElement.closest(".paragraph");

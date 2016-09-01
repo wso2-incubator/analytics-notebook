@@ -9,15 +9,12 @@ import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.spark.core.util.AnalyticsQueryResult;
 import org.wso2.carbon.notebook.ServiceHolder;
-import org.wso2.carbon.notebook.util.request.auth.Credentials;
 import org.wso2.carbon.notebook.util.request.paragraph.InteractiveAnalyticsQuery;
 import org.wso2.carbon.notebook.util.response.GeneralResponse;
 import org.wso2.carbon.notebook.util.response.ResponseConstants;
-import org.wso2.carbon.notebook.util.response.paragraph.InteractiveAnalyticsResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;

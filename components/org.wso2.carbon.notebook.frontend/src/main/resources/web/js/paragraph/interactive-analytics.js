@@ -27,9 +27,7 @@ interactiveAnalyticsParagraph.run = function(paragraph, callback) {
         url : constants.API_URI + "interactive-analytics/execute",
         data : JSON.stringify(queryParameters),
         success : function(data) {
-//            if (data.status == constants.response.SUCCESS) {
-                callback(util.output.generateTable(data.columns, data.rows));
-//            }
+            callback(util.output.generateTable(callback, data.columns, data.rows));
         }
     });
 };

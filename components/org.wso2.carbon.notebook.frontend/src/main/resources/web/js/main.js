@@ -58,26 +58,31 @@ util.generateAlert = function(type, title, message) {
 
 util.output = {};
 
-util.output.generateTable = function(headerArray, dataRowArray) {
-    var table = $("<table id='ajax-table' class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
+util.output.generateTable = function(callback, headerArray, dataRowArray) {
+    var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
+    callback(table);
 
-    var tableHeaderRow = $("<tr>");
+    var columnArray = [];
     for (var i = 0; i < headerArray.length; i++) {
-        tableHeaderRow.append($("<th>" + headerArray[i] + "</th>"));
-    }
-    table.append($("<thead>").append(tableHeaderRow));
-
-    var tableBody = $("<tbody>");
-    for (var i = 0; i < dataRowArray.length; i++) {
-        var dataRow = $("<tr>");
-        for(var j = 0; j < dataRowArray[i].length; j++) {
-            dataRow.append("<td>" + dataRowArray[i][j] + "<td>");
-        }
-        tableBody.append(dataRow);
+        columnArray.push({ title : headerArray[i] });
     }
 
-    table.append(tableBody);
-    return table;
+    table.DataTable({
+        responsive: true,
+        data : dataRowArray,
+        columns : columnArray
+    });
+};
+
+util.output.generateLazyLoadedTable = function(callback, httpMethod, url) {
+    var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
+    callback(table);
+
+    table.DataTable({
+        responsive: true,
+        serverSide : true,
+        ajax : { type : httpMethod, url : url }
+    });
 };
 
 // General Initializations
