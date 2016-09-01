@@ -62,8 +62,8 @@ util.output.generateTable = function(headerArray, dataRowArray) {
     var table = $("<table id='ajax-table' class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
 
     var tableHeaderRow = $("<tr>");
-    for (var i = 0; i < headerArray.length; i++) {
-        tableHeaderRow.append($("<th>" + headerArray[i] + "</th>"));
+    for (var k = 0; k < headerArray.length; k++) {
+        tableHeaderRow.append($("<th>" + headerArray[k] + "</th>"));
     }
     table.append($("<thead>").append(tableHeaderRow));
 
@@ -71,7 +71,7 @@ util.output.generateTable = function(headerArray, dataRowArray) {
     for (var i = 0; i < dataRowArray.length; i++) {
         var dataRow = $("<tr>");
         for(var j = 0; j < dataRowArray[i].length; j++) {
-            dataRow.append("<td>" + dataRowArray[i][j] + "<td>");
+            dataRow.append("<td>" + dataRowArray[i][j] + "</td>");
         }
         tableBody.append(dataRow);
     }
