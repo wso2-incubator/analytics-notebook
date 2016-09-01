@@ -15,7 +15,7 @@ signInUtil.singIn = function() {
             data : JSON.stringify(credentials),
             success : function(data) {
                 if (data.status == constants.response.SUCCESS) {
-                    window.location.href = "index.html";
+                    window.location.href = util.getQueryParameters().from;
                 } else if (data.status == constants.response.LOGIN_ERROR) {
                     setError("Login Error !", "Invalid Credentials");
                 }

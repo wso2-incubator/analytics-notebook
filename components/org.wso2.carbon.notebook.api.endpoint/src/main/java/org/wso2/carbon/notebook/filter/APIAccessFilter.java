@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.URLEncoder;
 
 /**
  * Used for filtering requests sent to the api without logging in
@@ -54,7 +55,13 @@ public class APIAccessFilter implements Filter {
         } else if (loggedIn || signInPageRequest || signUpPageRequest || signInRequest || signUpRequest) {
             filterChain.doFilter(request, response);
         } else {
-            response.sendRedirect(signInPageURI + "?from=" + currentURI);
+            // Generating the ui to redirect to after logging in
+            String uri = currentURI.substring(request.getContextPath().length()) + "?" + request.getQueryString();
+            if (uri.charAt(0) == '/') {
+                uri = uri.substring(1);
+            }
+
+            response.sendRedirect(signInPageURI + "?from=" + URLEncoder.encode(uri, "UTF-8"));
         }
     }
 
