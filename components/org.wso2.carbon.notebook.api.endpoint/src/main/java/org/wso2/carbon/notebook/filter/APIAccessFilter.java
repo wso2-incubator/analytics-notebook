@@ -28,6 +28,7 @@ public class APIAccessFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
+        String currentURI = request.getRequestURI();
         String homePageURI = request.getContextPath() + "/index.html";
         String signInPageURI = request.getContextPath() + "/sign-in.html";
         String signUpPageURI = request.getContextPath() + "/sign-up.html";
@@ -43,17 +44,17 @@ public class APIAccessFilter implements Filter {
             loggedIn = true;
         }
 
-        boolean signInPageRequest = request.getRequestURI().equals(signInPageURI);
-        boolean signUpPageRequest = request.getRequestURI().equals(signUpPageURI);
-        boolean signInRequest = request.getRequestURI().equals(signInURI);
-        boolean signUpRequest = request.getRequestURI().equals(signUpURI);
+        boolean signInPageRequest = currentURI.equals(signInPageURI);
+        boolean signUpPageRequest = currentURI.equals(signUpPageURI);
+        boolean signInRequest = currentURI.equals(signInURI);
+        boolean signUpRequest = currentURI.equals(signUpURI);
 
         if (loggedIn && (signInPageRequest || signUpPageRequest || signInRequest || signUpRequest)) {
             response.sendRedirect(homePageURI);
         } else if (loggedIn || signInPageRequest || signUpPageRequest || signInRequest || signUpRequest) {
             filterChain.doFilter(request, response);
         } else {
-            response.sendRedirect(signInPageURI);
+            response.sendRedirect(signInPageURI + "?from=" + currentURI);
         }
     }
 

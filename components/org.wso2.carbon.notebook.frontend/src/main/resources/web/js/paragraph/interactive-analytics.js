@@ -15,19 +15,21 @@ interactiveAnalyticsParagraph.init = function(paragraph) {
 };
 
 interactiveAnalyticsParagraph.run = function(paragraph, callback) {
-    var query = {};
-    query.tableName = paragraph.find("input-table");
+    var queryParameters = {
+        tableName : paragraph.find(".input-table").val(),
+        query : paragraph.find(".query").val(),
+        start : 0,
+        count : 100
+    };
 
     $.ajax({
         type: "POST",
         url : constants.API_URI + "interactive-analytics/execute",
-        data : JSON.stringify(query),
+        data : JSON.stringify(queryParameters),
         success : function(data) {
-            if (data.status == constants.response.SUCCESS) {
-                console.log(JSON.stringify(data));
-            } else if (data.status == constants.response.QUERY_ERROR) {
-
-            }
+//            if (data.status == constants.response.SUCCESS) {
+                callback(util.output.generateTable(data.columns, data.rows));
+//            }
         }
     });
 };
