@@ -2,7 +2,7 @@ package org.wso2.carbon.notebook.util.response;
 
 import java.util.List;
 
-public class TableResponse {
+public class TableResponse extends GeneralResponse{
     private String[] columns;
     private List<List<Object>> data;
 
@@ -10,7 +10,8 @@ public class TableResponse {
 
     }
 
-    public TableResponse(String[] columns, List<List<Object>> data) {
+    public TableResponse(String[] columns, List<List<Object>> data, String status, String message) {
+        super(status, message);
         this.columns = columns;
         this.data = data;
     }
@@ -30,4 +31,6 @@ public class TableResponse {
     public void setData(List<List<Object>> data) {
         this.data = data;
     }
+
+
 }

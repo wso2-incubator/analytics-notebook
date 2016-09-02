@@ -7,6 +7,7 @@ import org.wso2.carbon.notebook.ServiceHolder;
 import org.wso2.carbon.notebook.util.request.paragraph.BatchAnalyticsQuery;
 import org.wso2.carbon.notebook.util.response.GeneralResponse;
 import org.wso2.carbon.notebook.util.response.ResponseConstants;
+import org.wso2.carbon.notebook.util.response.TableResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -28,7 +29,8 @@ public class BatchAnalyticsEndpoint {
 
     /**
      * Execute a given script
-     * @param request HttpServeletRequest
+     *
+     * @param request       HttpServeletRequest
      * @param scriptContent The script
      * @return response
      */
@@ -36,29 +38,30 @@ public class BatchAnalyticsEndpoint {
     @Path("/execute-script")
     public Response executeScript(@Context HttpServletRequest request, String scriptContent) {
         HttpSession session = request.getSession();
-        int tenantID = (Integer)session.getAttribute("tenantID");
+        int tenantID = (Integer) session.getAttribute("tenantID");
 
         BatchAnalyticsQuery batchAnalyticsQuery = new Gson().fromJson(scriptContent, BatchAnalyticsQuery.class);
         String[] queriesInScript;
-        List<AnalyticsQueryResult> analyticsQueryResults = new ArrayList<AnalyticsQueryResult>();
+        List<TableResponse> tableResponses = new ArrayList<TableResponse>();
 
-        queriesInScript= ServiceHolder.getAnalyticsProcessorService()
-                .getQueries(batchAnalyticsQuery.getQuery() );
+        queriesInScript = ServiceHolder.getAnalyticsProcessorService()
+                .getQueries(batchAnalyticsQuery.getQuery());
 
         String jsonString;
         try {
-            for (String query: queriesInScript) {
-                analyticsQueryResults.add(ServiceHolder.getAnalyticsProcessorService()
-                        .executeQuery(tenantID, query));
+            for (String query : queriesInScript) {
+                AnalyticsQueryResult result = ServiceHolder.getAnalyticsProcessorService()
+                        .executeQuery(tenantID, query);
+                tableResponses.add(new TableResponse(result.getColumns(), result.getRows(), ResponseConstants.SUCCESS,null));
             }
-            jsonString = new Gson().toJson(analyticsQueryResults);
         } catch (AnalyticsExecutionException e) {
             e.printStackTrace();
-            GeneralResponse generalResponse = new GeneralResponse();
-            generalResponse.setStatus(ResponseConstants.QUERY_ERROR);
-            jsonString = new Gson().toJson(generalResponse);
+            tableResponses.add(new TableResponse(null, null, ResponseConstants.QUERY_ERROR, e.getMessage()));
+        } catch (RuntimeException e){
+            tableResponses.add(new TableResponse(null, null, ResponseConstants.QUERY_ERROR, e.getMessage()));
         }
 
+        jsonString = new Gson().toJson(tableResponses);
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 //

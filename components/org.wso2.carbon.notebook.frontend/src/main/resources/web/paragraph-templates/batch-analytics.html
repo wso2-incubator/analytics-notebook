@@ -14,7 +14,7 @@
             </div>
 
             <div class="input-group-btn ">
-                <button class="btn add-table-button" type="button">
+                <button class="btn add-table-button " type="button" disabled>
                     <i class="fw fw-import" aria-hidden="true"></i>
                     <span class="hidden-xs">Import</span>
                 </button>
@@ -35,5 +35,11 @@
         $(".add-table-button").click(function (event) {
             batchAnalyticsParagraph.addTable($(event.target));
         });
+        $(".input-table").change(function (event){
+            batchAnalyticsParagraph.enableImport($(event.target));
+        });
+
     });
+
+
 </script>
