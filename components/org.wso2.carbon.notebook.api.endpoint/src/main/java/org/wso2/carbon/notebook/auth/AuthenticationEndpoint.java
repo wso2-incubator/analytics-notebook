@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.api.auth;
+package org.wso2.carbon.notebook.auth;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.context.PrivilegedCarbonContext;

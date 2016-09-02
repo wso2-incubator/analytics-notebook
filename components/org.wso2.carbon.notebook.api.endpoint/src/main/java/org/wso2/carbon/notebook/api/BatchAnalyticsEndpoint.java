@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.api.rest;
+package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.analytics.spark.core.exception.AnalyticsExecutionException;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 
 @Path("/batch-analytics")
-public class BatchAnalyticProcessingEndPoint {
+public class BatchAnalyticsEndpoint {
 
 
     /**

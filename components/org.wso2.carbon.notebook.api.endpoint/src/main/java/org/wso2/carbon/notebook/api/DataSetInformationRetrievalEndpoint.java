@@ -1,11 +1,11 @@
-package org.wso2.carbon.notebook.api.rest;
+package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.notebook.ServiceHolder;
-import org.wso2.carbon.notebook.util.response.paragraph.ColumnResponse;
+import org.wso2.carbon.notebook.util.response.ColumnResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 
 @Path("/tables")
-public class DataSourceInformationRetrievalEndPoints {
+public class DataSetInformationRetrievalEndpoint {
     /**
      * List the set of tables available in the system
      *

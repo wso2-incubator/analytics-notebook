@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.util.response.paragraph;
+package org.wso2.carbon.notebook.util.response;
 
 import org.wso2.carbon.analytics.datasource.commons.AnalyticsSchema;
 

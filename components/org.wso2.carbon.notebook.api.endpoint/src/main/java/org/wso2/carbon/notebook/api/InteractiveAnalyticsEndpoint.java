@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.api.rest;
+package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.analytics.dataservice.commons.AnalyticsDataResponse;

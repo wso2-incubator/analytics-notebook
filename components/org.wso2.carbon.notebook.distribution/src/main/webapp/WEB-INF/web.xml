@@ -33,11 +33,11 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                org.wso2.carbon.notebook.api.auth.AuthenticationEndpoint
-                org.wso2.carbon.notebook.api.rest.EventReceiverInformationRetrievalEndpoint
-                org.wso2.carbon.notebook.api.rest.DataSourceInformationRetrievalEndPoints
-                org.wso2.carbon.notebook.api.rest.BatchAnalyticProcessingEndPoint
-                org.wso2.carbon.notebook.api.rest.InteractiveAnalyticsEndpoint
+                org.wso2.carbon.notebook.auth.AuthenticationEndpoint
+                org.wso2.carbon.notebook.api.BatchAnalyticsEndpoint
+                org.wso2.carbon.notebook.api.DataSetInformationRetrievalEndpoint
+                org.wso2.carbon.notebook.api.EventReceiverInformationRetrievalEndpoint
+                org.wso2.carbon.notebook.api.InteractiveAnalyticsEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
