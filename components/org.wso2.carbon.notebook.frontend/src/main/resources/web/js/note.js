@@ -47,7 +47,7 @@ note.delete = function() {
 // Functionality for paragraphs
 var paragraphUtil = {};
 
-paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be changed after deciding on the architecture
+ paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be changed after deciding on the architecture
     var paragraphType = paragraph.find(".paragraph-type-select").val();
     var outputView = paragraph.find(".output");
 
@@ -158,7 +158,7 @@ paragraphUtil.loadSourceViewByType = function(selectElement) {
             case "Preprocessor" :
                 paragraphTemplateLink = "paragraph-templates/preprocessor.html";
                 paragraphInitTask = function() {
-                    preprocessorParagraph.init(paragraph);
+                    paragraphUtil.loadTables(paragraph);
                 };
                 break;
             case "Data Visualization" :
@@ -166,6 +166,9 @@ paragraphUtil.loadSourceViewByType = function(selectElement) {
                 break;
             case "Batch Analytics" :
                 paragraphTemplateLink = "paragraph-templates/batch-analytics.html";
+                paragraphInitTask = function() {
+                    paragraphUtil.loadTables(paragraph);
+                };
                 break;
             case "Interactive Analytics" :
                 paragraphTemplateLink = "paragraph-templates/interactive-analytics.html";
@@ -223,4 +226,19 @@ paragraphUtil.loadAvailableParagraphOutputsToInputElement = function(selectEleme
             inputSelectElement.append($("<option>" + selectElement.value + "</option>"));
         }
     });
+};
+
+paragraphUtil.loadTables = function(paragraph) {
+    var inputTableSelectElement = paragraph.find(".input-table");
+    $.ajax({
+        type: "GET",
+        url : constants.API_URI + "tables",
+        success: function(data) {
+            inputTableSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
+            $.each(data, function(index, table) {
+                inputTableSelectElement.append($("<option>" + table + "</option>"));
+            });
+        }
+    });
+    $(paragraph).closest(".source").find(".table-name").fadeIn();
 };
