@@ -56,23 +56,6 @@ var paragraphUtil = {};
      * This is called later after checking if the output view is empty or not
      */
     var runParagraphTask = function() {
-        /*
-         * Callback function to be passed to paragraph run methods
-         * This generates the output tags and adds the content passed into it
-         * This is called from inside the relevant paragraph run method
-         */
-        var callbackFunction = function(output) {
-            var newOutputView = $("<div class='output fluid-container' style='display: none;'>");
-            newOutputView.append($("<p>Output</p>"));
-            var newOutputViewContent = $("<div class='fluid-container'>");
-            newOutputViewContent.append(output);
-            newOutputView.append(newOutputViewContent);
-            paragraph.find(".paragraph-content").append(newOutputView);
-
-            newOutputView.slideDown();
-            paragraph.find(".toggle-output-view").prop('disabled', false);
-        };
-
         var selectedParagraph;
         switch (paragraphType) {
             case "Data Source Definition" :
@@ -109,7 +92,17 @@ var paragraphUtil = {};
                 selectedParagraph = customParagraph;
                 break;
         }
-        selectedParagraph.run(paragraph, callbackFunction);
+        selectedParagraph.run(paragraph, function(output) {
+            var newOutputView = $("<div class='output fluid-container' style='display: none;'>");
+            newOutputView.append($("<p>Output</p>"));
+            var newOutputViewContent = $("<div class='fluid-container'>");
+            newOutputViewContent.append(output);
+            newOutputView.append(newOutputViewContent);
+            paragraph.find(".paragraph-content").append(newOutputView);
+
+            newOutputView.slideDown();
+            paragraph.find(".toggle-output-view").prop('disabled', false);
+        });
     };
 
     if (outputView.length > 0) {

@@ -58,9 +58,10 @@ util.generateAlert = function(type, title, message) {
 
 util.output = {};
 
-util.output.generateTable = function(callback, headerArray, dataRowArray) {
+util.output.generateTable = function(headerArray, dataRowArray) {
+    var tableContainer = $("<div>");
     var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
-    callback(table);
+    tableContainer.append(table);
 
     var columnArray = [];
     for (var i = 0; i < headerArray.length; i++) {
@@ -72,17 +73,22 @@ util.output.generateTable = function(callback, headerArray, dataRowArray) {
         data : dataRowArray,
         columns : columnArray
     });
+
+    return tableContainer;
 };
 
 util.output.generateLazyLoadedTable = function(callback, httpMethod, url) {
+    var tableContainer = $("<div>");
     var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
-    callback(table);
+    tableContainer.append(table);
 
     table.DataTable({
         responsive: true,
         serverSide : true,
         ajax : { type : httpMethod, url : url }
     });
+
+    return tableContainer;
 };
 
 // General Initializations

@@ -36,7 +36,7 @@
                 org.wso2.carbon.notebook.api.auth.AuthenticationEndpoint
                 org.wso2.carbon.notebook.api.rest.EventReceiverInformationRetrievalEndpoint
                 org.wso2.carbon.notebook.api.rest.DataSourceInformationRetrievalEndPoints
-                org.wso2.carbon.notebook.api.rest.AnalyticProcessorEndPoint
+                org.wso2.carbon.notebook.api.rest.BatchAnalyticProcessingEndPoint
                 org.wso2.carbon.notebook.api.rest.InteractiveAnalyticsEndpoint
             </param-value>
         </init-param>
