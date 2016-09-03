@@ -55,7 +55,7 @@ public class BatchAnalyticsEndpoint {
         } catch (AnalyticsExecutionException e) {
             e.printStackTrace();
             GeneralResponse generalResponse = new GeneralResponse();
-            generalResponse.setStatus(ResponseConstants.QUERY_ERROR);
+            generalResponse.setStatus(ResponseConstants.ERROR);
             jsonString = new Gson().toJson(generalResponse);
         }
 

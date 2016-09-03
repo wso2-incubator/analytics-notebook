@@ -15,19 +15,17 @@ interactiveAnalyticsParagraph.init = function(paragraph) {
 };
 
 interactiveAnalyticsParagraph.run = function(paragraph, callback) {
-    var queryParameters = {
-        tableName : paragraph.find(".input-table").val(),
-        query : paragraph.find(".query").val(),
-        start : 0,
-        count : 100
-    };
-
+    var tableName = paragraph.find(".input-table").val();
     $.ajax({
-        type: "POST",
-        url : constants.API_URI + "interactive-analytics/execute",
-        data : JSON.stringify(queryParameters),
-        success : function(data) {
-            callback(util.output.generateTable(data.columns, data.rows));
+        type: "GET",
+        url : constants.API_URI + "tables/" + tableName + "/columns",
+        success: function(data) {
+            var queryParameters = {
+                tableName : tableName,
+                query : paragraph.find(".query").val()
+            };
+            callback(util.output
+                .generateLazyLoadedTable("POST", constants.API_URI + "interactive-analytics/search/query", queryParameters, data));
         }
     });
 };

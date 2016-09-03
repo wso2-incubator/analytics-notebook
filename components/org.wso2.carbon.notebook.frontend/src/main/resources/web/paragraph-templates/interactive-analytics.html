@@ -7,9 +7,66 @@
     </div>
 </div>
 
-<div class="row">
+<div class="form-group">
+    <div class="input-group input-wrap">
+        <div class="input-group-btn">
+            <label class="control-label">Search By</label>
+        </div>
+        <label class="radio">
+            <input type="radio" name="search-by-option" class="search-by-date-range">
+            <span class="helper">Date Range</span>
+        </label>
+        <label class="radio">
+            <input type="radio" name="search-by-option" class="search-by-query">
+            <span class="helper">Query</span>
+        </label>
+    </div>
+</div>
+
+<div class="form-group date-range-container collapse">
+    <div class="input-group input-wrap">
+        <div class="input-group-btn">
+            <label class="control-label">From</label>
+        </div>
+        <div class="input-group-btn">
+            <input type="datetime" class="form-control form-control-lg" placeholder="Start Date">
+        </div>
+        <div class="input-group-btn">
+            <label class="control-label">To</label>
+        </div>
+        <div class="input-group-btn">
+            <input type="datetime" class="form-control form-control-lg" placeholder="End Date">
+        </div>
+    </div>
+</div>
+
+<div class="row query-container collapse">
     <div class="col-sm-12 form-group">
         <label>Query</label>
         <textarea class="form-control query" rows="5"></textarea>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $(".search-by-date-range").click(function(event) {
+            var sourceView = $(event.target).closest(".source");
+            var dateRangeContainer = sourceView.find(".date-range-container");
+            var queryContainer = sourceView.find(".query-container");
+
+            queryContainer.fadeOut(function() {
+                dateRangeContainer.fadeIn();
+            });
+        });
+
+        $(".search-by-query").click(function(event) {
+            var sourceView = $(event.target).closest(".source");
+            var dateRangeContainer = sourceView.find(".query-container");
+            var queryContainer = sourceView.find(".query-container");
+
+            dateRangeContainer.fadeOut(function() {
+                queryContainer.fadeIn();
+            });
+        })
+    });
+</script>
