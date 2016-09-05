@@ -5,7 +5,9 @@ import org.wso2.carbon.analytics.dataservice.commons.AnalyticsDataResponse;
 import org.wso2.carbon.analytics.dataservice.commons.SearchResultEntry;
 import org.wso2.carbon.analytics.dataservice.core.AnalyticsDataServiceUtils;
 import org.wso2.carbon.analytics.datasource.commons.Record;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.ServiceHolder;
+import org.wso2.carbon.notebook.Utils;
 import org.wso2.carbon.notebook.util.request.paragraph.InteractiveAnalyticsQuery;
 import org.wso2.carbon.notebook.util.response.GeneralResponse;
 import org.wso2.carbon.notebook.util.response.LazyLoadedTableResponse;
@@ -18,11 +20,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*
  * HTTP Responses for interactive analytics paragraph related requests
@@ -51,8 +49,8 @@ public class InteractiveAnalyticsEndpoint {
                     tenantID,
                     interactiveAnalyticsQuery.getTableName(),
                     interactiveAnalyticsQuery.getQuery(),
-                    interactiveAnalyticsQuery.getFrom(),
-                    interactiveAnalyticsQuery.getTo()
+                    interactiveAnalyticsQuery.getPaginationFrom(),
+                    interactiveAnalyticsQuery.getPaginationCount()
             );
 
             // Getting the list of IDs from Lucene Result
@@ -67,14 +65,7 @@ public class InteractiveAnalyticsEndpoint {
             List<Record> records = AnalyticsDataServiceUtils.listRecords(ServiceHolder.getAnalyticsDataService(), resp);
 
             // Creating a list of data
-            List<List<Object>> data = new ArrayList<List<Object>>();
-            for (Record record : records) {
-                Map<String, Object> row = record.getValues();
-                row.remove("_version");
-                row.put("_timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date(record.getTimestamp())));
-                data.add(new ArrayList<Object>(row.values()));
-            }
-            response.setData(data);
+            response.setData(Utils.getTableDataFromRecords(records));
 
             // Fetching the actual count
             int actualCount = ServiceHolder.getAnalyticsDataService().searchCount(tenantID,
@@ -89,7 +80,88 @@ public class InteractiveAnalyticsEndpoint {
             e.printStackTrace();
             jsonString = new Gson().toJson(new GeneralResponse(ResponseConstants.ERROR));
         }
+        return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
+    }
 
+    /**
+     * Run a lucene query for interactive analytics
+     *
+     * @return response
+     */
+    @POST
+    @Path("/search/date-range")
+    public Response getByDateRange(@Context HttpServletRequest request, String queryString) {
+        InteractiveAnalyticsQuery interactiveAnalyticsQuery = new Gson().fromJson(queryString, InteractiveAnalyticsQuery.class);
+        HttpSession session = request.getSession();
+        int tenantID = (Integer) session.getAttribute("tenantID");
+        String jsonString;
+
+        String recordStoreName;
+        boolean isRecordCountSupported;
+        try {
+            LazyLoadedTableResponse response = new LazyLoadedTableResponse();
+            long timeFrom = interactiveAnalyticsQuery.getTimeFrom();
+            long timeTo = interactiveAnalyticsQuery.getTimeTo();
+            int paginationFrom = interactiveAnalyticsQuery.getPaginationFrom();
+            int paginationCount = interactiveAnalyticsQuery.getPaginationCount();
+            response.setDraw(interactiveAnalyticsQuery.getDraw());
+
+            int originalFrom = interactiveAnalyticsQuery.getPaginationFrom();
+            if (!ServiceHolder.getAnalyticsDataService().isPaginationSupported(
+                    ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
+                            tenantID, interactiveAnalyticsQuery.getTableName()
+                    )
+                )) {
+                paginationCount = paginationFrom + paginationCount;
+                paginationFrom = 0;
+            }
+            AnalyticsDataResponse resp = ServiceHolder.getAnalyticsDataService().get(
+                tenantID, interactiveAnalyticsQuery.getTableName(), 1, null, timeFrom, timeTo, paginationFrom, paginationCount
+            );
+
+            List<Record> records;
+            if (!ServiceHolder.getAnalyticsDataService().isPaginationSupported(
+                    ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
+                        tenantID, interactiveAnalyticsQuery.getTableName()
+                    )
+                )) {
+                Iterator<Record> itr = AnalyticsDataServiceUtils.responseToIterator(ServiceHolder.getAnalyticsDataService(), resp);
+                records = new ArrayList<>();
+                for (int i = 0; i < originalFrom && itr.hasNext(); i++) {
+                    itr.next();
+                }
+                for (int i = 0; i < paginationCount && itr.hasNext(); i++) {
+                    records.add(itr.next());
+                }
+            } else {
+                records = AnalyticsDataServiceUtils.listRecords(ServiceHolder.getAnalyticsDataService(), resp);
+            }
+
+            // Creating a list of data
+            response.setData(Utils.getTableDataFromRecords(records));
+
+            // Fetching the actual count
+            recordStoreName = ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
+                    tenantID,
+                    interactiveAnalyticsQuery.getTableName());
+            isRecordCountSupported = ServiceHolder.getAnalyticsDataService().isRecordCountSupported(recordStoreName);
+            long actualCount = -1;
+            if (isRecordCountSupported) {
+                actualCount = ServiceHolder.getAnalyticsDataService().getRecordCount(
+                        tenantID,
+                        interactiveAnalyticsQuery.getTableName(),
+                        timeFrom,
+                        timeTo
+                );
+            }
+            response.setRecordsTotal(actualCount);
+            response.setRecordsFiltered(actualCount);
+
+            jsonString = new Gson().toJson(response);
+        } catch (AnalyticsException e) {
+            e.printStackTrace();
+            jsonString = new Gson().toJson(new GeneralResponse(ResponseConstants.ERROR));
+        }
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }

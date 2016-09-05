@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class LazyLoadedTableResponse {
     private int draw;
-    private int recordsTotal;
-    private int recordsFiltered;
-    private List<List<Object>> data;
+    private long recordsTotal;
+    private long recordsFiltered;
+    private List<Map<String, Object>> data;
 
     public int getDraw() {
         return draw;
@@ -17,27 +17,27 @@ public class LazyLoadedTableResponse {
         this.draw = draw;
     }
 
-    public int getRecordsTotal() {
+    public long getRecordsTotal() {
         return recordsTotal;
     }
 
-    public void setRecordsTotal(int recordsTotal) {
+    public void setRecordsTotal(long recordsTotal) {
         this.recordsTotal = recordsTotal;
     }
 
-    public int getRecordsFiltered() {
+    public long getRecordsFiltered() {
         return recordsFiltered;
     }
 
-    public void setRecordsFiltered(int recordsFiltered) {
+    public void setRecordsFiltered(long recordsFiltered) {
         this.recordsFiltered = recordsFiltered;
     }
 
-    public List<List<Object>> getData() {
+    public List<Map<String, Object>> getData() {
         return data;
     }
 
-    public void setData(List<List<Object>> data) {
+    public void setData(List<Map<String, Object>> data) {
         this.data = data;
     }
 }

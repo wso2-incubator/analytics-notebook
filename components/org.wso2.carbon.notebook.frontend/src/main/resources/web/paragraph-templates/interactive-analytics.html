@@ -7,17 +7,17 @@
     </div>
 </div>
 
-<div class="form-group">
+<div class="form-group search-by-container collapse">
     <div class="input-group input-wrap">
         <div class="input-group-btn">
             <label class="control-label">Search By</label>
         </div>
         <label class="radio">
-            <input type="radio" name="search-by-option" class="search-by-date-range">
+            <input type="radio" name="search-by-option" class="search-by-date-range" value="date-range">
             <span class="helper">Date Range</span>
         </label>
         <label class="radio">
-            <input type="radio" name="search-by-option" class="search-by-query">
+            <input type="radio" name="search-by-option" class="search-by-query" value="query">
             <span class="helper">Query</span>
         </label>
     </div>
@@ -29,13 +29,13 @@
             <label class="control-label">From</label>
         </div>
         <div class="input-group-btn">
-            <input type="datetime" class="form-control form-control-lg" placeholder="Start Date">
+            <input type="datetime" class="form-control form-control-lg time-from">
         </div>
         <div class="input-group-btn">
             <label class="control-label">To</label>
         </div>
         <div class="input-group-btn">
-            <input type="datetime" class="form-control form-control-lg" placeholder="End Date">
+            <input type="datetime" class="form-control form-control-lg time-to">
         </div>
     </div>
 </div>
@@ -48,7 +48,12 @@
 </div>
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
+        $(".input-table").change(function () {
+            var sourceView = $(event.target).closest(".source");
+            sourceView.find(".search-by-container").fadeIn();
+        });
+
         $(".search-by-date-range").click(function(event) {
             var sourceView = $(event.target).closest(".source");
             var dateRangeContainer = sourceView.find(".date-range-container");
@@ -61,12 +66,12 @@
 
         $(".search-by-query").click(function(event) {
             var sourceView = $(event.target).closest(".source");
-            var dateRangeContainer = sourceView.find(".query-container");
+            var dateRangeContainer = sourceView.find(".date-range-container");
             var queryContainer = sourceView.find(".query-container");
 
             dateRangeContainer.fadeOut(function() {
                 queryContainer.fadeIn();
             });
-        })
+        });
     });
 </script>

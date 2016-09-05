@@ -77,23 +77,24 @@ util.output.generateTable = function(headerArray, dataRowArray) {
     return tableContainer;
 };
 
-util.output.generateLazyLoadedTable = function(httpMethod, url, queryParameters, headerArray) {
+util.output.generateTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray) {
     var tableContainer = $("<div>");
     var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
     tableContainer.append(table);
 
     var columnArray = [];
     for (var i = 0; i < headerArray.length; i++) {
-        columnArray.push({ title : headerArray[i] });
+        columnArray.push({ data : headerArray[i], title : headerArray[i] });
     }
 
     table.DataTable({
         serverSide : true,
+        searching : false,
         columns : columnArray,
         ajax : function(data, callback, settings) {
             queryParameters.draw = data.draw;
-            queryParameters.from = data.start;
-            queryParameters.to = data.length;
+            queryParameters.paginationFrom = data.start;
+            queryParameters.paginationCount = data.length;
             $.ajax({
                 type: httpMethod,
                 url : url,
