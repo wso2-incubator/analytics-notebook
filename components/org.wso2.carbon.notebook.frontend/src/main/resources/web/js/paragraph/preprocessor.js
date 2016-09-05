@@ -9,10 +9,14 @@ preprocessorParagraph.loadPreprocessorParameters = function(selectElement) {
         success: function (data) {
             $.each(data, function (index, columnName) {
                 preprocessorTable.append($("<tr>" +
-                    "<td>" + columnName + "</td>"+
-                    "<td>" + '<input type="checkbox">' +"</td>"+
-                    "<td>" + '<select class="form-control"> <option>Discard</option> <option>Average</option></select>' + "</td>"+
-                    "</tr>"
+                    '<td>' + columnName + '</td>'+
+                    '<td>' + '<input type="checkbox" class="include-column" value = "' + columnName + '">' +'</td>'+
+                    '<td>' + '<select class="form-control"> ' +
+                    '<option>Discard</option>' +
+                    '<option>Replace with mean</option>'+
+                    '<option>Regression Imputation</option>'+
+                    '</select>' + '</td>'+
+                    '</tr>'
                     ));
             });
         }
@@ -22,5 +26,28 @@ preprocessorParagraph.loadPreprocessorParameters = function(selectElement) {
 
 preprocessorParagraph.run = function(paragraph, callback) {
     // TODO : run preprocessor paragraph
-    callback("Test");
+    var selectedColumns = [];
+    paragraph.find(".include-column").each(function () {
+        if (this.checked){
+            var columnName = $(this).val();
+            selectedColumns.push(columnName);
+        }
+        });
+    var tableName = paragraph.find(".input-table").val();
+    var tempTableName = tableName.toLowerCase();
+    var selectColumnsQuery = preprocessorParagraph.selectCoulmns(tableName, selectedColumns);
+    console.log(selectColumnsQuery);
+    
 };
+
+preprocessorParagraph.selectCoulmns = function (tableName , selectedColumns) {
+    var columnList='';
+    for( var i=0;i< selectedColumns.length;i++){
+        columnList+=selectedColumns[i];
+        columnList+= ', ';
+    }
+    columnList= columnList.substring(0, columnList.length - 2);
+    var selectColumnsQuery = 'SELECT ' + columnList + ' FROM '+ tableName;
+    return selectColumnsQuery;
+    
+}

@@ -235,3 +235,48 @@ paragraphUtil.loadTables = function(paragraph) {
     });
     $(paragraph).closest(".source").find(".table-name").fadeIn();
 };
+
+paragraphUtil.generateSparkQuery = function (tableName, tempTableName, callback) {
+    var createTempTableQuery;
+    var schema = '';
+    $.ajax({
+        type: "GET",
+        url: constants.API_URI + "tables/" + tableName + "/schema",
+        success: function (data) {
+            $.each(data, function (index, column) {
+                if (column.scoreParam == true) {
+                    schema += column.name + ' ' + column.type + ' -sp' + ', ';
+                }
+                else if (column.indexed == true) {
+                    schema += column.name + ' ' + column.type + ' -i' + ', ';
+                }
+                else {
+                    schema += column.name + ' ' + column.type + ', ';
+                }
+                if (index == data.length - 1) {
+                    schema = schema.substring(0, schema.length - 2);
+                    var createTempTableQuery = 'CREATE TEMPORARY TABLE ' +
+                        tempTableName +
+                        ' USING CarbonAnalytics OPTIONS (tableName "' +
+                        tableName +
+                        '", schema "' +
+                        schema +
+                        '");';
+                    callback(createTempTableQuery);
+                }
+            });
+        }
+    });
+
+};
+//
+// paragraphUtil.generateTempTableQuery = function (tableName, tempTableName, schema) {
+//     var createTempTableQuery = 'CREATE TEMPORARY TABLE ' +
+//         tempTableName +
+//         ' USING CarbonAnalytics OPTIONS (tableName "' +
+//         tableName +
+//         '", schema "' +
+//         schema +
+//         '");';
+//     return createTempTableQuery;
+// }
