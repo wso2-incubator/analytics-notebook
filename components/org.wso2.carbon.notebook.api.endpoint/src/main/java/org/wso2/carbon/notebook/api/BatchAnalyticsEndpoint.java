@@ -56,9 +56,9 @@ public class BatchAnalyticsEndpoint {
             }
         } catch (AnalyticsExecutionException e) {
             e.printStackTrace();
-            tableResponses.add(new TableResponse(null, null, ResponseConstants.QUERY_ERROR, e.getMessage()));
+            tableResponses.add(new TableResponse(null, null, ResponseConstants.ERROR, e.getMessage()));
         } catch (RuntimeException e){
-            tableResponses.add(new TableResponse(null, null, ResponseConstants.QUERY_ERROR, e.getMessage()));
+            tableResponses.add(new TableResponse(null, null, ResponseConstants.ERROR, e.getMessage()));
         }
 
         jsonString = new Gson().toJson(tableResponses);
