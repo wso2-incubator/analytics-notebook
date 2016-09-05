@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook;
+package org.wso2.carbon.notebook.api.endpoint;
 
 import org.wso2.carbon.analytics.datasource.commons.Record;
 
@@ -8,9 +8,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class Utils {
+public class NotebookUtils {
     private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
 
+
+    /**
+     *
+     * @param records Record objcets of the table from which the data needs to be extracted
+     * @return List of rows of data of the table. Each row is represented by a map which maps each column header to an Object
+     */
     public static List<Map<String, Object>> getTableDataFromRecords(List<Record> records) {
         List<Map<String, Object>> data = new ArrayList<>();
         for (Record record : records) {

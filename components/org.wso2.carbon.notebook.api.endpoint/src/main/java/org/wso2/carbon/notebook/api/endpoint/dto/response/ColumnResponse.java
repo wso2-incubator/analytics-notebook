@@ -1,8 +1,6 @@
-package org.wso2.carbon.notebook.util.response;
+package org.wso2.carbon.notebook.api.endpoint.dto.response;
 
 import org.wso2.carbon.analytics.datasource.commons.AnalyticsSchema;
-
-import java.util.List;
 
 
 public class ColumnResponse {

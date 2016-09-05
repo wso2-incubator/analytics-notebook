@@ -1,9 +1,5 @@
-package org.wso2.carbon.notebook.util.request.paragraph;
+package org.wso2.carbon.notebook.api.endpoint.dto.request.paragraph;
 
-
-/**
- * Created by pamoda on 8/30/16.
- */
 public class BatchAnalyticsQuery {
     public String getQuery() {
         return query;

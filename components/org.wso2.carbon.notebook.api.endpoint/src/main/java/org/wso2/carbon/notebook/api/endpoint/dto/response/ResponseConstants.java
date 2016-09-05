@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.util.response;
+package org.wso2.carbon.notebook.api.endpoint.dto.response;
 
 /**
  * Used for storing the constants used in returning responses from the REST API

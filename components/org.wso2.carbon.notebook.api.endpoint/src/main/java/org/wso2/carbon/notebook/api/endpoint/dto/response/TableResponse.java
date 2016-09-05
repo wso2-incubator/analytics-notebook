@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.util.response;
+package org.wso2.carbon.notebook.api.endpoint.dto.response;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import java.util.List;
  * Used for returning the result from a query execution
  */
 
-public class TableResponse extends GeneralResponse{
+public class TableResponse extends GeneralResponse {
     private String[] columns;
     private List<List<Object>> data;
 

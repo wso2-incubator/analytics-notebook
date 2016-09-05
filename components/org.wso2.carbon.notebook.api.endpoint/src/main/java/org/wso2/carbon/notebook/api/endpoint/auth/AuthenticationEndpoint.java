@@ -1,11 +1,11 @@
-package org.wso2.carbon.notebook.auth;
+package org.wso2.carbon.notebook.api.endpoint.auth;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.notebook.ServiceHolder;
-import org.wso2.carbon.notebook.util.request.auth.Credentials;
-import org.wso2.carbon.notebook.util.response.GeneralResponse;
-import org.wso2.carbon.notebook.util.response.ResponseConstants;
+import org.wso2.carbon.notebook.api.endpoint.ServiceHolder;
+import org.wso2.carbon.notebook.api.endpoint.dto.response.GeneralResponse;
+import org.wso2.carbon.notebook.api.endpoint.dto.request.auth.Credentials;
+import org.wso2.carbon.notebook.api.endpoint.dto.response.ResponseConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +16,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/*
+/**
  * For handling user management
  */
 @Path("/auth")

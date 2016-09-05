@@ -1,11 +1,11 @@
-package org.wso2.carbon.notebook.api;
+package org.wso2.carbon.notebook.api.endpoint.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.base.MultitenantConstants;
-import org.wso2.carbon.notebook.ServiceHolder;
-import org.wso2.carbon.notebook.util.response.ColumnResponse;
+import org.wso2.carbon.notebook.api.endpoint.ServiceHolder;
+import org.wso2.carbon.notebook.api.endpoint.dto.response.ColumnResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/*
+/**
  * HTTP Response for data source information
  */
 
@@ -32,7 +32,7 @@ public class DataSetInformationRetrievalEndpoint {
      */
     @GET
     public Response listTableName() {
-        List<String> tableNames = new ArrayList<String>();
+        List<String> tableNames = new ArrayList<>();
         try {
             tableNames = ServiceHolder.getAnalyticsDataService().listTables(MultitenantConstants.SUPER_TENANT_ID);
         } catch (AnalyticsException e) {
@@ -54,7 +54,7 @@ public class DataSetInformationRetrievalEndpoint {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         Collection<ColumnDefinition> columns = null;
-        List<String> columnNames = new ArrayList<String>();
+        List<String> columnNames = new ArrayList<>();
         try {
             columns = ServiceHolder.getAnalyticsDataService().getTableSchema(tenantID, tableName).getColumns().values();
         } catch (AnalyticsException e) {
@@ -82,7 +82,7 @@ public class DataSetInformationRetrievalEndpoint {
     public Response getTableSchema(@Context HttpServletRequest request, @PathParam("tableName") String tableName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
-        List<ColumnResponse> columnResponses = new ArrayList<ColumnResponse>();
+        List<ColumnResponse> columnResponses = new ArrayList<>();
 
         Collection<ColumnDefinition> columns = null;
 
@@ -93,7 +93,7 @@ public class DataSetInformationRetrievalEndpoint {
         }
         if (columns != null) {
             for (ColumnDefinition column : columns) {
-                columnResponses.add(new ColumnResponse(column.getName(), column.getType() ,column.isIndexed() , column.isScoreParam()));
+                columnResponses.add(new ColumnResponse(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
             }
         }
 

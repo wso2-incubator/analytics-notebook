@@ -1,9 +1,9 @@
-package org.wso2.carbon.notebook.util.response;
+package org.wso2.carbon.notebook.api.endpoint.dto.response;
 
 import java.util.List;
 import java.util.Map;
 
-public class LazyLoadedTableResponse {
+public class LazyLoadedTableResponse extends GeneralResponse {
     private int draw;
     private long recordsTotal;
     private long recordsFiltered;

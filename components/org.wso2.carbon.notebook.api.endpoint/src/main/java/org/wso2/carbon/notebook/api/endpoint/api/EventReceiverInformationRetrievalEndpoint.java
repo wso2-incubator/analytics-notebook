@@ -1,8 +1,8 @@
-package org.wso2.carbon.notebook.api;
+package org.wso2.carbon.notebook.api.endpoint.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.event.receiver.core.config.EventReceiverConfiguration;
-import org.wso2.carbon.notebook.ServiceHolder;
+import org.wso2.carbon.notebook.api.endpoint.ServiceHolder;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,7 +11,7 @@ import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
-/*
+/**
  * Getting HTTP Response for Event Stream Information
  */
 @Path("/event-receivers")
@@ -23,7 +23,7 @@ public class EventReceiverInformationRetrievalEndpoint {
      */
     @GET
     public Response retrieveEventReceiverNames() {
-        List<String> eventReceiverNames = new ArrayList<String>();
+        List<String> eventReceiverNames = new ArrayList<>();
         List<EventReceiverConfiguration> eventReceiverConfigurations =
                 ServiceHolder.getEventReceiverService().getAllActiveEventReceiverConfigurations();
         for (EventReceiverConfiguration eventReceiverConfiguration : eventReceiverConfigurations) {

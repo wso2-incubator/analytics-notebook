@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.util.response;
+package org.wso2.carbon.notebook.api.endpoint.dto.response;
 
 /**
  * Used for returning the status of a request sent to the server
@@ -10,6 +10,7 @@ public class GeneralResponse {
     public GeneralResponse() {
 
     }
+
     public GeneralResponse(String status) {
         this.status = status;
     }

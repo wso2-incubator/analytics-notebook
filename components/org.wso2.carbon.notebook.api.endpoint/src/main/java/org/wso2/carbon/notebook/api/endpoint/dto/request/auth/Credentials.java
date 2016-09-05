@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.util.request.auth;
+package org.wso2.carbon.notebook.api.endpoint.dto.request.auth;
 
 public class Credentials {
     private String username;

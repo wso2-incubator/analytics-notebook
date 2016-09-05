@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.api;
+package org.wso2.carbon.notebook.api.endpoint.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.analytics.dataservice.commons.AnalyticsDataResponse;
@@ -6,12 +6,12 @@ import org.wso2.carbon.analytics.dataservice.commons.SearchResultEntry;
 import org.wso2.carbon.analytics.dataservice.core.AnalyticsDataServiceUtils;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
-import org.wso2.carbon.notebook.ServiceHolder;
-import org.wso2.carbon.notebook.Utils;
-import org.wso2.carbon.notebook.util.request.paragraph.InteractiveAnalyticsQuery;
-import org.wso2.carbon.notebook.util.response.GeneralResponse;
-import org.wso2.carbon.notebook.util.response.LazyLoadedTableResponse;
-import org.wso2.carbon.notebook.util.response.ResponseConstants;
+import org.wso2.carbon.notebook.api.endpoint.ServiceHolder;
+import org.wso2.carbon.notebook.api.endpoint.NotebookUtils;
+import org.wso2.carbon.notebook.api.endpoint.dto.request.paragraph.InteractiveAnalyticsQuery;
+import org.wso2.carbon.notebook.api.endpoint.dto.response.GeneralResponse;
+import org.wso2.carbon.notebook.api.endpoint.dto.response.LazyLoadedTableResponse;
+import org.wso2.carbon.notebook.api.endpoint.dto.response.ResponseConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,9 +20,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-/*
+/**
  * HTTP Responses for interactive analytics paragraph related requests
  */
 @Path("/interactive-analytics")
@@ -54,7 +56,7 @@ public class InteractiveAnalyticsEndpoint {
             );
 
             // Getting the list of IDs from Lucene Result
-            List<String> ids = new ArrayList<String>();
+            List<String> ids = new ArrayList<>();
             for (SearchResultEntry entry : searchResultEntries) {
                 ids.add(entry.getId());
             }
@@ -65,16 +67,17 @@ public class InteractiveAnalyticsEndpoint {
             List<Record> records = AnalyticsDataServiceUtils.listRecords(ServiceHolder.getAnalyticsDataService(), resp);
 
             // Creating a list of data
-            response.setData(Utils.getTableDataFromRecords(records));
+            response.setData(NotebookUtils.getTableDataFromRecords(records));
 
             // Fetching the actual count
             int actualCount = ServiceHolder.getAnalyticsDataService().searchCount(tenantID,
-                interactiveAnalyticsQuery.getTableName(),
-                interactiveAnalyticsQuery.getQuery()
+                    interactiveAnalyticsQuery.getTableName(),
+                    interactiveAnalyticsQuery.getQuery()
             );
             response.setRecordsTotal(actualCount);
             response.setRecordsFiltered(actualCount);
 
+            response.setStatus(ResponseConstants.SUCCESS);
             jsonString = new Gson().toJson(response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,20 +114,20 @@ public class InteractiveAnalyticsEndpoint {
                     ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
                             tenantID, interactiveAnalyticsQuery.getTableName()
                     )
-                )) {
+            )) {
                 paginationCount = paginationFrom + paginationCount;
                 paginationFrom = 0;
             }
             AnalyticsDataResponse resp = ServiceHolder.getAnalyticsDataService().get(
-                tenantID, interactiveAnalyticsQuery.getTableName(), 1, null, timeFrom, timeTo, paginationFrom, paginationCount
+                    tenantID, interactiveAnalyticsQuery.getTableName(), 1, null, timeFrom, timeTo, paginationFrom, paginationCount
             );
 
             List<Record> records;
             if (!ServiceHolder.getAnalyticsDataService().isPaginationSupported(
                     ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
-                        tenantID, interactiveAnalyticsQuery.getTableName()
+                            tenantID, interactiveAnalyticsQuery.getTableName()
                     )
-                )) {
+            )) {
                 Iterator<Record> itr = AnalyticsDataServiceUtils.responseToIterator(ServiceHolder.getAnalyticsDataService(), resp);
                 records = new ArrayList<>();
                 for (int i = 0; i < originalFrom && itr.hasNext(); i++) {
@@ -138,7 +141,7 @@ public class InteractiveAnalyticsEndpoint {
             }
 
             // Creating a list of data
-            response.setData(Utils.getTableDataFromRecords(records));
+            response.setData(NotebookUtils.getTableDataFromRecords(records));
 
             // Fetching the actual count
             recordStoreName = ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
@@ -157,6 +160,7 @@ public class InteractiveAnalyticsEndpoint {
             response.setRecordsTotal(actualCount);
             response.setRecordsFiltered(actualCount);
 
+            response.setStatus(ResponseConstants.SUCCESS);
             jsonString = new Gson().toJson(response);
         } catch (AnalyticsException e) {
             e.printStackTrace();

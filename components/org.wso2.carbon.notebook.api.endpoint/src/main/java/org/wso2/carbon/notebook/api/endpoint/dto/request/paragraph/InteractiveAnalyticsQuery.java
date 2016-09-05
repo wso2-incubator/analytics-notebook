@@ -1,8 +1,6 @@
-package org.wso2.carbon.notebook.util.request.paragraph;
+package org.wso2.carbon.notebook.api.endpoint.dto.request.paragraph;
 
 //import org.wso2.carbon.analytics.dataservice.commons.SortByField;
-
-import java.util.List;
 
 public class InteractiveAnalyticsQuery {
 

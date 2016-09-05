@@ -8,7 +8,7 @@
     <!-- Filters start here -->
     <filter>
         <filter-name>AccessControlFilter</filter-name>
-        <filter-class>org.wso2.carbon.notebook.filter.APIAccessFilter</filter-class>
+        <filter-class>org.wso2.carbon.notebook.api.endpoint.filter.APIAccessFilter</filter-class>
     </filter>
     <!-- Filters end here -->
 
@@ -33,11 +33,11 @@
         <init-param>
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
-                org.wso2.carbon.notebook.auth.AuthenticationEndpoint
-                org.wso2.carbon.notebook.api.BatchAnalyticsEndpoint
-                org.wso2.carbon.notebook.api.DataSetInformationRetrievalEndpoint
-                org.wso2.carbon.notebook.api.EventReceiverInformationRetrievalEndpoint
-                org.wso2.carbon.notebook.api.InteractiveAnalyticsEndpoint
+                org.wso2.carbon.notebook.api.endpoint.auth.AuthenticationEndpoint
+                org.wso2.carbon.notebook.api.endpoint.api.BatchAnalyticsEndpoint
+                org.wso2.carbon.notebook.api.endpoint.api.DataSetInformationRetrievalEndpoint
+                org.wso2.carbon.notebook.api.endpoint.api.EventReceiverInformationRetrievalEndpoint
+                org.wso2.carbon.notebook.api.endpoint.api.InteractiveAnalyticsEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
