@@ -20,7 +20,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /*
  * HTTP Responses for interactive analytics paragraph related requests
@@ -54,7 +56,7 @@ public class InteractiveAnalyticsEndpoint {
             );
 
             // Getting the list of IDs from Lucene Result
-            List<String> ids = new ArrayList<String>();
+            List<String> ids = new ArrayList<>();
             for (SearchResultEntry entry : searchResultEntries) {
                 ids.add(entry.getId());
             }
@@ -69,8 +71,8 @@ public class InteractiveAnalyticsEndpoint {
 
             // Fetching the actual count
             int actualCount = ServiceHolder.getAnalyticsDataService().searchCount(tenantID,
-                interactiveAnalyticsQuery.getTableName(),
-                interactiveAnalyticsQuery.getQuery()
+                    interactiveAnalyticsQuery.getTableName(),
+                    interactiveAnalyticsQuery.getQuery()
             );
             response.setRecordsTotal(actualCount);
             response.setRecordsFiltered(actualCount);
@@ -111,20 +113,20 @@ public class InteractiveAnalyticsEndpoint {
                     ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
                             tenantID, interactiveAnalyticsQuery.getTableName()
                     )
-                )) {
+            )) {
                 paginationCount = paginationFrom + paginationCount;
                 paginationFrom = 0;
             }
             AnalyticsDataResponse resp = ServiceHolder.getAnalyticsDataService().get(
-                tenantID, interactiveAnalyticsQuery.getTableName(), 1, null, timeFrom, timeTo, paginationFrom, paginationCount
+                    tenantID, interactiveAnalyticsQuery.getTableName(), 1, null, timeFrom, timeTo, paginationFrom, paginationCount
             );
 
             List<Record> records;
             if (!ServiceHolder.getAnalyticsDataService().isPaginationSupported(
                     ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
-                        tenantID, interactiveAnalyticsQuery.getTableName()
+                            tenantID, interactiveAnalyticsQuery.getTableName()
                     )
-                )) {
+            )) {
                 Iterator<Record> itr = AnalyticsDataServiceUtils.responseToIterator(ServiceHolder.getAnalyticsDataService(), resp);
                 records = new ArrayList<>();
                 for (int i = 0; i < originalFrom && itr.hasNext(); i++) {

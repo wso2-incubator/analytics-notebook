@@ -32,7 +32,7 @@ public class DataSetInformationRetrievalEndpoint {
      */
     @GET
     public Response listTableName() {
-        List<String> tableNames = new ArrayList<String>();
+        List<String> tableNames = new ArrayList<>();
         try {
             tableNames = ServiceHolder.getAnalyticsDataService().listTables(MultitenantConstants.SUPER_TENANT_ID);
         } catch (AnalyticsException e) {
@@ -54,7 +54,7 @@ public class DataSetInformationRetrievalEndpoint {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         Collection<ColumnDefinition> columns = null;
-        List<String> columnNames = new ArrayList<String>();
+        List<String> columnNames = new ArrayList<>();
         try {
             columns = ServiceHolder.getAnalyticsDataService().getTableSchema(tenantID, tableName).getColumns().values();
         } catch (AnalyticsException e) {
@@ -82,7 +82,7 @@ public class DataSetInformationRetrievalEndpoint {
     public Response getTableSchema(@Context HttpServletRequest request, @PathParam("tableName") String tableName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
-        List<ColumnResponse> columnResponses = new ArrayList<ColumnResponse>();
+        List<ColumnResponse> columnResponses = new ArrayList<>();
 
         Collection<ColumnDefinition> columns = null;
 
@@ -93,7 +93,7 @@ public class DataSetInformationRetrievalEndpoint {
         }
         if (columns != null) {
             for (ColumnDefinition column : columns) {
-                columnResponses.add(new ColumnResponse(column.getName(), column.getType() ,column.isIndexed() , column.isScoreParam()));
+                columnResponses.add(new ColumnResponse(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
             }
         }
 

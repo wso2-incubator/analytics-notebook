@@ -5,7 +5,6 @@ import org.wso2.carbon.analytics.spark.core.exception.AnalyticsExecutionExceptio
 import org.wso2.carbon.analytics.spark.core.util.AnalyticsQueryResult;
 import org.wso2.carbon.notebook.ServiceHolder;
 import org.wso2.carbon.notebook.util.request.paragraph.BatchAnalyticsQuery;
-import org.wso2.carbon.notebook.util.response.GeneralResponse;
 import org.wso2.carbon.notebook.util.response.ResponseConstants;
 import org.wso2.carbon.notebook.util.response.TableResponse;
 
@@ -42,7 +41,7 @@ public class BatchAnalyticsEndpoint {
 
         BatchAnalyticsQuery batchAnalyticsQuery = new Gson().fromJson(scriptContent, BatchAnalyticsQuery.class);
         String[] queriesInScript;
-        List<TableResponse> tableResponses = new ArrayList<TableResponse>();
+        List<TableResponse> tableResponses = new ArrayList<>();
 
         queriesInScript = ServiceHolder.getAnalyticsProcessorService()
                 .getQueries(batchAnalyticsQuery.getQuery());
@@ -52,12 +51,12 @@ public class BatchAnalyticsEndpoint {
             for (String query : queriesInScript) {
                 AnalyticsQueryResult result = ServiceHolder.getAnalyticsProcessorService()
                         .executeQuery(tenantID, query);
-                tableResponses.add(new TableResponse(result.getColumns(), result.getRows(), ResponseConstants.SUCCESS,null));
+                tableResponses.add(new TableResponse(result.getColumns(), result.getRows(), ResponseConstants.SUCCESS, null));
             }
         } catch (AnalyticsExecutionException e) {
             e.printStackTrace();
             tableResponses.add(new TableResponse(null, null, ResponseConstants.ERROR, e.getMessage()));
-        } catch (RuntimeException e){
+        } catch (RuntimeException e) {
             tableResponses.add(new TableResponse(null, null, ResponseConstants.ERROR, e.getMessage()));
         }
 
