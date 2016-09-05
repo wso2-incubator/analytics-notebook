@@ -2,6 +2,10 @@ package org.wso2.carbon.notebook.util.response;
 
 import java.util.List;
 
+/**
+ * Used for returning the result from a query execution
+ */
+
 public class TableResponse extends GeneralResponse{
     private String[] columns;
     private List<List<Object>> data;
@@ -31,6 +35,5 @@ public class TableResponse extends GeneralResponse{
     public void setData(List<List<Object>> data) {
         this.data = data;
     }
-
 
 }

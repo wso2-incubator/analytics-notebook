@@ -10,7 +10,6 @@ batchAnalyticsParagraph.run = function (paragraph, callback) {
         url: constants.API_URI + "batch-analytics/execute-script",
         success: function (data) {
             $.each(data, function (index, result) {
-                console.log(JSON.stringify(result.message));
                 if (result.status == "QUERY_ERROR"){
                     output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> ERROR'+ result.message +'</p>'));
                 }else {
@@ -27,12 +26,12 @@ batchAnalyticsParagraph.run = function (paragraph, callback) {
     });
 };
 
+//import the selected table generating the query
 batchAnalyticsParagraph.addTable = function (paragraph) {
     var sourceElement = paragraph.closest(".source");
     var textArea = sourceElement.find(".query");
     var tableName = sourceElement.find(".input-table").val();
     var tempTable = sourceElement.find(".temporary-table");
-    var schema = '';
     var tempTableName;
 
     if (!tempTable.val()) {
@@ -41,33 +40,9 @@ batchAnalyticsParagraph.addTable = function (paragraph) {
     else {
         tempTableName = tempTable.val();
     }
-    $.ajax({
-        type: "GET",
-        url: constants.API_URI + "tables/" + tableName + "/schema",
-        success: function (data) {
-            $.each(data, function (index, column) {
-                if (column.scoreParam == true) {
-                    schema += column.name + ' ' + column.type + ' -sp' + ', ';
-                }
-                else if (column.indexed == true) {
-                    schema += column.name + ' ' + column.type + ' -i' + ', ';
-                }
-                else {
-                    schema += column.name + ' ' + column.type + ', ';
-                }
 
-            });
-            schema = schema.substring(0, schema.length - 2);
-            var createTempTableQuery = 'CREATE TEMPORARY TABLE ' +
-                tempTableName +
-                ' USING CarbonAnalytics OPTIONS (tableName "' +
-                tableName +
-                '", schema "' +
-                schema +
-                '");';
-            textArea.val( textArea.val() + createTempTableQuery + "\n");
-        }
-
+    paragraphUtil.generateSparkQuery(tableName , tempTableName ,  function (createTempTableQuery) {
+        textArea.val( textArea.val() + createTempTableQuery + "\n");
     });
 
 };
@@ -76,4 +51,4 @@ batchAnalyticsParagraph.enableImport = function (paragraph) {
     var sourceElement = paragraph.closest(".source");
     var button = $(sourceElement.find(".add-table-button"));
     $(button).prop('disabled' , false);
-}
+};

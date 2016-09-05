@@ -10,6 +10,9 @@ public class GeneralResponse {
     public GeneralResponse() {
 
     }
+    public GeneralResponse(String status) {
+        this.status = status;
+    }
 
     public GeneralResponse(String status, String message) {
         this.status = status;

@@ -64,25 +64,6 @@ public class BatchAnalyticsEndpoint {
         jsonString = new Gson().toJson(tableResponses);
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
-//
-//    @POST
-//    @Path("/execute")
-//    public Response executeQuery(@Context HttpServletRequest request , String query) {
-//        HttpSession session = request.getSession();
-//        int tenantID = (Integer)session.getAttribute("tenantID");
-//
-//        BatchAnalyticsQuery batchAnalyticsQuery = new Gson().fromJson(query , BatchAnalyticsQuery.class);
-//
-//        AnalyticsQueryResult analyticsQueryResult = null;
-//        try {
-//            analyticsQueryResult = ServiceHolder.getAnalyticsProcessorService()
-//                    .executeQuery(tenantID , batchAnalyticsQuery.getQuery());
-//        } catch (AnalyticsExecutionException e) {
-//            e.printStackTrace();
-//        }
-//
-//        String jsonString = new Gson().toJson(analyticsQueryResult);
-//        return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
-//    }
+
 }
 
