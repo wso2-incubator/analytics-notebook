@@ -10,7 +10,7 @@ batchAnalyticsParagraph.run = function (paragraph, callback) {
         url: constants.API_URI + "batch-analytics/execute-script",
         success: function (data) {
             $.each(data, function (index, result) {
-                if (result.status == "QUERY_ERROR"){
+                if (result.status == constants.response.ERROR){
                     output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> ERROR'+ result.message +'</p>'));
                 }else {
                     if (result.columns.length == 0 || result.data.length == 0) {
