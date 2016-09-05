@@ -52,7 +52,7 @@ public class AuthenticationEndpoint {
             session.setAttribute("tenantID", tenantID);
             generalResponse.setStatus(ResponseConstants.SUCCESS);
         } else {
-            generalResponse.setStatus(ResponseConstants.LOGIN_ERROR);
+            generalResponse.setStatus(ResponseConstants.ERROR);
         }
 
         String jsonString = new Gson().toJson(generalResponse);

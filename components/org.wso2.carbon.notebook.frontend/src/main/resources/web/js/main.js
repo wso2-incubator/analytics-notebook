@@ -77,15 +77,32 @@ util.output.generateTable = function(headerArray, dataRowArray) {
     return tableContainer;
 };
 
-util.output.generateLazyLoadedTable = function(callback, httpMethod, url) {
+util.output.generateLazyLoadedTable = function(httpMethod, url, queryParameters, headerArray) {
     var tableContainer = $("<div>");
     var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
     tableContainer.append(table);
 
+    var columnArray = [];
+    for (var i = 0; i < headerArray.length; i++) {
+        columnArray.push({ title : headerArray[i] });
+    }
+
     table.DataTable({
-        responsive: true,
         serverSide : true,
-        ajax : { type : httpMethod, url : url }
+        columns : columnArray,
+        ajax : function(data, callback, settings) {
+            queryParameters.draw = data.draw;
+            queryParameters.from = data.start;
+            queryParameters.to = data.length;
+            $.ajax({
+                type: httpMethod,
+                url : url,
+                data : JSON.stringify(queryParameters),
+                success : function(returnedData) {
+                    callback(returnedData)
+                }
+            });
+        }
     });
 
     return tableContainer;
