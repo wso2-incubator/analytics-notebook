@@ -51,6 +51,18 @@
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.identity.authentication</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.ml</groupId>
+            <artifactId>org.wso2.carbon.ml.commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.ml</groupId>
+            <artifactId>org.wso2.carbon.ml.core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
