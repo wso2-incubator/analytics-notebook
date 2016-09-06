@@ -1,12 +1,18 @@
 // Functionality for the whole note
 var note = {};
 
+/**
+ * Initializes the note page
+ */
 note.init = function() {
     var parameters = util.getQueryParameters();
     $("#note-name").html("Note_1");
     $("#note-path").html(parameters.note);
 };
 
+/**
+ * Run all paragraphs in the current note
+ */
 note.runAllParagraphs = function() {
     // Looping through the paragraphs and running them
     $(".paragraph").each(function(index, paragraph) {
@@ -14,6 +20,11 @@ note.runAllParagraphs = function() {
     });
 };
 
+/**
+ * Toggle the visibility of all views (source or output views) in the current note
+ *
+ * @param type Should be one of ["source", "output"]
+ */
 note.toggleVisibilityOfMultipleViews = function(type) {
     var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views");
     var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view");
@@ -31,6 +42,9 @@ note.toggleVisibilityOfMultipleViews = function(type) {
     }
 };
 
+/**
+ * Add a new paragraph to the current note
+ */
 note.addParagraph = function() {
     var paragraph = $("<div class='paragraph well fluid-container'>");
     paragraph.css({ display : "none" });
@@ -40,6 +54,9 @@ note.addParagraph = function() {
     });
 };
 
+/**
+ * Delete the current note
+ */
 note.delete = function() {
     // TODO : send the request to delete the note to the notebook server
 };
@@ -47,7 +64,12 @@ note.delete = function() {
 // Functionality for paragraphs
 var paragraphUtil = {};
 
- paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be changed after deciding on the architecture
+/**
+ * Run the paragraph specified
+ *
+ * @param paragraph {jQuery} The paragraph that should be run
+ */
+paragraphUtil.run = function(paragraph) {  // TODO : This method needs to be changed after deciding on the architecture
     var paragraphType = paragraph.find(".paragraph-type-select").val();
     var outputView = paragraph.find(".output");
 
@@ -115,6 +137,12 @@ var paragraphUtil = {};
     }
 };
 
+/**
+ * Toggle the visibility of a view (source or output view) in the paragraph in which the toggle is located in
+ *
+ * @param toggleButton
+ * @param type
+ */
 paragraphUtil.toggleVisibilityOfSingleView = function(toggleButton, type) {
     var view = toggleButton.closest(".paragraph").find("." + type);
     var toggleButtonInnerHTML = toggleButton.html();
@@ -128,6 +156,11 @@ paragraphUtil.toggleVisibilityOfSingleView = function(toggleButton, type) {
     toggleButton.html(toggleButtonInnerHTML);
 };
 
+/**
+ * Delete the specified paragraph
+ *
+ * @param paragraph {jQuery} The pargraph that should be deleted
+ */
 paragraphUtil.delete = function(paragraph) {
     // TODO : send the relevant query to the notebook server to delete
     paragraph.slideUp(function() {
@@ -135,6 +168,11 @@ paragraphUtil.delete = function(paragraph) {
     });
 };
 
+/**
+ * Load the source view of the paragraph in which the select element is located in
+ *
+ * @param selectElement The select element which is located in the paragraph
+ */
 paragraphUtil.loadSourceViewByType = function(selectElement) {
     var paragraph = selectElement.closest(".paragraph");
     var paragraphContent = paragraph.find(".paragraph-content");
@@ -210,6 +248,12 @@ paragraphUtil.loadSourceViewByType = function(selectElement) {
     });
 };
 
+/**
+ * Loads all available output tables/streams/models into the paragraph in which the select element is located in
+ *
+ * @param selectElement {jQuery} The select element which is located in the paragraph
+ * @param type Should be one of the following ["table", "stream", "model"]
+ */
 paragraphUtil.loadAvailableParagraphOutputsToInputElement = function(selectElement, type) {
     var inputSelectElement = $(selectElement);
     inputSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
@@ -221,6 +265,11 @@ paragraphUtil.loadAvailableParagraphOutputsToInputElement = function(selectEleme
     });
 };
 
+/**
+ * Load names of all the tables available in the server into the input table element in the paragraph specified
+ *
+ * @param paragraph {jQuery} The paragraph in which the input table select element is located
+ */
 paragraphUtil.loadTables = function(paragraph) {
     var inputTableSelectElement = paragraph.find(".input-table");
     $.ajax({
@@ -236,6 +285,13 @@ paragraphUtil.loadTables = function(paragraph) {
     $(paragraph).closest(".source").find(".table-name").fadeIn();
 };
 
+/**
+ * Generate a spark query using the specified parameters
+ *
+ * @param tableName The name of the table
+ * @param tempTableName The name of the temp table into which the data will be loaded
+ * @param callback The callback function into which the query will be passed after generating the query
+ */
 paragraphUtil.generateSparkQuery = function (tableName, tempTableName, callback) {
     var createTempTableQuery;
     var schema = '';
@@ -269,14 +325,3 @@ paragraphUtil.generateSparkQuery = function (tableName, tempTableName, callback)
     });
 
 };
-//
-// paragraphUtil.generateTempTableQuery = function (tableName, tempTableName, schema) {
-//     var createTempTableQuery = 'CREATE TEMPORARY TABLE ' +
-//         tempTableName +
-//         ' USING CarbonAnalytics OPTIONS (tableName "' +
-//         tableName +
-//         '", schema "' +
-//         schema +
-//         '");';
-//     return createTempTableQuery;
-// }

@@ -7,7 +7,7 @@ import org.wso2.carbon.analytics.dataservice.core.AnalyticsDataServiceUtils;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.api.endpoint.ServiceHolder;
-import org.wso2.carbon.notebook.api.endpoint.NotebookUtils;
+import org.wso2.carbon.notebook.api.endpoint.util.NotebookUtils;
 import org.wso2.carbon.notebook.api.endpoint.dto.request.paragraph.InteractiveAnalyticsQuery;
 import org.wso2.carbon.notebook.api.endpoint.dto.response.GeneralResponse;
 import org.wso2.carbon.notebook.api.endpoint.dto.response.LazyLoadedTableResponse;
@@ -119,7 +119,14 @@ public class InteractiveAnalyticsEndpoint {
                 paginationFrom = 0;
             }
             AnalyticsDataResponse resp = ServiceHolder.getAnalyticsDataService().get(
-                    tenantID, interactiveAnalyticsQuery.getTableName(), 1, null, timeFrom, timeTo, paginationFrom, paginationCount
+                    tenantID,
+                    interactiveAnalyticsQuery.getTableName(),
+                    1,
+                    null,
+                    timeFrom,
+                    timeTo,
+                    paginationFrom,
+                    paginationCount
             );
 
             List<Record> records;

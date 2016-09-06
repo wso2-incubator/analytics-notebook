@@ -14,6 +14,11 @@ var constants = {
 // Utility functions
 var util = {};
 
+/**
+ * Parses the query parameters in the current page uri
+ *
+ * @return Object with the attribute name and attribute values in the query parameter.
+ */
 util.getQueryParameters = function() {
     var keyValuePairMap = {};
     var query = window.location.search.substring(1);   // Removing the "?" from query string
@@ -25,10 +30,13 @@ util.getQueryParameters = function() {
     return keyValuePairMap;
 };
 
-/*
+/**
+ * Generates alert element
+ *
  * @param type Should be one of ["success", "info", "warning", "error"]
  * @param title Title of the error message
  * @param message Alert message
+ * @return {jQuery} element containing the alert
  */
 util.generateAlert = function(type, title, message) {
     var alertClass;
@@ -58,6 +66,14 @@ util.generateAlert = function(type, title, message) {
 
 util.output = {};
 
+
+/**
+ * Generates a table with client side pagination, ordering and searching
+ *
+ * @param headerArray Array of column names
+ * @param dataRowArray 2D array of data
+ * @return {jQuery} The table element
+ */
 util.output.generateTable = function(headerArray, dataRowArray) {
     var tableContainer = $("<div>");
     var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
@@ -77,6 +93,15 @@ util.output.generateTable = function(headerArray, dataRowArray) {
     return tableContainer;
 };
 
+/**
+ * Generates a table with server side pagination. Ordering and searching disabled
+ *
+ * @param httpMethod The http verb that should be used in the request sent for each draw
+ * @param url The uri that should be used in the request sent for each draw
+ * @param queryParameters The custom parameters that should be added in the request sent for each draw
+ * @param headerArray The column names array of the tables
+ * @return {jQuery} The table element
+ */
 util.output.generateTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray) {
     var tableContainer = $("<div>");
     var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
@@ -90,6 +115,7 @@ util.output.generateTableWithLazyLoading = function(httpMethod, url, queryParame
     table.DataTable({
         serverSide : true,
         searching : false,
+        ordering:  false,
         columns : columnArray,
         ajax : function(data, callback, settings) {
             queryParameters.draw = data.draw;

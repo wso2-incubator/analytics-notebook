@@ -1,7 +1,5 @@
 package org.wso2.carbon.notebook.api.endpoint.dto.request.paragraph;
 
-//import org.wso2.carbon.analytics.dataservice.commons.SortByField;
-
 public class InteractiveAnalyticsQuery {
 
     private int draw;
@@ -11,7 +9,6 @@ public class InteractiveAnalyticsQuery {
     private int paginationCount;
     private long timeFrom;
     private long timeTo;
-//    private List<SortByField> sortByFields;
 
     public int getDraw() {
         return draw;
@@ -68,12 +65,4 @@ public class InteractiveAnalyticsQuery {
     public void setTimeTo(long timeTo) {
         this.timeTo = timeTo;
     }
-
-//    public List<SortByField> getSortByFields() {
-//        return sortByFields;
-//    }
-//
-//    public void setSortByFields(List<SortByField> sortByFields) {
-//        this.sortByFields = sortByFields;
-//    }
 }
