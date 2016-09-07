@@ -31,7 +31,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Spark utility functions for the notebook
+ * Machine learner utility functions for the notebook
  */
 public class MLUtils {
     /**
@@ -76,7 +76,7 @@ public class MLUtils {
     /**
      * Generate a random sample of the dataset using Spark.
      */
-    public static SamplePoints getSampleFromDAS(String path, int sampleSize, String sourceType, int tenantId)
+    public static SamplePoints getSampleFromDAS(String path, int sampleSize, int tenantId)
             throws MLMalformedDatasetException {
 
         JavaSparkContext sparkContext = null;

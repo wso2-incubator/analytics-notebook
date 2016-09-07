@@ -221,6 +221,10 @@ function Paragraph() {
                     self.paragraphClient = new PreprocessorParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/preprocessor.html";
                     break;
+                case "Data Explore" :
+                    self.paragraphClient = new DataExploreParagraphClient(self.paragraphElement);
+                    paragraphTemplateLink = "source-view-templates/data-explore.html";
+                    break;
                 case "Data Visualization" :
                     self.paragraphClient = new DataVisualizationParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/data-visualization.html";
