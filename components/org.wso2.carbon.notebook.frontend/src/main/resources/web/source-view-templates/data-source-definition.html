@@ -18,19 +18,3 @@
         <input type="text" class="form-control output-table">
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        $(".data-source-type").change(function(event) {
-            dataSourceDefinitionParagraph.onTypeSelect($(event.target));
-        });
-
-        $(".data-source-table").change(function(event) {
-            dataSourceDefinitionParagraph.onTableChange($(event.target));
-        });
-
-        $(".output-table").keyup(function(event) {
-            dataSourceDefinitionParagraph.onOutputTableKeyUp($(event.target));
-        });
-    });
-</script>

@@ -46,32 +46,3 @@
         <textarea class="form-control query" rows="5"></textarea>
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        $(".input-table").change(function () {
-            var sourceView = $(event.target).closest(".source");
-            sourceView.find(".search-by-container").fadeIn();
-        });
-
-        $(".search-by-date-range").click(function(event) {
-            var sourceView = $(event.target).closest(".source");
-            var dateRangeContainer = sourceView.find(".date-range-container");
-            var queryContainer = sourceView.find(".query-container");
-
-            queryContainer.fadeOut(function() {
-                dateRangeContainer.fadeIn();
-            });
-        });
-
-        $(".search-by-query").click(function(event) {
-            var sourceView = $(event.target).closest(".source");
-            var dateRangeContainer = sourceView.find(".date-range-container");
-            var queryContainer = sourceView.find(".query-container");
-
-            dateRangeContainer.fadeOut(function() {
-                queryContainer.fadeIn();
-            });
-        });
-    });
-</script>

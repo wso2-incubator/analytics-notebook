@@ -1,54 +1,72 @@
-var batchAnalyticsParagraph = {};
+/**
+ * Batch analytics paragraph client prototype constructor
+ *
+ * @param paragraph The paragraph in which the client resides in
+ * @constructor
+ */
+function BatchAnalyticsParagraphClient(paragraph) {
+    var self = this;
 
-batchAnalyticsParagraph.run = function (paragraph, callback) {
-    // TODO : run batch analytics paragraph
-    var query = paragraph.find(".query");
-    var output = [];
-    $.ajax({
-        type: "POST",
-        data: JSON.stringify({query: query.val()}),
-        url: constants.API_URI + "batch-analytics/execute-script",
-        success: function (data) {
-            $.each(data, function (index, result) {
-                if (result.status == constants.response.ERROR){
-                    output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> ERROR'+ result.message +'</p>'));
-                }else {
-                    if (result.columns.length == 0 || result.data.length == 0) {
-                        output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> Executed. No results to show. </p>'));
+    self.initialize = function() {
+        new ParagraphUtils().loadTableNames(paragraph);
+
+        // Adding event listeners for the batch analytics paragraph
+        paragraph.find(".add-table-button").click(function (event) {
+            addTable($(event.target));
+        });
+
+        paragraph.find(".input-table").change(function (){
+            var button = paragraph.find(".add-table-button");
+            button.prop('disabled' , false);
+        });
+    };
+
+    self.run = function (callback) {
+        // TODO : run batch analytics paragraph
+        var query = paragraph.find(".query");
+        var output = [];
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify({query: query.val()}),
+            url: constants.API_URI + "batch-analytics/execute-script",
+            success: function (data) {
+                $.each(data, function (index, result) {
+                    if (result.status == constants.response.ERROR){
+                        output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> ERROR'+ result.message +'</p>'));
                     } else {
-                        output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong></p>'));
-                        output.push(util.output.generateTable(result.columns, result.data));
+                        if (result.columns.length == 0 || result.data.length == 0) {
+                            output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> Executed. No results to show. </p>'));
+                        } else {
+                            output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong></p>'));
+                            output.push(new Utils().generateTable(result.columns, result.data));
+                        }
                     }
-                }
-            });
-            callback(output);
+                });
+                callback(output);
+            }
+        });
+    };
+
+    /**
+     * Import the selected table generating the query
+     *
+     * @private
+     */
+    var addTable = function () {
+        var textArea = paragraph.find(".query");
+        var tableName = paragraph.find(".input-table").val();
+        var tempTable = paragraph.find(".temporary-table");
+        var tempTableName;
+
+        if (!tempTable.val()) {
+            tempTableName = tableName.toLowerCase();
         }
-    });
-};
+        else {
+            tempTableName = tempTable.val();
+        }
 
-//import the selected table generating the query
-batchAnalyticsParagraph.addTable = function (paragraph) {
-    var sourceElement = paragraph.closest(".source");
-    var textArea = sourceElement.find(".query");
-    var tableName = sourceElement.find(".input-table").val();
-    var tempTable = sourceElement.find(".temporary-table");
-    var tempTableName;
-
-    if (!tempTable.val()) {
-        tempTableName = tableName.toLowerCase();
-    }
-    else {
-        tempTableName = tempTable.val();
-    }
-
-    paragraphUtil.generateSparkQuery(tableName , tempTableName ,  function (createTempTableQuery) {
-        textArea.val( textArea.val() + createTempTableQuery + "\n");
-    });
-
-};
-
-batchAnalyticsParagraph.enableImport = function (paragraph) {
-    var sourceElement = paragraph.closest(".source");
-    var button = $(sourceElement.find(".add-table-button"));
-    $(button).prop('disabled' , false);
-};
+        new ParagraphUtils().generateSparkQuery(tableName , tempTableName ,  function (createTempTableQuery) {
+            textArea.val( textArea.val() + createTempTableQuery + "\n");
+        });
+    };
+}

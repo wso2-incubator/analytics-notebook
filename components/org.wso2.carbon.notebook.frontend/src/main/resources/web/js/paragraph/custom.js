@@ -1,6 +1,18 @@
-var customParagraph = {};
+/**
+ * Custom paragraph client prototype
+ *
+ * @param paragraph The paragraph in which the client resides in
+ * @constructor
+ */
+function CustomParagraphClient(paragraph) {
+    var self = this;
 
-customParagraph.run = function(paragraph, callback) {
-    // TODO : run custom paragraph
-    callback("Test");
-};
+    self.initialize = function () {
+        // TODO : initialize paragraph
+    };
+
+    self.run = function(callback) {
+        // TODO : run custom paragraph
+        callback("Test");
+    };
+}

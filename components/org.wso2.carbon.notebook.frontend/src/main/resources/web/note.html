@@ -82,32 +82,6 @@
     <script type="text/javascript" src="js/paragraph/prediction.js"></script>
     <script type="text/javascript" src="js/paragraph/custom.js"></script>
     <script type="text/javascript" src="js/paragraph/event-simulation.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            note.init();
-
-            $("#run-all-paragraphs-button").click(function() {
-                note.runAllParagraphs();
-            });
-
-            $("#toggle-all-source-views-button").click(function() {
-                note.toggleVisibilityOfMultipleViews("source");
-            });
-
-            $("#toggle-all-output-views-button").click(function() {
-                note.toggleVisibilityOfMultipleViews("output");
-            });
-
-            $("#add-paragraph-button").click(function() {
-                note.addParagraph();
-            });
-
-            $("#delete-note-button").click(function() {
-                note.delete();
-            });
-        });
-    </script>
 </head>
 <body>
     <header class="header header-default">
@@ -170,7 +144,6 @@
             <div class="body-wrapper">
                 <div class="page-header">
                     <h1 id="note-name"></h1>
-                    <p id="note-path" class="lead"></p>
                 </div>
 
                 <div class="form-horizontal">
@@ -217,5 +190,11 @@
             </p>
         </div>
     </footer>
+
+    <script>
+        $(document).ready(function() {
+            new Note().initialize();
+        });
+    </script>
 </body>
 </html>
