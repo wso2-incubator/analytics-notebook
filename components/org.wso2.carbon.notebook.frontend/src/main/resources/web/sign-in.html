@@ -139,17 +139,7 @@
 
     <script>
         $(document).ready(function() {
-            $("#sign-in").click(function() {
-                signInUtil.singIn();
-            });
-
-            $(".form-control").keyup(function(event) {
-                if (event.keyCode == 13 && $("#username").val().length > 0 && $("#password").val().length > 0) {
-                    signInUtil.singIn();
-                }
-            });
-
-            $("#username").focus();
+            new Authenticator().initialize();
         });
     </script>
 </body>

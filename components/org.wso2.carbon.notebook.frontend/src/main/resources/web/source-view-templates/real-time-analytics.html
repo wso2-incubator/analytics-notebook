@@ -22,11 +22,3 @@
         <textarea class="form-control query" rows="5"></textarea>
     </div>
 </div>
-
-<script>
-    $(document).ready(function() {
-        $(".input-table").focusin(function() {
-            paragraphUtil.loadAvailableParagraphOutputsToInputElement($(event.target) ,'stream');
-        });
-    });
-</script>

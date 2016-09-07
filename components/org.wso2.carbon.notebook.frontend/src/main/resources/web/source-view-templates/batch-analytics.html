@@ -29,17 +29,3 @@
         <textarea class="form-control query" rows="5"></textarea>
     </div>
 </div>
-
-<script>
-    $(document).ready(function () {
-        $(".add-table-button").click(function (event) {
-            batchAnalyticsParagraph.addTable($(event.target));
-        });
-        $(".input-table").change(function (event){
-            batchAnalyticsParagraph.enableImport($(event.target));
-        });
-
-    });
-
-
-</script>
