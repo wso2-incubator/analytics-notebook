@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.api.endpoint.preprocessor.transformation;
+package org.wso2.carbon.notebook.api.endpoint.ml.preprocessor.transformation;
 
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.notebook.api.endpoint.util.MLUtils;
@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
  */
 public class LineToTokens implements Function<String, String[]> {
 
-    private static final long serialVersionUID = -5025419727399292773L;
     private final Pattern tokenSeparator;
 
     public LineToTokens(Builder builder) {

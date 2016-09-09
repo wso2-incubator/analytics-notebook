@@ -1,10 +1,13 @@
-package org.wso2.carbon.notebook.api.endpoint.dto.response;
+package org.wso2.carbon.notebook.api.endpoint.dto.request.paragraph;
 
-public class FeatureResponse {
+import java.io.Serializable;
+
+public class FeatureRequest implements Serializable {
     private String name;
     private int index;
     private String type;
     private String imputeOption;
+    private boolean include;
 
     public String getName() {
         return name;
@@ -46,5 +49,5 @@ public class FeatureResponse {
         this.include = include;
     }
 
-    private boolean include;
+
 }

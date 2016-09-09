@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.api.endpoint.preprocessor.transformation;
+package org.wso2.carbon.notebook.api.endpoint.ml.preprocessor.transformation;
 
 import org.apache.spark.api.java.function.Function;
 
@@ -7,7 +7,6 @@ import org.apache.spark.api.java.function.Function;
  */
 public class HeaderFilter implements Function<String, Boolean> {
 
-    private static final long serialVersionUID = -6996897057400853414L;
     private final String header;
 
     private HeaderFilter(Builder builder) {

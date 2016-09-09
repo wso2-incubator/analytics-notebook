@@ -24,7 +24,7 @@ import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.notebook.api.endpoint.ServiceHolder;
-import org.wso2.carbon.notebook.api.endpoint.dto.response.FeatureResponse;
+import org.wso2.carbon.notebook.api.endpoint.dto.request.paragraph.FeatureRequest;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -122,7 +122,9 @@ public class MLUtils {
         DataFrame dataFrame = sqlCtx.sql("select * from ML_REF");
         // Additional auto-generated column "_timestamp" needs to be dropped because it is not in the schema.
         JavaRDD<Row> rows = dataFrame.drop("_timestamp").javaRDD();
+
         lines = rows.map(new RowsToLines.Builder().separator(CSVFormat.RFC4180.getDelimiter() + "").build());
+        List<String> testResult =lines.collect();
         return lines;
     }
 
@@ -259,10 +261,10 @@ public class MLUtils {
      * @param imputeOption Impute option
      * @return Returns indices of features where discard row imputaion is applied
      */
-    public static List<Integer> getImputeFeatureIndices(List<FeatureResponse> features, List<Integer> newToOldIndicesList,
+    public static List<Integer> getImputeFeatureIndices(List<FeatureRequest> features, List<Integer> newToOldIndicesList,
                                                         String imputeOption) {
         List<Integer> imputeFeatureIndices = new ArrayList<Integer>();
-        for (FeatureResponse feature : features) {
+        for (FeatureRequest feature : features) {
             if (feature.getImputeOption().equals(imputeOption) && feature.isInclude() == true) {
                 int currentIndex = feature.getIndex();
                 int newIndex = newToOldIndicesList.indexOf(currentIndex) != -1 ? newToOldIndicesList
@@ -348,9 +350,9 @@ public class MLUtils {
      * @param features      list of features of the dataset
      * @return A list of indices of features to be included after processed
      */
-    public static List<Integer> getIncludedFeatureIndices(List<FeatureResponse> features) {
+    public static List<Integer> getIncludedFeatureIndices(List<FeatureRequest> features) {
         List<Integer> includedFeatureIndices = new ArrayList<>();
-        for (FeatureResponse feature : features) {
+        for (FeatureRequest feature : features) {
             if (feature.isInclude()) {
                 includedFeatureIndices.add(feature.getIndex());
             }

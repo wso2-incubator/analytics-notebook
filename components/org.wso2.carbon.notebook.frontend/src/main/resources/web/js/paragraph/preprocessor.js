@@ -19,14 +19,34 @@ function PreprocessorParagraphClient(paragraph) {
 
     self.run = function(callback) {
         // TODO : run preprocessor paragraph
-        var selectedColumns = [];
-        paragraph.find(".include-column").each(function () {
-            if (this.checked){
-                var columnName = $(this).val();
-                selectedColumns.push(columnName);
+        var tableName = paragraph.find(".input-table").val();
+        var features= [];
+        var i=0;
+        paragraph.find(".feature-details").each(function () {
+            var feature = $(this);
+            var feature_name = feature.find(".feature-include").val();
+            var feature_include = false;
+            if (feature.find(".feature-include").is(':checked')){
+                feature_include = true;
+            }
+            var feature_type = feature.find(".feature-type").val();
+            var impute_option = feature.find(".impute-option").val();
+            var featureResponse = {name : feature_name , index : null , type : feature_type , imputeOption : impute_option,include : feature_include};
+
+            i += 1;
+            features.push(featureResponse);
+        });
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify({ tableName : tableName , featureList : features }),
+            url: constants.API_URI + "preprocessor/preprocess",
+            success: function (data) {
+                $.each(data, function (index, result) {
+                        console.log(result);
+                });
             }
         });
-        var tableName = paragraph.find(".input-table").val();
+
     };
 
     /**
@@ -43,13 +63,16 @@ function PreprocessorParagraphClient(paragraph) {
             url : constants.API_URI + "tables/" + selectElement.val() + "/columns",
             success: function (data) {
                 $.each(data, function (index, columnName) {
-                    preprocessorTable.append($("<tr>" +
-                        '<td>' + columnName + '</td>'+
-                        '<td>' + '<input type="checkbox" class="include-column" value = "' + columnName + '">' +'</td>'+
-                        '<td>' + '<select class="form-control"> ' +
-                        '<option>Discard</option>' +
-                        '<option>Replace with mean</option>'+
-                        '<option>Regression Imputation</option>'+
+                    preprocessorTable.append($('<tr class="feature-details">' +
+                        '<td class="feature-name">' + columnName + '</td>'+
+                        '<td>' + '<input type="checkbox" class="feature-include" value = "' + columnName + '">' +'</td>'+
+                        '<td>' + '<select class="form-control feature-type"> ' +
+                        '<option value = "NUMERICAL">Numerical</option>' +
+                        '<option value = "CATEGORICAL">Categorical</option>'+
+                        '</select>' + '</td>'+
+                        '<td>' + '<select class="form-control impute-option"> ' +
+                        '<option value = "DISCARD">Discard</option>' +
+                        '<option value = "REPLACE_WITH_MEAN">Replace with mean</option>'+
                         '</select>' + '</td>'+
                         '</tr>'
                     ));

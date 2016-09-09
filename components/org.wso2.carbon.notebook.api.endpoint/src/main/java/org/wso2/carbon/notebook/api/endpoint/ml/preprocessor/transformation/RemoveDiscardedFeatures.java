@@ -1,7 +1,7 @@
-package org.wso2.carbon.notebook.api.endpoint.preprocessor.transformation;
+package org.wso2.carbon.notebook.api.endpoint.ml.preprocessor.transformation;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.notebook.api.endpoint.dto.response.FeatureResponse;
+import org.wso2.carbon.notebook.api.endpoint.dto.request.paragraph.FeatureRequest;
 import org.wso2.carbon.notebook.api.endpoint.util.MLUtils;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class RemoveDiscardedFeatures implements Function< String[], String[]> {
     public static class Builder {
         private List<Integer> newToOldIndicesList;
 
-        public Builder init(List<FeatureResponse> features) {
+        public Builder init(List<FeatureRequest> features) {
             this.newToOldIndicesList = MLUtils.getIncludedFeatureIndices(features);
             return this;
         }
