@@ -18,11 +18,25 @@
 
     <modules>
         <module>components/org.wso2.carbon.notebook.api</module>
-        <module>components/org.wso2.carbon.notebook.distribution</module>
+        <module>components/org.wso2.carbon.notebook.core</module>
+        <module>components/org.wso2.carbon.notebook.commons</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Internal dependencies start here -->
+            <dependency>
+                <groupId>org.wso2.carbon.notebook</groupId>
+                <artifactId>org.wso2.carbon.notebook.core</artifactId>
+                <version>${carbon.notebook.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.notebook</groupId>
+                <artifactId>org.wso2.carbon.notebook.commons</artifactId>
+                <version>${carbon.notebook.version}</version>
+            </dependency>
+            <!-- Internal dependencies end here -->
+
             <!-- WSO2 dependencies start here -->
             <dependency>
                 <groupId>org.wso2.carbon.analytics-common</groupId>
@@ -147,6 +161,9 @@
     </build>
 
     <properties>
+        <!-- Notebook version -->
+        <carbon.notebook.version>1.0-SNAPSHOT</carbon.notebook.version>
+
         <!-- Dependency versions start here -->
         <carbon.commons.version>4.3.4</carbon.commons.version>
         <carbon.analytics.common.version>5.1.2-alpha</carbon.analytics.common.version>

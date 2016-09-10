@@ -9,7 +9,7 @@ function PreprocessorParagraphClient(paragraph) {
 
     self.initialize = function() {
         // Adding event receivers
-        paragraph.find(".preprocessor-input.input-table").change(function() {
+        paragraph.find(".org.wso2.carbon.notebook.core.preprocessor-input.input-table").change(function() {
             loadPreprocessorParameters();
         });
 
@@ -18,7 +18,7 @@ function PreprocessorParagraphClient(paragraph) {
     };
 
     self.run = function(callback) {
-        // TODO : run preprocessor paragraph
+        // TODO : run org.wso2.carbon.notebook.core.preprocessor paragraph
         var tableName = paragraph.find(".input-table").val();
         var features= [];
         var i=0;
@@ -39,7 +39,7 @@ function PreprocessorParagraphClient(paragraph) {
         $.ajax({
             type: "POST",
             data: JSON.stringify({ tableName : tableName , featureList : features }),
-            url: constants.API_URI + "preprocessor/preprocess",
+            url: constants.API_URI + "org.wso2.carbon.notebook.core.preprocessor/preprocess",
             success: function (data) {
                 $.each(data, function (index, result) {
                         console.log(result);
@@ -50,13 +50,13 @@ function PreprocessorParagraphClient(paragraph) {
     };
 
     /**
-     * Load preprocessor parameters table
+     * Load org.wso2.carbon.notebook.core.preprocessor parameters table
      *
      * @private
      */
     var loadPreprocessorParameters = function() {
-        var selectElement = paragraph.find(".preprocessor-input.input-table");
-        var preprocessorTable = paragraph.find(".preprocessor-table > tbody");
+        var selectElement = paragraph.find(".org.wso2.carbon.notebook.core.preprocessor-input.input-table");
+        var preprocessorTable = paragraph.find(".org.wso2.carbon.notebook.core.preprocessor-table > tbody");
         preprocessorTable.html("");
         $.ajax({
             type: "GET",
@@ -79,7 +79,7 @@ function PreprocessorParagraphClient(paragraph) {
                 });
             }
         });
-        selectElement.closest(".source").find(".preprocessor-table").fadeIn();
+        selectElement.closest(".source").find(".org.wso2.carbon.notebook.core.preprocessor-table").fadeIn();
     };
 
     /**

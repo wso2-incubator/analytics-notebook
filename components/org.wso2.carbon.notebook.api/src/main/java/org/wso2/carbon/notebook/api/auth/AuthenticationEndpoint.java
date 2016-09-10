@@ -2,10 +2,11 @@ package org.wso2.carbon.notebook.api.auth;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.notebook.api.ServiceHolder;
-import org.wso2.carbon.notebook.api.dto.response.GeneralResponse;
-import org.wso2.carbon.notebook.api.dto.request.auth.Credentials;
-import org.wso2.carbon.notebook.api.dto.response.ResponseConstants;
+import org.wso2.carbon.notebook.commons.request.LoginRequest;
+import org.wso2.carbon.notebook.commons.response.ErrorResponse;
+import org.wso2.carbon.notebook.core.ServiceHolder;
+import org.wso2.carbon.notebook.commons.response.Response;
+import org.wso2.carbon.notebook.commons.response.ResponseConstants;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,17 +15,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  * For handling user management
  */
 @Path("/auth")
 public class AuthenticationEndpoint {
-    public AuthenticationEndpoint() {
-
-    }
-
     /**
      * Sign in the user and save the username and tenant id
      *
@@ -32,15 +28,15 @@ public class AuthenticationEndpoint {
      */
     @POST
     @Path("/sign-in")
-    public Response signIn(@Context HttpServletRequest request, String credentialsString) {
-        Credentials credentials = new Gson().fromJson(credentialsString, Credentials.class);
+    public javax.ws.rs.core.Response signIn(@Context HttpServletRequest request, String credentialsString) {
+        LoginRequest loginRequest = new Gson().fromJson(credentialsString, LoginRequest.class);
         HttpSession session = request.getSession();
+        String jsonString;
 
-        GeneralResponse generalResponse = new GeneralResponse();
         if (ServiceHolder.getAuthenticationService()
-                .authenticate(credentials.getUsername(), credentials.getPassword())) {
-            String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(credentials.getUsername());
-            String tenantDomain = MultitenantUtils.getTenantDomain(credentials.getPassword());
+                .authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {
+            String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(loginRequest.getUsername());
+            String tenantDomain = MultitenantUtils.getTenantDomain(loginRequest.getPassword());
 
             PrivilegedCarbonContext.startTenantFlow();
             PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, false);
@@ -50,12 +46,11 @@ public class AuthenticationEndpoint {
             session.setAttribute("username", tenantAwareUsername);
             session.setAttribute("tenantDomain", tenantDomain);
             session.setAttribute("tenantID", tenantID);
-            generalResponse.setStatus(ResponseConstants.SUCCESS);
+            jsonString = new Gson().toJson(new Response(ResponseConstants.SUCCESS));
         } else {
-            generalResponse.setStatus(ResponseConstants.ERROR);
+            jsonString = new Gson().toJson(new ErrorResponse("Invalid Credentials"));
         }
 
-        String jsonString = new Gson().toJson(generalResponse);
-        return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
+        return javax.ws.rs.core.Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }

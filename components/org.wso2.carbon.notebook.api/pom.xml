@@ -12,21 +12,22 @@
     </parent>
 
     <artifactId>org.wso2.carbon.notebook.api</artifactId>
-    <name>Notebook - REST API</name>
+    <packaging>war</packaging>
+    <name>Notebook - API</name>
 
     <dependencies>
+        <!-- Internal dependencies start here -->
         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
+            <groupId>org.wso2.carbon.notebook</groupId>
+            <artifactId>org.wso2.carbon.notebook.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <groupId>org.wso2.carbon.notebook</groupId>
+            <artifactId>org.wso2.carbon.notebook.commons</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
+        <!-- Internal dependencies end here -->
+
+        <!-- WSO2 dependencies start here -->
         <dependency>
             <groupId>org.wso2.carbon.analytics-common</groupId>
             <artifactId>org.wso2.carbon.event.receiver.core</artifactId>
@@ -44,29 +45,44 @@
             <artifactId>org.wso2.carbon.analytics.spark.core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.wso2.carbon.commons</groupId>
             <artifactId>org.wso2.carbon.identity.authentication</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.ml</groupId>
+            <artifactId>org.wso2.carbon.ml.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.ml</groupId>
             <artifactId>org.wso2.carbon.ml.commons</artifactId>
+        </dependency>
+        <!-- WSO2 dependencies end here -->
+
+        <!-- Third party dependencies start here -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon.ml</groupId>
-            <artifactId>org.wso2.carbon.ml.core</artifactId>
-        </dependency>
+        <!-- Third party dependencies end here -->
     </dependencies>
 
     <build>
-        <finalName>notebook-rest-api</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -76,6 +92,18 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>../../app</directory>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
         </plugins>
+        <finalName>notebook</finalName>
     </build>
 </project>

@@ -134,7 +134,13 @@ function Utils() {
                     url : url,
                     data : JSON.stringify(queryParameters),
                     success : function(returnedData) {
-                        callback(returnedData)
+                        console.log(returnedData);
+                        callback({
+                            draw : returnedData.draw,
+                            recordsTotal : returnedData.recordsCount,
+                            recordsFiltered : returnedData.recordsCount,
+                            data : returnedData.data
+                        })
                     }
                 });
             }
