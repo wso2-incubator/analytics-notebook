@@ -35,10 +35,11 @@
             <param-value>
                 org.wso2.carbon.notebook.api.endpoint.auth.AuthenticationEndpoint
                 org.wso2.carbon.notebook.api.endpoint.api.BatchAnalyticsEndpoint
+                org.wso2.carbon.notebook.api.endpoint.api.DataExploreEndpoint
                 org.wso2.carbon.notebook.api.endpoint.api.DataSetInformationRetrievalEndpoint
                 org.wso2.carbon.notebook.api.endpoint.api.EventReceiverInformationRetrievalEndpoint
                 org.wso2.carbon.notebook.api.endpoint.api.InteractiveAnalyticsEndpoint
-                org.wso2.carbon.notebook.api.endpoint.api.DataExploreEndpoint
+                org.wso2.carbon.notebook.api.endpoint.api.PreprocessorEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
