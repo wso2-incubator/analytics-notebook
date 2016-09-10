@@ -8,6 +8,7 @@ function Note() {
 
     // Prototype fields
     self.paragraphs = [];
+    self.uniqueParagraphIDCounter = 0;
 
     /**
      * Initialize the note
@@ -42,12 +43,12 @@ function Note() {
      *
      * @private
      */
-    var runAllParagraphs = function() {
+    function runAllParagraphs() {
         // Looping through the paragraphs and running them
         $.each(self.paragraphs, function(index, paragraph) {
             paragraph.run();
         });
-    };
+    }
 
     /**
      * Toggle the visibility of all views (source or output views) in the current note
@@ -55,7 +56,7 @@ function Note() {
      * @private
      * @param type Should be one of ["source", "output"]
      */
-    var toggleVisibilityOfMultipleViews = function(type) {
+    function toggleVisibilityOfMultipleViews(type) {
         var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views");
         var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view");
         var buttonTemplate;
@@ -70,33 +71,34 @@ function Note() {
             toggleSourceOrOutputViewButton.html(buttonTemplate);
             $("." + type).slideUp();
         }
-    };
+    }
 
     /**
      * Add a new paragraph to the current note
      *
      * @private
      */
-    var addParagraph = function() {
-        self.paragraphs.push(new Paragraph());
-    };
+    function addParagraph() {
+        self.paragraphs.push(new Paragraph(self.uniqueParagraphIDCounter++));
+    }
 
     /**
      * Delete the current note
      *
      * @private
      */
-    var remove = function() {
+    function remove() {
         // TODO : send the request to delete the note to the notebook server
-    };
+    }
 }
 
 /**
  * Paragraph prototype
  *
+ * @param id {int} unique paragraph id assigned to the paragraph
  * @constructor
  */
-function Paragraph() {
+function Paragraph(id) {
     var self = this;
 
     // Initializing paragraph
@@ -130,6 +132,7 @@ function Paragraph() {
 
     // Prototype variables
     self.paragraphClient = null;    // The client will be set when the paragraph type is selected
+    self.paragraphID = id;
 
     /**
      * Run the paragraph specified
@@ -173,7 +176,7 @@ function Paragraph() {
      * @private
      * @param type {string} The type of views to toggle. Should be one of ["output", "source"]
      */
-    var toggleVisibilityOfSingleView = function(type) {
+    function toggleVisibilityOfSingleView(type) {
         var view = self.paragraphElement.find("." + type);
         var toggleButton = self.paragraphElement.find(".toggle-" + type + "-view-button");
         var toggleButtonInnerHTML = toggleButton.html();
@@ -185,26 +188,26 @@ function Paragraph() {
             view.slideUp();
         }
         toggleButton.html(toggleButtonInnerHTML);
-    };
+    }
 
     /**
      * Delete the specified paragraph
      *
      * @private
      */
-    var remove = function() {
+    function remove() {
         // TODO : send the relevant query to the notebook server to delete
         self.paragraphElement.slideUp(function() {
             self.paragraphElement.remove();
         });
-    };
+    }
 
     /**
      * Load the source view of the paragraph in which the select element is located in
      *
      * @private
      */
-    var loadSourceViewByType = function() {
+    function loadSourceViewByType() {
         var selectElement = self.paragraphElement.find(".paragraph-type-select");
         var paragraphContent = self.paragraphElement.find(".paragraph-content");
         paragraphContent.slideUp(function() {
@@ -276,7 +279,7 @@ function Paragraph() {
                 self.paragraphElement.find(".toggle-output-view").prop('disabled', true);
             });
         });
-    };
+    }
 }
 
 /**

@@ -7,36 +7,28 @@
     </div>
 </div>
 
-<div class="form-group search-by-container collapse">
-    <div class="input-group input-wrap">
-        <div class="input-group-btn">
-            <label class="control-label">Search By</label>
+<div class="row">
+    <div class="form-group search-by-container collapse">
+        <div class="input-group input-wrap">
+            <div class="input-group-btn">
+                <label class="control-label">Search By</label>
+            </div>
+            <label class="radio">
+                <input type="radio" name="search-by-option" class="search-by-time-range" value="time-range">
+                <span class="helper">Time Range</span>
+            </label>
+            <label class="radio">
+                <input type="radio" name="search-by-option" class="search-by-query" value="query">
+                <span class="helper">Query</span>
+            </label>
         </div>
-        <label class="radio">
-            <input type="radio" name="search-by-option" class="search-by-date-range" value="date-range">
-            <span class="helper">Date Range</span>
-        </label>
-        <label class="radio">
-            <input type="radio" name="search-by-option" class="search-by-query" value="query">
-            <span class="helper">Query</span>
-        </label>
     </div>
 </div>
 
-<div class="form-group date-range-container collapse">
-    <div class="input-group input-wrap">
-        <div class="input-group-btn">
-            <label class="control-label">From</label>
-        </div>
-        <div class="input-group-btn">
-            <input type="datetime" class="form-control form-control-lg time-from">
-        </div>
-        <div class="input-group-btn">
-            <label class="control-label">To</label>
-        </div>
-        <div class="input-group-btn">
-            <input type="datetime" class="form-control form-control-lg time-to">
-        </div>
+<div class="row col-sm-3 time-range-container collapse">
+    <div class="form-group">
+        <label>Time Range</label>
+        <input type="text" class="form-control time-range">
     </div>
 </div>
 

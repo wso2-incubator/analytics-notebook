@@ -7,15 +7,19 @@
 function InteractiveAnalyticsParagraphClient(paragraph) {
     var self = this;
 
+    // Private variables used in the prototype
+    var timeFrom;
+    var timeTo;
+
     self.initialize = function () {
         // Adding event listeners
         paragraph.find(".input-table").change(function () {
             paragraph.find(".search-by-container").fadeIn();
         });
 
-        paragraph.find(".search-by-date-range").click(function(event) {
+        paragraph.find(".search-by-time-range").click(function(event) {
             var sourceView = $(event.target).closest(".source");
-            var dateRangeContainer = sourceView.find(".date-range-container");
+            var dateRangeContainer = sourceView.find(".time-range-container");
             var queryContainer = sourceView.find(".query-container");
 
             queryContainer.fadeOut(function() {
@@ -25,7 +29,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
 
         paragraph.find(".search-by-query").click(function(event) {
             var sourceView = $(event.target).closest(".source");
-            var dateRangeContainer = sourceView.find(".date-range-container");
+            var dateRangeContainer = sourceView.find(".time-range-container");
             var queryContainer = sourceView.find(".query-container");
 
             dateRangeContainer.fadeOut(function() {
@@ -35,6 +39,16 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
 
         // Initializing the interactive analytics paragraph
         new ParagraphUtils().loadTableNames(paragraph);
+
+        // Adding the date pickers
+        paragraph.find(".time-range").daterangepicker({
+            timePicker : true,
+            autoApply : true,
+            timePicker24Hour : true
+        }, function(start, end, label) {
+            timeFrom = start.format('MM/DD/YYYY hh:mm:ss').getTime();
+            timeTo = end.format('MM/DD/YYYY hh:mm:ss').getTime();
+        });
     };
 
     self.run = function(callback) {
@@ -50,9 +64,8 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                 if (searchMethod == "query") {
                     queryParameters.query = paragraph.find(".query").val();
                 } else {
-                    console.log(paragraph.find(".time-from").val());
-                    queryParameters.timeFrom = new Date(paragraph.find(".time-from").val()).getTime();
-                    queryParameters.timeTo = new Date(paragraph.find(".time-to").val()).getTime();
+                    queryParameters.timeFrom = timeFrom;
+                    queryParameters.timeTo = timeTo;
                 }
                 data.push("_timestamp");
                 data.push("_version");

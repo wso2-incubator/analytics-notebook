@@ -18,7 +18,7 @@
  * under the License.
 -->
 
-<svg version="1.1" id="wso2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+<svg version="1.1" id="wso2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" tenantID="0px" tableName="0px"
 	 viewBox="29 -6.639 72 27.639" enable-background="new 29 -6.639 72 27.639" xml:space="preserve">
 <circle fill="#F47B20" cx="82.076" cy="4.192" r="8.691"/>
 <path fill="#FFFFFF" d="M90.804,3.776l-0.01-0.115h-0.115c-0.53-0.001-1.061,0-1.594,0c-0.531,0-1.062,0-1.593,0h-0.073

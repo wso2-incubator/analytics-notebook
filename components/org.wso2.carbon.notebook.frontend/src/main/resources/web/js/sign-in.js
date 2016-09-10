@@ -25,7 +25,7 @@ function Authenticator() {
      *
      * @private
      */
-    var singIn = function() {
+    function singIn() {
         var credentials = {
             username : $("#username").val(),
             password : $("#password").val()
@@ -51,5 +51,5 @@ function Authenticator() {
                 }
             });
         }
-    };
+    }
 }

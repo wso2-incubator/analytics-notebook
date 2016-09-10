@@ -2,148 +2,178 @@
  * Data explore paragraph client prototype
  *
  * @param paragraph The paragraph in which the client resides in
+ * @param id {int} unique paragraph id assigned to the paragraph
  * @constructor
  */
-function DataExploreParagraphClient(paragraph) {
+function DataExploreParagraphClient(paragraph, id) {
     var self = this;
+
+    var sampledData;
 
     var categoricalFeatureNames = [];
     var numericalFeatureNames = [];
+
     var scatterMarkerSize = -1;
     var trellisMarkerSize = -1;
     var clusterMarkerSize = -1;
 
     self.initialize = function () {
-        // Setting event listeners for redrawing charts upon changes in selections
-        paragraph.find("select[class='scatter-x'], select[class='scatter-y'], select[class='scatter-group']").change(function() {
-            paragraph.find("#scatter").html("Loading chart...");
-            drawPlotsAjax();
-        });
-        paragraph.find("input[class='categoricalFeatureNames']").change(function() {
-            paragraph.find("#parallelSets").html("Loading chart...");
-            drawParallelSets();
-        });
-        paragraph.find("input[class='numericalFeatureNames'], select[class='trellis-cat-features']").change(function() {
-            paragraph.find(".trellisChart").html("Loading chart...");
-            drawTrellisChart();
-        });
-        paragraph.find("select[class='cluster-independent'], select[class='cluster-dependent'], select[class='cluster-num-clusters']").change(function() {
-            paragraph.find("#clusterDiagram").html("Loading chart...");
-            drawClusterDiagram();
-        });
-
-        scatterMarkerSize = paragraph.find('.scatter-marker-size-input').val();
-        trellisMarkerSize = paragraph.find('.trellis-marker-size-input').val();
-        clusterMarkerSize = paragraph.find('.cluster-marker-size-input').val();
-
-
-        // Binding events to chart links
-        paragraph.find('.scatter-plot-link').click(function(e) {
-            e.preventDefault();
-            drawScatterPlotBase();
-        });
-        paragraph.find('.parallel-sets-link').click(function(e) {
-            e.preventDefault();
-            drawParallelSetsBase();
-        });
-        paragraph.find('.trellis-chart-link').click(function(e) {
-            e.preventDefault();
-            drawTrellisChartBase();
-        });
-        paragraph.find('.cluster-diagram-link').click(function(e) {
-            e.preventDefault();
-            drawClusterDiagramBase();
-        });
-
-        // Disable tabs based on the features
-        removeTabs();
-
-        // Select the active tab on page load
-        selectActiveTab();
-
-        // Disabling tabs
-        paragraph.find(".wr-tabs-grphs > li").click(function() {
-            if ($(this).hasClass("disabled")) {
-                return false;
-            }
-        });
-
-        // Functions for chart marker size changes
-        paragraph.find(".scatter-marker-size").on("click", function(e) {
-            e.preventDefault();
-            var $button = $(this);
-            var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
-
-            var newValue;
-            if ($button.data('operator') == "+") {
-                newValue = parseFloat(oldValue) + 1;
-            } else {
-                // Don't allow decrementing below 1
-                if (oldValue > 1) {
-                    newValue = parseFloat(oldValue) - 1;
-                } else {
-                    newValue = 1;
-                }
-            }
-            scatterMarkerSize = newValue;
-            $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
-            paragraph.find(".scatter").html("Loading chart...");
-            drawPlotsAjax();
-        });
-
-        paragraph.find(".trellis-marker-size").on("click", function(e) {
-            e.preventDefault();
-            var $button = $(this);
-            var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
-
-            var newValue;
-            if ($button.data('operator') == "+") {
-                newValue = parseFloat(oldValue) + 1;
-            } else {
-                // Don't allow decrementing below 1
-                if (oldValue > 1) {
-                    newValue = parseFloat(oldValue) - 1;
-                } else {
-                    newValue = 1;
-                }
-            }
-            trellisMarkerSize = newValue;
-            $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
-            paragraph.find(".trellisChart").html("Loading chart...");
-            drawTrellisChart();
-        });
-
-        paragraph.find(".cluster-marker-size").on("click", function(e) {
-            e.preventDefault();
-            var $button = $(this);
-            var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
-
-            var newValue;
-            if ($button.data('operator') == "+") {
-                newValue = parseFloat(oldValue) + 1;
-            } else {
-                // Don't allow decrementing below 1
-                if (oldValue > 1) {
-                    newValue = parseFloat(oldValue) - 1;
-                } else {
-                    newValue = 1;
-                }
-            }
-            clusterMarkerSize = newValue;
-            $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
-            paragraph.find(".clusterDiagram").html("Loading chart...");
-            redrawClusterDiagram();
-        });
+        new ParagraphUtils().loadTableNames(paragraph);
     };
 
     self.run = function(callback) {
-        // TODO : run custom paragraph
-        callback("Test");
+        // Loading the chart into the output view
+        callback($("<div>").load("output-view-templates/data-explore.html", function() {
+            // Generating ids for tabs
+            var chartClasses = ["scatter-plot", "parallel-sets", "trellis-chart", "cluster-diagram"];
+            for (var i = 0; i < chartClasses.length; i++) {
+                console.log(paragraph.find("." + chartClasses[i]).parent().html());
+                console.log(paragraph.find("." + chartClasses[i] + "-link").parent().html());
+                paragraph.find("." + chartClasses[i]).attr("id", chartClasses[i] + id);
+                paragraph.find("." + chartClasses[i] + "-link").attr("href", "#" + chartClasses[i] + id);
+            }
+
+            // Setting event listeners for redrawing charts upon changes in selections
+            paragraph.find("select[class='scatter-x'], select[class='scatter-y'], select[class='scatter-group']").change(function() {
+                paragraph.find(".scatter").html("Loading chart...");
+                drawPlotsAjax();
+            });
+            paragraph.find("input[class='categoricalFeatureNames']").change(function() {
+                paragraph.find(".parallelSets").html("Loading chart...");
+                drawParallelSets();
+            });
+            paragraph.find("input[class='numericalFeatureNames'], select[class='trellis-cat-features']").change(function() {
+                paragraph.find(".trellisChart").html("Loading chart...");
+                drawTrellisChart();
+            });
+            paragraph.find("select[class='cluster-independent'], select[class='cluster-dependent'], select[class='cluster-num-clusters']").change(function() {
+                paragraph.find(".clusterDiagram").html("Loading chart...");
+                drawClusterDiagram();
+            });
+
+            scatterMarkerSize = paragraph.find('.scatter-marker-size-input').val();
+            trellisMarkerSize = paragraph.find('.trellis-marker-size-input').val();
+            clusterMarkerSize = paragraph.find('.cluster-marker-size-input').val();
+
+            // Binding events to chart links
+            paragraph.find('.scatter-plot-link').click(function(e) {
+                e.preventDefault();
+                drawScatterPlotBase();
+            });
+            paragraph.find('.parallel-sets-link').click(function(e) {
+                e.preventDefault();
+                drawParallelSetsBase();
+            });
+            paragraph.find('.trellis-chart-link').click(function(e) {
+                e.preventDefault();
+                drawTrellisChartBase();
+            });
+            paragraph.find('.cluster-diagram-link').click(function(e) {
+                e.preventDefault();
+                drawClusterDiagramBase();
+            });
+
+            // Disabling tabs
+            paragraph.find(".wr-tabs-grphs > li").click(function() {
+                if ($(this).hasClass("disabled")) {
+                    return false;
+                }
+            });
+
+            // Event listeners for chart marker size changes
+            paragraph.find(".scatter-marker-size").on("click", function(e) {
+                e.preventDefault();
+                var $button = $(this);
+                var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+                var newValue;
+                if ($button.data('operator') == "+") {
+                    newValue = parseFloat(oldValue) + 1;
+                } else {
+                    // Don't allow decrementing below 1
+                    if (oldValue > 1) {
+                        newValue = parseFloat(oldValue) - 1;
+                    } else {
+                        newValue = 1;
+                    }
+                }
+                scatterMarkerSize = newValue;
+                $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+                paragraph.find(".scatter").html("Loading chart...");
+                drawPlotsAjax();
+            });
+
+            paragraph.find(".trellis-marker-size").on("click", function(e) {
+                e.preventDefault();
+                var $button = $(this);
+                var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+                var newValue;
+                if ($button.data('operator') == "+") {
+                    newValue = parseFloat(oldValue) + 1;
+                } else {
+                    // Don't allow decrementing below 1
+                    if (oldValue > 1) {
+                        newValue = parseFloat(oldValue) - 1;
+                    } else {
+                        newValue = 1;
+                    }
+                }
+                trellisMarkerSize = newValue;
+                $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+                paragraph.find(".trellisChart").html("Loading chart...");
+                drawTrellisChart();
+            });
+
+            paragraph.find(".cluster-marker-size").on("click", function(e) {
+                e.preventDefault();
+                var $button = $(this);
+                var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
+
+                var newValue;
+                if ($button.data('operator') == "+") {
+                    newValue = parseFloat(oldValue) + 1;
+                } else {
+                    // Don't allow decrementing below 1
+                    if (oldValue > 1) {
+                        newValue = parseFloat(oldValue) - 1;
+                    } else {
+                        newValue = 1;
+                    }
+                }
+                clusterMarkerSize = newValue;
+                $button.closest('.sp-quantity').find("input.quntity-input").val(newValue);
+                paragraph.find(".clusterDiagram").html("Loading chart...");
+                redrawClusterDiagram();
+            });
+
+
+            var tableName = paragraph.find(".input-table").val();
+            var sampleSize = paragraph.find(".sample-size").val();
+            $.ajax({
+                type: "GET",
+                url: constants.API_URI + "data-explore/sample?table-name=" + tableName + "&sample-size=" + sampleSize,
+                success: function(data) {
+                    sampledData = data;
+
+                    // Disable tabs based on the features
+                    removeTabs();
+
+                    // Select the active tab on page load
+                    selectActiveTab();
+                }
+            });
+
+            // Setting summary stats - sample size
+            $('#scatter-desc-note, #parallel-sets-desc-note, #trellis-desc-note, #cluster-desc-note').html(
+                "<b>*</b> Random " + paragraph.find(".sample-size").val() + ' data points from the selected table are used for visualizations.'
+            );
+        }));
     };
 
 
     // select the active tab based on the feature types
-    var selectActiveTab = function() {
+    function selectActiveTab() {
         if (numericalFeatureNames.length > 1 && categoricalFeatureNames.length > 0) {
             paragraph.find('.scatter-plot-link').click();
         } else if (categoricalFeatureNames.length > 1) {
@@ -153,10 +183,10 @@ function DataExploreParagraphClient(paragraph) {
         } else if (numericalFeatureNames.length > 1) {
             paragraph.find('.cluster-diagram-link').click();
         }
-    };
+    }
 
     // remove unsupported tabs
-    var removeTabs = function() {
+    function removeTabs() {
         if (!(numericalFeatureNames.length > 1 && categoricalFeatureNames.length > 0)) {
             paragraph.find('#scatter-plot-li').remove();
         }
@@ -169,9 +199,9 @@ function DataExploreParagraphClient(paragraph) {
         if (numericalFeatureNames.length < 2) {
             paragraph.find('#cluster-diagram-li').remove();
         }
-    };
+    }
 
-    var drawScatterPlotBase = function() {
+    function drawScatterPlotBase() {
         if (numericalFeatureNames.length > 1 && categoricalFeatureNames.length > 0) {
             paragraph.find('.scatter-x, .scatter-y, .scatter-group').empty();
             $.each(numericalFeatureNames, function(index, feature) {
@@ -192,10 +222,9 @@ function DataExploreParagraphClient(paragraph) {
             var infoText = "Minimum of two numerical features and one categorical feature required to draw a scatter plot.";
             paragraph.find(".scatter").html(buildNotification(infoText, 'info'));
         }
-    };
+    }
 
     function drawPlotsAjax() {
-        //TODO: put regex as global var
         var numFeatureIndependent = paragraph.find(".scatter-x").val().replace(/^\s+|\s+$/g, '');
         var numFeatureDependent = paragraph.find(".scatter-y").val().replace(/^\s+|\s+$/g, '');
         var catFeature = paragraph.find(".scatter-group").val().replace(/^\s+|\s+$/g, '');

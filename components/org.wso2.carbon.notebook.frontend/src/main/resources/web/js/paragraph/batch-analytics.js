@@ -52,7 +52,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
      *
      * @private
      */
-    var addTable = function () {
+    function addTable() {
         var textArea = paragraph.find(".query");
         var tableName = paragraph.find(".input-table").val();
         var tempTable = paragraph.find(".temporary-table");
@@ -68,5 +68,5 @@ function BatchAnalyticsParagraphClient(paragraph) {
         new ParagraphUtils().generateSparkQuery(tableName , tempTableName ,  function (createTempTableQuery) {
             textArea.val( textArea.val() + createTempTableQuery + "\n");
         });
-    };
+    }
 }

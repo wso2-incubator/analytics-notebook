@@ -31,7 +31,7 @@ function DataSourceDefinitionParagraphClient(paragraph) {
      *
      * @private
      */
-    var onTypeSelect = function() {
+    function onTypeSelect() {
         var selectElement = paragraph.find(".data-source-type");
         var type;
         var url;
@@ -55,28 +55,28 @@ function DataSourceDefinitionParagraphClient(paragraph) {
                 tablesSelectElement.parent().fadeIn();
             }
         });
-    };
+    }
 
     /**
      * Run on input table select tasks
      *
      * @private
      */
-    var onTableChange = function() {
+    function onTableChange() {
         paragraph.find(".output-table").parent().fadeIn();
-    };
+    }
 
     /**
      * Run on output table keyup tasks
      *
      * @private
      */
-    var onOutputTableKeyUp = function() {
+    function onOutputTableKeyUp() {
         var inputElement = paragraph.find(".output-table");
         if (inputElement.val().length != 0) {
 //        sourceView.closest(".paragraph").find(".run").prop('disabled', false);
         } else {
 //        sourceView.closest(".paragraph").find(".run").prop('disabled', true);
         }
-    };
+    }
 }

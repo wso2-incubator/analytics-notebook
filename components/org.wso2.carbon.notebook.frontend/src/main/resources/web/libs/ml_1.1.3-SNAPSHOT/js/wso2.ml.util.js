@@ -16,17 +16,6 @@
  * under the License.
  */
 
-function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
-
-function getBaseUrl(fullUrl) {
-    var parts = fullUrl.split('/');
-    return parts[0] + '//' + parts[2];
-}
 // function to build notifications
 function buildNotification(message, notificationType) {
     var builtNotification;
@@ -34,29 +23,25 @@ function buildNotification(message, notificationType) {
         builtNotification =
             '<div class="alert alert-warning alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-            '<img src="../../images/icons/ico-error.png" class="indi" />' +
+            '<img src="libs/ml_1.1.3-SNAPSHOT/images/icons/ico-error.png" class="indi" />' +
             message +
             '</div>';
     } else if (notificationType == 'info') {
         builtNotification =
             '<div class="alert alert-info alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-            '<img src="../../images/icons/ico-alert.png" class="indi" />' +
+            '<img src="libs/ml_1.1.3-SNAPSHOT/images/icons/ico-alert.png" class="indi" />' +
             message +
             '</div>';
     } else if (notificationType == 'success') {
         builtNotification =
             '<div class="alert alert-success alert-dismissible" role="alert">' +
             '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-            '<img src="../../images/icons/ico-success.png" class="indi" />' +
+            '<img src="libs/ml_1.1.3-SNAPSHOT/images/icons/ico-success.png" class="indi" />' +
             message +
             '</div>';
     }
     return builtNotification;
-}
-// function to handle notifications
-function handleNotification(notificationText, notificationArea, notificationType) {
-    $(notificationArea).html(buildNotification(notificationText, notificationType));
 }
 
 /* pagination plugin */
