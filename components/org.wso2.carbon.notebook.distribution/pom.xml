@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>org.wso2.carbon.notebook</groupId>
-            <artifactId>org.wso2.carbon.notebook.api.endpoint</artifactId>
+            <artifactId>org.wso2.carbon.notebook.api</artifactId>
             <version>${pom.version}</version>
         </dependency>
     </dependencies>
@@ -31,7 +31,7 @@
                 <configuration>
                     <webResources>
                         <resource>
-                            <directory>../org.wso2.carbon.notebook.frontend/src/main/resources/web</directory>
+                            <directory>../../app</directory>
                         </resource>
                     </webResources>
                 </configuration>
