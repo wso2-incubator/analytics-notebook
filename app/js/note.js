@@ -222,7 +222,7 @@ function Paragraph(id) {
                     break;
                 case "Preprocessor" :
                     self.paragraphClient = new PreprocessorParagraphClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/org.wso2.carbon.notebook.core.preprocessor.html";
+                    paragraphTemplateLink = "source-view-templates/preprocessor.html";
                     break;
                 case "Data Explore" :
                     self.paragraphClient = new DataExploreParagraphClient(self.paragraphElement);

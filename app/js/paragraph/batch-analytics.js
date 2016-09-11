@@ -38,7 +38,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
                             output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> Executed. No results to show. </p>'));
                         } else {
                             output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong></p>'));
-                            output.push(new Utils().generateTable(result.columns, result.data));
+                            output.push(new Utils().generateDataTable(result.columns, result.data));
                         }
                     }
                 });
@@ -59,11 +59,9 @@ function BatchAnalyticsParagraphClient(paragraph) {
         var tempTableName;
 
         if (!tempTable.val()) {
-            tempTableName = tableName.toLowerCase();
+            tempTable.val(tableName.toLowerCase());
         }
-        else {
-            tempTableName = tempTable.val();
-        }
+        tempTableName = tempTable.val();
 
         new ParagraphUtils().generateSparkQuery(tableName , tempTableName ,  function (createTempTableQuery) {
             textArea.val( textArea.val() + createTempTableQuery + "\n");

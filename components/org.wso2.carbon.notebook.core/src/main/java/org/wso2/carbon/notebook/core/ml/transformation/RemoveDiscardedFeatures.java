@@ -1,7 +1,7 @@
 package org.wso2.carbon.notebook.core.ml.transformation;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.notebook.commons.request.FeatureRequest;
+import org.wso2.carbon.notebook.commons.request.dto.Feature;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class RemoveDiscardedFeatures implements Function< String[], String[]> {
     public static class Builder {
         private List<Integer> newToOldIndicesList;
 
-        public Builder init(List<FeatureRequest> features) {
+        public Builder init(List<Feature> features) {
             this.newToOldIndicesList = MLUtils.getIncludedFeatureIndices(features);
             return this;
         }

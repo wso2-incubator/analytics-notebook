@@ -2,7 +2,7 @@ package org.wso2.carbon.notebook.core.ml.transformation;
 
 import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.notebook.commons.request.FeatureRequest;
+import org.wso2.carbon.notebook.commons.request.dto.Feature;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class DiscardedRowsFilter implements Function<String[], Boolean> {
     public static class Builder {
         private List<Integer> indices;
 
-        public Builder init(List<FeatureRequest> features) {
+        public Builder init(List<Feature> features) {
             this.indices = MLUtils.getImputeFeatureIndices(features, new ArrayList<Integer>(),
                     MLConstants.DISCARD);
             return this;

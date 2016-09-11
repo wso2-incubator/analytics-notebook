@@ -6,7 +6,7 @@ import org.wso2.carbon.notebook.commons.request.LoginRequest;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.commons.response.Response;
-import org.wso2.carbon.notebook.commons.response.ResponseConstants;
+import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +46,7 @@ public class AuthenticationEndpoint {
             session.setAttribute("username", tenantAwareUsername);
             session.setAttribute("tenantDomain", tenantDomain);
             session.setAttribute("tenantID", tenantID);
-            jsonString = new Gson().toJson(new Response(ResponseConstants.SUCCESS));
+            jsonString = new Gson().toJson(new Response(Status.SUCCESS));
         } else {
             jsonString = new Gson().toJson(new ErrorResponse("Invalid Credentials"));
         }

@@ -9,7 +9,7 @@ function PreprocessorParagraphClient(paragraph) {
 
     self.initialize = function() {
         // Adding event receivers
-        paragraph.find(".org.wso2.carbon.notebook.core.preprocessor-input.input-table").change(function() {
+        paragraph.find(".preprocessor-input.input-table").change(function() {
             loadPreprocessorParameters();
         });
 
@@ -18,7 +18,7 @@ function PreprocessorParagraphClient(paragraph) {
     };
 
     self.run = function(callback) {
-        // TODO : run org.wso2.carbon.notebook.core.preprocessor paragraph
+        // TODO : run preprocessor paragraph
         var tableName = paragraph.find(".input-table").val();
         var features= [];
         var i=0;
@@ -39,7 +39,7 @@ function PreprocessorParagraphClient(paragraph) {
         $.ajax({
             type: "POST",
             data: JSON.stringify({ tableName : tableName , featureList : features }),
-            url: constants.API_URI + "org.wso2.carbon.notebook.core.preprocessor/preprocess",
+            url: constants.API_URI + "preprocessor/preprocess",
             success: function (data) {
                 $.each(data, function (index, result) {
                         console.log(result);
@@ -50,36 +50,44 @@ function PreprocessorParagraphClient(paragraph) {
     };
 
     /**
-     * Load org.wso2.carbon.notebook.core.preprocessor parameters table
+     * Load preprocessor parameters table
      *
      * @private
      */
     var loadPreprocessorParameters = function() {
-        var selectElement = paragraph.find(".org.wso2.carbon.notebook.core.preprocessor-input.input-table");
-        var preprocessorTable = paragraph.find(".org.wso2.carbon.notebook.core.preprocessor-table > tbody");
+        var selectElement = paragraph.find(".preprocessor-input.input-table");
+        var preprocessorTable = paragraph.find(".preprocessor-table > tbody");
         preprocessorTable.html("");
         $.ajax({
             type: "GET",
             url : constants.API_URI + "tables/" + selectElement.val() + "/columns",
             success: function (data) {
+                var headerArray = ["Attribute", "Include", "Type", "Impute"];
+                var tableData = [];
                 $.each(data, function (index, columnName) {
-                    preprocessorTable.append($('<tr class="feature-details">' +
-                        '<td class="feature-name">' + columnName + '</td>'+
-                        '<td>' + '<input type="checkbox" class="feature-include" value = "' + columnName + '">' +'</td>'+
-                        '<td>' + '<select class="form-control feature-type"> ' +
-                        '<option value = "NUMERICAL">Numerical</option>' +
-                        '<option value = "CATEGORICAL">Categorical</option>'+
-                        '</select>' + '</td>'+
-                        '<td>' + '<select class="form-control impute-option"> ' +
-                        '<option value = "DISCARD">Discard</option>' +
-                        '<option value = "REPLACE_WITH_MEAN">Replace with mean</option>'+
-                        '</select>' + '</td>'+
-                        '</tr>'
-                    ));
+                    var row = [
+                        "<span class='feature-name'>" + columnName + "</span>",
+                        "<input type='checkbox' class='feature-include' value='" + columnName + "'>",
+                        "<select class='form-control feature-type'>" +
+                            "<option value='NUMERICAL'>Numerical</option>" +
+                            "<option value='CATEGORICAL'>Categorical</option>" +
+                        "</select>",
+                        "<select class='form-control impute-option'>" +
+                            "<option value='DISCARD'>Discard</option>" +
+                            "<option value='REPLACE_WITH_MEAN'>Replace with mean</option>" +
+                        "</select>"
+                    ];
+                    tableData.push(row);
+
+                    if (index == data.length - 1) {
+                        paragraph.find(".preprocessor-table").html(
+                            new Utils().generateListTable(headerArray, tableData)
+                        );
+                    }
                 });
             }
         });
-        selectElement.closest(".source").find(".org.wso2.carbon.notebook.core.preprocessor-table").fadeIn();
+        selectElement.closest(".source").find(".preprocessor-table").fadeIn();
     };
 
     /**

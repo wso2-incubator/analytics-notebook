@@ -1,7 +1,7 @@
 package org.wso2.carbon.notebook.commons.response.dto;
 
 import org.wso2.carbon.notebook.commons.response.Response;
-import org.wso2.carbon.notebook.commons.response.ResponseConstants;
+import org.wso2.carbon.notebook.commons.response.Status;
 
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ public class LazyLoadedTable extends Response {
     private List<Map<String, Object>> data;
 
     public LazyLoadedTable(int draw, long recordsCount, List<Map<String, Object>> data) {
-        super(ResponseConstants.SUCCESS);
+        super(Status.SUCCESS);
         this.draw = draw;
         this.recordsCount = recordsCount;
         this.data = data;

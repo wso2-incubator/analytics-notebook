@@ -13,7 +13,6 @@ import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.Workflow;
@@ -24,7 +23,7 @@ import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
 import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-import org.wso2.carbon.notebook.commons.request.FeatureRequest;
+import org.wso2.carbon.notebook.commons.request.dto.Feature;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -261,10 +260,10 @@ public class MLUtils {
      * @param imputeOption Impute option
      * @return Returns indices of features where discard row imputaion is applied
      */
-    public static List<Integer> getImputeFeatureIndices(List<FeatureRequest> features, List<Integer> newToOldIndicesList,
+    public static List<Integer> getImputeFeatureIndices(List<Feature> features, List<Integer> newToOldIndicesList,
                                                         String imputeOption) {
         List<Integer> imputeFeatureIndices = new ArrayList<Integer>();
-        for (FeatureRequest feature : features) {
+        for (Feature feature : features) {
             if (feature.getImputeOption().equals(imputeOption) && feature.isInclude() == true) {
                 int currentIndex = feature.getIndex();
                 int newIndex = newToOldIndicesList.indexOf(currentIndex) != -1 ? newToOldIndicesList
@@ -302,11 +301,11 @@ public class MLUtils {
     /**
      * Retrieve the index of a feature in the dataset.
      */
-    public static int getFeatureIndex(String featureName, List<Feature> features) {
+    public static int getFeatureIndex(String featureName, List<org.wso2.carbon.ml.commons.domain.Feature> features) {
         if (featureName == null || features == null) {
             return -1;
         }
-        for (Feature feature : features) {
+        for (org.wso2.carbon.ml.commons.domain.Feature feature : features) {
             if (featureName.equals(feature.getName())) {
                 return feature.getIndex();
             }
@@ -321,8 +320,8 @@ public class MLUtils {
     public static SortedMap<Integer, String> getIncludedFeaturesAfterReordering(Workflow workflow,
                                                                                 List<Integer> newToOldIndicesList, int responseIndex) {
         SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
-        List<Feature> features = workflow.getFeatures();
-        for (Feature feature : features) {
+        List<org.wso2.carbon.ml.commons.domain.Feature> features = workflow.getFeatures();
+        for (org.wso2.carbon.ml.commons.domain.Feature feature : features) {
             if (feature.isInclude() == true && feature.getIndex() != responseIndex) {
                 int currentIndex = feature.getIndex();
                 int newIndex = newToOldIndicesList.indexOf(currentIndex);
@@ -337,8 +336,8 @@ public class MLUtils {
      * @return A list of indices of features to be included in the model*/
     public static SortedMap<Integer, String> getIncludedFeatures(Workflow workflow, int responseIndex) {
         SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
-        List<Feature> features = workflow.getFeatures();
-        for (Feature feature : features) {
+        List<org.wso2.carbon.ml.commons.domain.Feature> features = workflow.getFeatures();
+        for (org.wso2.carbon.ml.commons.domain.Feature feature : features) {
             if (feature.isInclude() == true && feature.getIndex() != responseIndex) {
                 inlcudedFeatures.put(feature.getIndex(), feature.getName());
             }
@@ -350,9 +349,9 @@ public class MLUtils {
      * @param features      list of features of the dataset
      * @return A list of indices of features to be included after processed
      */
-    public static List<Integer> getIncludedFeatureIndices(List<FeatureRequest> features) {
+    public static List<Integer> getIncludedFeatureIndices(List<Feature> features) {
         List<Integer> includedFeatureIndices = new ArrayList<Integer>();
-        for (FeatureRequest feature : features) {
+        for (Feature feature : features) {
             if (feature.isInclude()) {
                 includedFeatureIndices.add(feature.getIndex());
             }

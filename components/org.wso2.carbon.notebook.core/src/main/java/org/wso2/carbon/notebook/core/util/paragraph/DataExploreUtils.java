@@ -3,7 +3,6 @@ package org.wso2.carbon.notebook.core.util.paragraph;
 import org.apache.commons.lang.math.NumberUtils;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.notebook.commons.request.ScatterPlotPointsRequest;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 
 import java.util.*;
@@ -12,44 +11,6 @@ import java.util.*;
  * Data explorer utility functions for the notebook
  */
 public class DataExploreUtils {
-    public static List<Object> getScatterPlotPoints(int tenantID, ScatterPlotPointsRequest scatterPlotPointsRequest)
-            throws MLMalformedDatasetException {
-        SamplePoints sample = MLUtils.getSampleFromDAS(
-                scatterPlotPointsRequest.getTableName(),
-                scatterPlotPointsRequest.getSampleSize(),
-                tenantID
-        );
-        List<Object> points = new ArrayList<Object>();
-
-        // Converts the sample to a JSON array.
-        List<List<String>> columnData = sample.getSamplePoints();
-        Map<String, Integer> dataHeaders = sample.getHeader();
-
-        int firstFeatureColumn = dataHeaders.get(scatterPlotPointsRequest.getxAxisFeature());
-        int secondFeatureColumn = dataHeaders.get(scatterPlotPointsRequest.getyAxisFeature());
-        int thirdFeatureColumn = dataHeaders.get(scatterPlotPointsRequest.getGroupByFeature());
-        for (int row = 0; row < columnData.get(thirdFeatureColumn).size(); row++) {
-            if (columnData.get(firstFeatureColumn).get(row) != null
-                    && columnData.get(secondFeatureColumn).get(row) != null
-                    && columnData.get(thirdFeatureColumn).get(row) != null
-                    && !columnData.get(firstFeatureColumn).get(row).isEmpty()
-                    && !columnData.get(secondFeatureColumn).get(row).isEmpty()
-                    && !columnData.get(thirdFeatureColumn).get(row).isEmpty()) {
-                Map<Double, Object> map1 = new HashMap<Double, Object>();
-                Map<Double, Object> map2 = new HashMap<Double, Object>();
-                String val1 = columnData.get(secondFeatureColumn).get(row);
-                String val2 = columnData.get(firstFeatureColumn).get(row);
-                if (NumberUtils.isNumber(val1) && NumberUtils.isNumber(val2)) {
-                    map2.put(Double.parseDouble(val1), columnData.get(thirdFeatureColumn).get(row));
-                    map1.put(Double.parseDouble(val2), map2);
-                    points.add(map1);
-                }
-            }
-        }
-
-        return points;
-    }
-
 //    public static List<String> getFeatureNames(int tenantID, String tableName) throws MLMalformedDatasetException {
 //        SamplePoints samplePoints = MLDataHolder.getSamplePoints(tableName, tenantID);
 //        Map<String, Integer> headerMap = samplePoints.getHeader();

@@ -76,15 +76,37 @@ function Utils() {
     };
 
     /**
-     * Generates a table with client side pagination, ordering and searching
+     * Generates a data table with client side pagination, ordering and searching
      *
      * @param headerArray {string[]} Array of column names
      * @param dataRowArray {string[][]} 2D array of data
      * @return {jQuery} The table element
      */
-    self.generateTable = function(headerArray, dataRowArray) {
+    self.generateDataTable = function(headerArray, dataRowArray) {
+        return generateTable(
+            $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>"),
+            headerArray,
+            dataRowArray
+        );
+    };
+
+    /**
+     * Generates a list table with client side pagination, ordering and searching
+     *
+     * @param headerArray {string[]} Array of column names
+     * @param dataRowArray {string[][]} 2D array of data
+     * @return {jQuery} The table element
+     */
+    self.generateListTable = function(headerArray, dataRowArray) {
+        return generateTable(
+            $("<table class='table table-striped table-hover display' cellspacing='0'>"),
+            headerArray,
+            dataRowArray
+        );
+    };
+
+    var generateTable = function(table, headerArray, dataRowArray) {
         var tableContainer = $("<div>");
-        var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
         tableContainer.append(table);
 
         var columnArray = [];
@@ -102,7 +124,7 @@ function Utils() {
     };
 
     /**
-     * Generates a table with server side pagination. Ordering and searching disabled
+     * Generates a data table with server side pagination. Ordering and searching disabled
      *
      * @param httpMethod {string} The http verb that should be used in the request sent for each draw
      * @param url {string} The uri that should be used in the request sent for each draw
@@ -110,7 +132,7 @@ function Utils() {
      * @param headerArray {string[]} The column names array of the tables
      * @return {jQuery} The table element
      */
-    self.generateTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray) {
+    self.generateDataTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray) {
         var tableContainer = $("<div>");
         var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
         tableContainer.append(table);
@@ -134,7 +156,6 @@ function Utils() {
                     url : url,
                     data : JSON.stringify(queryParameters),
                     success : function(returnedData) {
-                        console.log(returnedData);
                         callback({
                             draw : returnedData.draw,
                             recordsTotal : returnedData.recordsCount,

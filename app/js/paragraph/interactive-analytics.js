@@ -69,7 +69,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                 }
                 data.push("_timestamp");
                 data.push("_version");
-                callback(new Utils().generateTableWithLazyLoading(
+                callback(new Utils().generateDataTableWithLazyLoading(
                     "POST", constants.API_URI + "interactive-analytics/search/" + searchMethod, queryParameters, data
                 ));
             }

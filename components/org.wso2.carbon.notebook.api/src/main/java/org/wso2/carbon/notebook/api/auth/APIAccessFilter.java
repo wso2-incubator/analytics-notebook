@@ -1,5 +1,9 @@
 package org.wso2.carbon.notebook.api.auth;
 
+import com.google.gson.Gson;
+import org.wso2.carbon.notebook.commons.response.ErrorResponse;
+import org.wso2.carbon.notebook.commons.response.Status;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,8 +32,9 @@ public class APIAccessFilter implements Filter {
         String homePageURI = request.getContextPath() + "/index.html";
         String signInPageURI = request.getContextPath() + "/sign-in.html";
         String signUpPageURI = request.getContextPath() + "/sign-up.html";
-        String signInURI = request.getContextPath() + "/api/auth/sign-in";
-        String signUpURI = request.getContextPath() + "/api/auth/sign-up";
+        String apiRequestURIPrefix = request.getContextPath() + "/api";
+        String signInURI = apiRequestURIPrefix + "/auth/sign-in";
+        String signUpURI = apiRequestURIPrefix + "/auth/sign-up";
 
         boolean loggedIn = false;
         HttpSession session = request.getSession();
@@ -44,11 +49,14 @@ public class APIAccessFilter implements Filter {
         boolean signUpPageRequest = currentURI.equals(signUpPageURI);
         boolean signInRequest = currentURI.equals(signInURI);
         boolean signUpRequest = currentURI.equals(signUpURI);
+        boolean apiRequest = currentURI.substring(0, 13).equals(apiRequestURIPrefix);
 
         if (loggedIn && (signInPageRequest || signUpPageRequest || signInRequest || signUpRequest)) {
             response.sendRedirect(homePageURI);
         } else if (loggedIn || signInPageRequest || signUpPageRequest || signInRequest || signUpRequest) {
             filterChain.doFilter(request, response);
+        } else if (apiRequest) {
+            response.getWriter().print(new Gson().toJson(new ErrorResponse(Status.NOT_LOGGED_IN, "Please login before accessing the API")));
         } else {
             // Generating the uri to redirect to after logging in
             String uri = currentURI.substring(request.getContextPath().length()) + (request.getQueryString() == null ? "" : "?" + request.getQueryString());

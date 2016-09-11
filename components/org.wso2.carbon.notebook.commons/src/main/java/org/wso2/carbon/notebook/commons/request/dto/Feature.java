@@ -1,8 +1,8 @@
-package org.wso2.carbon.notebook.commons.request;
+package org.wso2.carbon.notebook.commons.request.dto;
 
 import java.io.Serializable;
 
-public class FeatureRequest implements Serializable {
+public class Feature implements Serializable {
     private String name;
     private int index;
     private String type;

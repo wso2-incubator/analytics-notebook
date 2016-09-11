@@ -4,7 +4,12 @@ public class ErrorResponse extends Response {
     private String message;
 
     public ErrorResponse(String message) {
-        super(ResponseConstants.ERROR);
+        super(Status.ERROR);
+        this.message = message;
+    }
+
+    public ErrorResponse(Status status, String message) {
+        super(status);
         this.message = message;
     }
 

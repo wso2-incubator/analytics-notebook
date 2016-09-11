@@ -15,6 +15,6 @@ function EventSimulationParagraphClientClient(paragraph) {
     };
 
     self.run = function() {
-        // TODO : run org.wso2.carbon.notebook.core.preprocessor paragraph
+        // TODO : run preprocessor paragraph
     };
 }

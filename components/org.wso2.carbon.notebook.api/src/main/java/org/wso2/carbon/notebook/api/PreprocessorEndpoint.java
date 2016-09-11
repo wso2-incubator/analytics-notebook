@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-import org.wso2.carbon.notebook.commons.request.FeatureRequest;
+import org.wso2.carbon.notebook.commons.request.dto.Feature;
 import org.wso2.carbon.notebook.commons.request.PreprocessorRequest;
 import org.wso2.carbon.notebook.core.ml.DataSetPreprocessor;
 import org.wso2.carbon.notebook.core.util.MLUtils;
@@ -37,7 +37,7 @@ public class PreprocessorEndpoint {
 
         PreprocessorRequest preprocessRequest = new Gson().fromJson(preProcessParameters, PreprocessorRequest.class);
         String tableName = preprocessRequest.getTableName();
-        List<FeatureRequest> featureList = preprocessRequest.getFeatureList();
+        List<Feature> featureList = preprocessRequest.getFeatureList();
         String headerLine;
         String columnSeparator = ",";
         DataSetPreprocessor preprocessor = new DataSetPreprocessor();
@@ -46,8 +46,8 @@ public class PreprocessorEndpoint {
         try {
             JavaRDD<String> lines = MLUtils.getLinesFromDASTable(tableName, tenantID, ServiceHolder.getSparkContextService().getJavaSparkContext());
             headerLine = MLUtils.extractHeaderLine(tableName, tenantID);
-            for(FeatureRequest featureRequest : featureList){
-                featureRequest.setIndex(MLUtils.getFeatureIndex(featureRequest.getName(),headerLine , columnSeparator));
+            for(Feature feature : featureList){
+                feature.setIndex(MLUtils.getFeatureIndex(feature.getName(),headerLine , columnSeparator));
 
             }
             resultantArray= preprocessor.preProcess(lines , headerLine ,columnSeparator, featureList);

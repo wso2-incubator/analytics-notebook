@@ -10,7 +10,7 @@ public class DataExploreResponse extends Response {
     private List<String> numericalFeatureNames;
 
     public DataExploreResponse(SamplePoints samplePoints, List<String> categoricalFeatureNames, List<String> numericalFeatureNames) {
-        super(ResponseConstants.SUCCESS);
+        super(Status.SUCCESS);
         this.samplePoints = samplePoints;
         this.categoricalFeatureNames = categoricalFeatureNames;
         this.numericalFeatureNames = numericalFeatureNames;

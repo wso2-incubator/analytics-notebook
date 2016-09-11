@@ -1,7 +1,7 @@
 package org.wso2.carbon.notebook.commons.response.dto;
 
 import org.wso2.carbon.notebook.commons.response.Response;
-import org.wso2.carbon.notebook.commons.response.ResponseConstants;
+import org.wso2.carbon.notebook.commons.response.Status;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public class Table extends Response {
     private List<List<Object>> data;
 
     public Table(String[] columns, List<List<Object>> data) {
-        super(ResponseConstants.SUCCESS);
+        super(Status.SUCCESS);
         this.columns = columns;
         this.data = data;
     }

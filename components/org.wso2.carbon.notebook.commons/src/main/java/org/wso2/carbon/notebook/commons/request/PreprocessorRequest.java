@@ -1,12 +1,14 @@
 package org.wso2.carbon.notebook.commons.request;
 
+import org.wso2.carbon.notebook.commons.request.dto.Feature;
+
 import java.util.List;
 
 public class PreprocessorRequest {
     private String tableName;
-    private List<FeatureRequest> featureList;
+    private List<Feature> featureList;
 
-    public PreprocessorRequest(String tableName, List<FeatureRequest> featureList) {
+    public PreprocessorRequest(String tableName, List<Feature> featureList) {
         this.tableName = tableName;
         this.featureList = featureList;
     }
@@ -19,11 +21,11 @@ public class PreprocessorRequest {
         this.tableName = tableName;
     }
 
-    public List<FeatureRequest> getFeatureList() {
+    public List<Feature> getFeatureList() {
         return featureList;
     }
 
-    public void setFeatureList(List<FeatureRequest> featureList) {
+    public void setFeatureList(List<Feature> featureList) {
         this.featureList = featureList;
     }
 }
