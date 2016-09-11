@@ -1,15 +1,17 @@
-package org.wso2.carbon.notebook.commons.response;
+package org.wso2.carbon.notebook.commons.response.paragraph;
 
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
+import org.wso2.carbon.notebook.commons.response.GeneralResponse;
+import org.wso2.carbon.notebook.commons.response.Status;
 
 import java.util.List;
 
-public class DataExploreResponse extends Response {
+public class DataExploreGeneralResponse extends GeneralResponse {
     private SamplePoints samplePoints;
     private List<String> categoricalFeatureNames;
     private List<String> numericalFeatureNames;
 
-    public DataExploreResponse(SamplePoints samplePoints, List<String> categoricalFeatureNames, List<String> numericalFeatureNames) {
+    public DataExploreGeneralResponse(SamplePoints samplePoints, List<String> categoricalFeatureNames, List<String> numericalFeatureNames) {
         super(Status.SUCCESS);
         this.samplePoints = samplePoints;
         this.categoricalFeatureNames = categoricalFeatureNames;

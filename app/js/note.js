@@ -318,59 +318,20 @@ function ParagraphUtils() {
         $.ajax({
             type: "GET",
             url : constants.API_URI + "tables",
-            success: function(data) {
-                inputTableSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
-                $.each(data, function(index, table) {
-                    inputTableSelectElement.append($("<option>" + table + "</option>"));
-                });
+            success: function(response) {
+                if (response.status == constants.response.SUCCESS) {
+                    inputTableSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
+                    $.each(response.tableNames, function (index, table) {
+                        inputTableSelectElement.append($("<option>" + table + "</option>"));
+                    });
+                } else {
+                    self.handleError(paragraph, response.message);
+                }
             }
         });
     };
 
-    /**
-     * Callback function for generate spark query
-     *
-     * @callback GenerateSparkQueryCallback
-     * @param Query {string}
-     */
-
-    /**
-     * Generate a spark query using the specified parameters
-     *
-     * @param tableName {string} The name of the table
-     * @param tempTableName {string} The name of the temp table into which the data will be loaded
-     * @param callback {GenerateSparkQueryCallback} The callback function into which the query will be passed after generating the query
-     */
-    self.generateSparkQuery = function (tableName, tempTableName, callback) {
-        var schema = '';
-        $.ajax({
-            type: "GET",
-            url: constants.API_URI + "tables/" + tableName + "/schema",
-            success: function (data) {
-                $.each(data, function (index, column) {
-                    if (column.scoreParam == true) {
-                        schema += column.name + ' ' + column.type + ' -sp' + ', ';
-                    }
-                    else if (column.indexed == true) {
-                        schema += column.name + ' ' + column.type + ' -i' + ', ';
-                    }
-                    else {
-                        schema += column.name + ' ' + column.type + ', ';
-                    }
-                    if (index == data.length - 1) {
-                        schema = schema.substring(0, schema.length - 2);
-                        var createTempTableQuery = 'CREATE TEMPORARY TABLE ' +
-                            tempTableName +
-                            ' USING CarbonAnalytics OPTIONS (tableName "' +
-                            tableName +
-                            '", schema "' +
-                            schema +
-                            '");';
-                        callback(createTempTableQuery);
-                    }
-                });
-            }
-        });
+    self.handleError = function(paragraph, message) {
 
     };
 }

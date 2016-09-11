@@ -1,12 +1,12 @@
 package org.wso2.carbon.notebook.commons.response.dto;
 
-import org.wso2.carbon.notebook.commons.response.Response;
+import org.wso2.carbon.notebook.commons.response.GeneralResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
 
 import java.util.List;
 import java.util.Map;
 
-public class LazyLoadedTable extends Response {
+public class LazyLoadedTable extends GeneralResponse {
     private int draw;
     private long recordsCount;
     private List<Map<String, Object>> data;

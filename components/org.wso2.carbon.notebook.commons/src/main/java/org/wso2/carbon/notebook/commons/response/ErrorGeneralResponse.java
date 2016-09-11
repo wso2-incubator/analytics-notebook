@@ -1,14 +1,14 @@
 package org.wso2.carbon.notebook.commons.response;
 
-public class ErrorResponse extends Response {
+public class ErrorGeneralResponse extends GeneralResponse {
     private String message;
 
-    public ErrorResponse(String message) {
+    public ErrorGeneralResponse(String message) {
         super(Status.ERROR);
         this.message = message;
     }
 
-    public ErrorResponse(Status status, String message) {
+    public ErrorGeneralResponse(String status, String message) {
         super(status);
         this.message = message;
     }

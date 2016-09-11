@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.commons.request;
+package org.wso2.carbon.notebook.commons.request.paragraph;
 
 public class InteractiveAnalyticsRequest {
 

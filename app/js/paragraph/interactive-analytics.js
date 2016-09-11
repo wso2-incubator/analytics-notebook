@@ -56,22 +56,29 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
         $.ajax({
             type: "GET",
             url : constants.API_URI + "tables/" + tableName + "/columns",
-            success: function(data) {
-                var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
-                var queryParameters = {
-                    tableName : tableName
-                };
-                if (searchMethod == "query") {
-                    queryParameters.query = paragraph.find(".query").val();
+            success: function(response) {
+                if (response.status == constants.response.SUCCESS) {
+                    var columns = response.columnNames;
+                    var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
+                    var queryParameters = {
+                        tableName : tableName
+                    };
+                    if (searchMethod == "query") {
+                        queryParameters.query = paragraph.find(".query").val();
+                    } else {
+                        queryParameters.timeFrom = timeFrom;
+                        queryParameters.timeTo = timeTo;
+                    }
+                    columns.push("_timestamp");
+                    columns.push("_version");
+                    callback(new Utils().generateDataTableWithLazyLoading(
+                        "POST", constants.API_URI + "interactive-analytics/search/" + searchMethod, queryParameters, columns
+                    ));
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
                 } else {
-                    queryParameters.timeFrom = timeFrom;
-                    queryParameters.timeTo = timeTo;
+                    new ParagraphUtils().handleError(paragraph, response.message);
                 }
-                data.push("_timestamp");
-                data.push("_version");
-                callback(new Utils().generateDataTableWithLazyLoading(
-                    "POST", constants.API_URI + "interactive-analytics/search/" + searchMethod, queryParameters, data
-                ));
             }
         });
     };

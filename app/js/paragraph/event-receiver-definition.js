@@ -13,11 +13,17 @@ function EventReceiverDefinitionParagraphClient(paragraph) {
         $.ajax({
             type: "GET",
             url : constants.API_URI + "event-receivers",
-            success: function(data) {
-                eventReceiverSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
-                $.each(data, function(index, eventReceiver) {
-                    eventReceiverSelectElement.append($("<option>" + eventReceiver + "</option>"));
-                });
+            success: function(response) {
+                if (response.status == constants.response.SUCCESS) {
+                    eventReceiverSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
+                    $.each(response.eventReceiverNames, function(index, eventReceiver) {
+                        eventReceiverSelectElement.append($("<option>" + eventReceiver + "</option>"));
+                    });
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    new ParagraphUtils().handleError(paragraph, response.message);
+                }
             }
         });
     };

@@ -2,10 +2,10 @@ package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
+import org.wso2.carbon.notebook.commons.response.ErrorGeneralResponse;
 import org.wso2.carbon.notebook.commons.response.dto.LazyLoadedTable;
-import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.core.util.paragraph.InteractiveAnalyticsUtils;
-import org.wso2.carbon.notebook.commons.request.InteractiveAnalyticsRequest;
+import org.wso2.carbon.notebook.commons.request.paragraph.InteractiveAnalyticsRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -53,7 +53,7 @@ public class InteractiveAnalyticsEndpoint {
                 data
             ));
         } catch (AnalyticsException e) {
-            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+            jsonString = new Gson().toJson(new ErrorGeneralResponse(e.getMessage()));
             e.printStackTrace();
         }
 
@@ -93,7 +93,7 @@ public class InteractiveAnalyticsEndpoint {
                 data
             ));
         } catch (AnalyticsException e) {
-            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+            jsonString = new Gson().toJson(new ErrorGeneralResponse(e.getMessage()));
             e.printStackTrace();
         }
 

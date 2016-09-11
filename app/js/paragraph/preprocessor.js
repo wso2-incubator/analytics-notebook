@@ -41,9 +41,15 @@ function PreprocessorParagraphClient(paragraph) {
             data: JSON.stringify({ tableName : tableName , featureList : features }),
             url: constants.API_URI + "preprocessor/preprocess",
             success: function (data) {
-                $.each(data, function (index, result) {
-                        console.log(result);
-                });
+                if (response.status == constants.response.SUCCESS) {
+                    $.each(data, function (index, result) {
+                            console.log(result);
+                    });
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    new ParagraphUtils().handleError(paragraph, data.message);
+                }
             }
         });
 
@@ -61,30 +67,36 @@ function PreprocessorParagraphClient(paragraph) {
         $.ajax({
             type: "GET",
             url : constants.API_URI + "tables/" + selectElement.val() + "/columns",
-            success: function (data) {
-                var headerArray = ["Attribute", "Include", "Type", "Impute"];
-                var tableData = [];
-                $.each(data, function (index, columnName) {
-                    var row = [
-                        "<span class='feature-name'>" + columnName + "</span>",
-                        "<input type='checkbox' class='feature-include' value='" + columnName + "'>",
-                        "<select class='form-control feature-type'>" +
-                            "<option value='NUMERICAL'>Numerical</option>" +
-                            "<option value='CATEGORICAL'>Categorical</option>" +
-                        "</select>",
-                        "<select class='form-control impute-option'>" +
-                            "<option value='DISCARD'>Discard</option>" +
-                            "<option value='REPLACE_WITH_MEAN'>Replace with mean</option>" +
-                        "</select>"
-                    ];
-                    tableData.push(row);
+            success: function (response) {
+                if (response.status == constants.response.SUCCESS) {
+                    var headerArray = ["Attribute", "Include", "Type", "Impute"];
+                    var tableData = [];
+                    $.each(response.columns, function (index, columnName) {
+                        var row = [
+                            "<span class='feature-name'>" + columnName + "</span>",
+                            "<input type='checkbox' class='feature-include' value='" + columnName + "'>",
+                            "<select class='form-control feature-type'>" +
+                                "<option value='NUMERICAL'>Numerical</option>" +
+                                "<option value='CATEGORICAL'>Categorical</option>" +
+                            "</select>",
+                            "<select class='form-control impute-option'>" +
+                                "<option value='DISCARD'>Discard</option>" +
+                                "<option value='REPLACE_WITH_MEAN'>Replace with mean</option>" +
+                            "</select>"
+                        ];
+                        tableData.push(row);
 
-                    if (index == data.length - 1) {
-                        paragraph.find(".preprocessor-table").html(
-                            new Utils().generateListTable(headerArray, tableData)
-                        );
-                    }
-                });
+                        if (index == response.columns.length - 1) {
+                            paragraph.find(".preprocessor-table").html(
+                                new Utils().generateListTable(headerArray, tableData)
+                            );
+                        }
+                    });
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    new ParagraphUtils().handleError(paragraph, response.message);
+                }
             }
         });
         selectElement.closest(".source").find(".preprocessor-table").fadeIn();

@@ -4,8 +4,8 @@ var constants = {
     PRODUCT_VERSION : "1.0-SNAPSHOT",
     response : {
         SUCCESS : "SUCCESS",
-        LOGIN_ERROR : "LOGIN_ERROR",
-        ERROR : "ERROR"
+        ERROR : "ERROR",
+        NOT_LOGGED_IN : "NOT_LOGGED_IN"
     },
     API_URI : "api/"
 };
@@ -156,12 +156,24 @@ function Utils() {
                     url : url,
                     data : JSON.stringify(queryParameters),
                     success : function(returnedData) {
-                        callback({
-                            draw : returnedData.draw,
-                            recordsTotal : returnedData.recordsCount,
-                            recordsFiltered : returnedData.recordsCount,
-                            data : returnedData.data
-                        })
+                        var options;
+                        if (returnedData.status == constants.response.SUCCESS) {
+                            options = {
+                                draw : returnedData.draw,
+                                recordsTotal : returnedData.recordsCount,
+                                recordsFiltered : returnedData.recordsCount,
+                                data : returnedData.data
+                            };
+                        } else  {
+                            options = {
+                                draw : data.draw,
+                                recordsTotal : 0,
+                                recordsFiltered : 0,
+                                data : [],
+                                error : returnedData.message
+                            };
+                        }
+                        callback(options)
                     }
                 });
             }

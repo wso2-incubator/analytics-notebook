@@ -5,7 +5,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.commons.request.dto.Feature;
-import org.wso2.carbon.notebook.commons.request.PreprocessorRequest;
+import org.wso2.carbon.notebook.commons.request.paragraph.PreprocessorRequest;
 import org.wso2.carbon.notebook.core.ml.DataSetPreprocessor;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 import javax.servlet.http.HttpServletRequest;

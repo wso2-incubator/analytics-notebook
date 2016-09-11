@@ -3,8 +3,9 @@ package org.wso2.carbon.notebook.api;
 import com.google.gson.Gson;
 import org.wso2.carbon.analytics.spark.core.exception.AnalyticsExecutionException;
 import org.wso2.carbon.analytics.spark.core.util.AnalyticsQueryResult;
-import org.wso2.carbon.notebook.commons.request.BatchAnalyticsRequest;
-import org.wso2.carbon.notebook.commons.response.ErrorResponse;
+import org.wso2.carbon.notebook.commons.request.paragraph.BatchAnalyticsRequest;
+import org.wso2.carbon.notebook.commons.response.ErrorGeneralResponse;
+import org.wso2.carbon.notebook.commons.response.paragraph.BatchAnalyticsGeneralResponse;
 import org.wso2.carbon.notebook.commons.response.dto.Table;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 
@@ -48,9 +49,11 @@ public class BatchAnalyticsEndpoint {
                 tables.add(new Table(result.getColumns(), result.getRows()));
             }
 
-            jsonString = new Gson().toJson(tables);
+            BatchAnalyticsGeneralResponse response = new BatchAnalyticsGeneralResponse();
+            response.setTables(tables);
+            jsonString = new Gson().toJson(response);
         } catch (AnalyticsExecutionException | RuntimeException e) {
-            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+            jsonString = new Gson().toJson(new ErrorGeneralResponse(e.getMessage()));
             e.printStackTrace();
         }
 

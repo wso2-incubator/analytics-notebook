@@ -1,6 +1,6 @@
 package org.wso2.carbon.notebook.commons.response.dto;
 
-import org.wso2.carbon.notebook.commons.response.Response;
+import org.wso2.carbon.notebook.commons.response.GeneralResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
  * Used for returning the result from a query execution
  */
 
-public class Table extends Response {
+public class Table extends GeneralResponse {
     private String[] columns;
     private List<List<Object>> data;
 

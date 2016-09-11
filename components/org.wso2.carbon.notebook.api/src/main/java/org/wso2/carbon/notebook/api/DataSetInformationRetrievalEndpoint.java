@@ -4,8 +4,10 @@ import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.notebook.commons.response.GeneralResponse;
+import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.dto.Column;
-import org.wso2.carbon.notebook.commons.response.ErrorResponse;
+import org.wso2.carbon.notebook.commons.response.ErrorGeneralResponse;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,12 +18,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
- * HTTP Response for data source information
+ * HTTP GeneralResponse for data source information
  */
 
 @Path("/tables")
@@ -36,11 +36,14 @@ public class DataSetInformationRetrievalEndpoint {
         String jsonString;
 
         try {
-            jsonString = new Gson().toJson(
-                    ServiceHolder.getAnalyticsDataService().listTables(MultitenantConstants.SUPER_TENANT_ID)
+            Map<String, Object> response = ResponseFactory.getCustomSuccessResponseObject();
+            response.put(
+                "tableNames",
+                ServiceHolder.getAnalyticsDataService().listTables(MultitenantConstants.SUPER_TENANT_ID)
             );
+            jsonString = new Gson().toJson(response);
         } catch (AnalyticsException e) {
-            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+            jsonString = new Gson().toJson(new ErrorGeneralResponse(e.getMessage()));
             e.printStackTrace();
         }
 
@@ -66,9 +69,12 @@ public class DataSetInformationRetrievalEndpoint {
             for (ColumnDefinition column : columns) {
                 columnNames.add(column.getName());
             }
-            jsonString = new Gson().toJson(columnNames);
+
+            Map<String, Object> response = ResponseFactory.getCustomSuccessResponseObject();
+            response.put("columnNames", columnNames);
+            jsonString = new Gson().toJson(response);
         } catch (AnalyticsException e) {
-            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+            jsonString = new Gson().toJson(new ErrorGeneralResponse(e.getMessage()));
             e.printStackTrace();
         }
 
@@ -90,15 +96,18 @@ public class DataSetInformationRetrievalEndpoint {
         String jsonString;
 
         try {
-            List<Column> columnResponses = new ArrayList<>();
+            List<Column> schema = new ArrayList<>();
             Collection<ColumnDefinition> columns = ServiceHolder.getAnalyticsDataService()
                     .getTableSchema(tenantID, tableName).getColumns().values();
             for (ColumnDefinition column : columns) {
-                columnResponses.add(new Column(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
+                schema.add(new Column(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
             }
-            jsonString = new Gson().toJson(columnResponses);
+
+            Map<String, Object> response = ResponseFactory.getCustomSuccessResponseObject();
+            response.put("schema", schema);
+            jsonString = new Gson().toJson(response);
         } catch (AnalyticsException e) {
-            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+            jsonString = new Gson().toJson(new ErrorGeneralResponse(e.getMessage()));
             e.printStackTrace();
         }
 

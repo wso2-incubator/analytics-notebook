@@ -29,20 +29,22 @@ function BatchAnalyticsParagraphClient(paragraph) {
             type: "POST",
             data: JSON.stringify({query: query.val()}),
             url: constants.API_URI + "batch-analytics/execute-script",
-            success: function (data) {
-                $.each(data, function (index, result) {
-                    if (result.status == constants.response.ERROR){
-                        output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> ERROR'+ result.message +'</p>'));
-                    } else {
+            success: function (response) {
+                if (response.status == constants.response.SUCCESS) {
+                    $.each(response.tables, function (index, result) {
                         if (result.columns.length == 0 || result.data.length == 0) {
                             output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> Executed. No results to show. </p>'));
                         } else {
                             output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong></p>'));
                             output.push(new Utils().generateDataTable(result.columns, result.data));
                         }
-                    }
-                });
-                callback(output);
+                    });
+                    callback(output);
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    new ParagraphUtils().handleError(paragraph, response.message);
+                }
             }
         });
     };
@@ -63,8 +65,61 @@ function BatchAnalyticsParagraphClient(paragraph) {
         }
         tempTableName = tempTable.val();
 
-        new ParagraphUtils().generateSparkQuery(tableName , tempTableName ,  function (createTempTableQuery) {
+        generateSparkQuery(tableName , tempTableName ,  function (createTempTableQuery) {
             textArea.val( textArea.val() + createTempTableQuery + "\n");
         });
+    }
+
+    /**
+     * Callback function for generate spark query
+     *
+     * @callback GenerateSparkQueryCallback
+     * @param Query {string}
+     */
+
+    /**
+     * Generate a spark query using the specified parameters
+     *
+     * @param tableName {string} The name of the table
+     * @param tempTableName {string} The name of the temp table into which the data will be loaded
+     * @param callback {GenerateSparkQueryCallback} The callback function into which the query will be passed after generating the query
+     */
+    function generateSparkQuery(tableName, tempTableName, callback) {
+        var schema = '';
+        $.ajax({
+            type: "GET",
+            url: constants.API_URI + "tables/" + tableName + "/schema",
+            success: function (response) {
+                if (response.status == constants.response.SUCCESS) {
+                    $.each(response.schema, function (index, column) {
+                        if (column.scoreParam == true) {
+                            schema += column.name + ' ' + column.type + ' -sp' + ', ';
+                        }
+                        else if (column.indexed == true) {
+                            schema += column.name + ' ' + column.type + ' -i' + ', ';
+                        }
+                        else {
+                            schema += column.name + ' ' + column.type + ', ';
+                        }
+                        if (index == response.schema.length - 1) {
+                            schema = schema.substring(0, schema.length - 2);
+                            var createTempTableQuery = 'CREATE TEMPORARY TABLE ' +
+                                tempTableName +
+                                ' USING CarbonAnalytics OPTIONS (tableName "' +
+                                tableName +
+                                '", schema "' +
+                                schema +
+                                '");';
+                            callback(createTempTableQuery);
+                        }
+                    });
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    new ParagraphUtils().handleError(paragraph, response.message);
+                }
+            }
+        });
+
     }
 }

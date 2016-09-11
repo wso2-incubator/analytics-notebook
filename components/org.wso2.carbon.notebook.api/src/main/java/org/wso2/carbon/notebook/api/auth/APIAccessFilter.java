@@ -1,7 +1,7 @@
 package org.wso2.carbon.notebook.api.auth;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.notebook.commons.response.ErrorResponse;
+import org.wso2.carbon.notebook.commons.response.ErrorGeneralResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
 
 import javax.servlet.*;
@@ -56,7 +56,8 @@ public class APIAccessFilter implements Filter {
         } else if (loggedIn || signInPageRequest || signUpPageRequest || signInRequest || signUpRequest) {
             filterChain.doFilter(request, response);
         } else if (apiRequest) {
-            response.getWriter().print(new Gson().toJson(new ErrorResponse(Status.NOT_LOGGED_IN, "Please login before accessing the API")));
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().print(new Gson().toJson(new ErrorGeneralResponse(Status.NOT_LOGGED_IN, "Please login first")));
         } else {
             // Generating the uri to redirect to after logging in
             String uri = currentURI.substring(request.getContextPath().length()) + (request.getQueryString() == null ? "" : "?" + request.getQueryString());

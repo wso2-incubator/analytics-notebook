@@ -30,23 +30,20 @@ function Authenticator() {
             username : $("#username").val(),
             password : $("#password").val()
         };
-        var setError = function(title, message) {
-            $("#error-msg").html(new Utils().generateAlert("error", title, message));
-        };
         if (credentials.username.length > 0 && credentials.password.length > 0) {
             $.ajax({
                 type: "POST",
                 url : constants.API_URI + "auth/sign-in",
                 data : JSON.stringify(credentials),
-                success : function(data) {
-                    if (data.status == constants.response.SUCCESS) {
+                success : function(response) {
+                    if (response.status == constants.response.SUCCESS) {
                         var redirectURI = new Utils().getQueryParameters().from;
                         if (redirectURI == undefined) {
                             redirectURI = "index.html";
                         }
                         window.location.href = redirectURI;
-                    } else if (data.status == constants.response.LOGIN_ERROR) {
-                        setError("Login Error !", "Invalid Credentials");
+                    } else if (response.status == constants.response.ERROR) {
+                        $("#error-msg").html(new Utils().generateAlert("error", "Login Error", response.message));
                     }
                 }
             });

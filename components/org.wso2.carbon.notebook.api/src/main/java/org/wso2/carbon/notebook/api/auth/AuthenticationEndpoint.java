@@ -3,9 +3,9 @@ package org.wso2.carbon.notebook.api.auth;
 import com.google.gson.Gson;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.notebook.commons.request.LoginRequest;
-import org.wso2.carbon.notebook.commons.response.ErrorResponse;
+import org.wso2.carbon.notebook.commons.response.ErrorGeneralResponse;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-import org.wso2.carbon.notebook.commons.response.Response;
+import org.wso2.carbon.notebook.commons.response.GeneralResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
@@ -46,9 +46,9 @@ public class AuthenticationEndpoint {
             session.setAttribute("username", tenantAwareUsername);
             session.setAttribute("tenantDomain", tenantDomain);
             session.setAttribute("tenantID", tenantID);
-            jsonString = new Gson().toJson(new Response(Status.SUCCESS));
+            jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
         } else {
-            jsonString = new Gson().toJson(new ErrorResponse("Invalid Credentials"));
+            jsonString = new Gson().toJson(new ErrorGeneralResponse("Invalid Credentials"));
         }
 
         return javax.ws.rs.core.Response.ok(jsonString, MediaType.APPLICATION_JSON).build();

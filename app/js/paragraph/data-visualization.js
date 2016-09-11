@@ -1,4 +1,4 @@
-/**
+/**ajax
  * Data visualization paragraph client prototype
  *
  * @param paragraph The paragraph in which the client resides in

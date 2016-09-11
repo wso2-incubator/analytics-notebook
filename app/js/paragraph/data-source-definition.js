@@ -46,13 +46,19 @@ function DataSourceDefinitionParagraphClient(paragraph) {
         $.ajax({
             type: type,
             url : constants.API_URI + url,
-            success: function(data) {
-                var tablesSelectElement = selectElement.closest(".source").find(".data-source-table");
-                tablesSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
-                $.each(data, function(index, table) {
-                    tablesSelectElement.append($("<option>" + table + "</option>"));
-                });
-                tablesSelectElement.parent().fadeIn();
+            success: function(response) {
+                if (response.status == constants.response.SUCCESS) {
+                    var tablesSelectElement = selectElement.closest(".source").find(".data-source-table");
+                    tablesSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
+                    $.each(response, function(index, table) {
+                        tablesSelectElement.append($("<option>" + table + "</option>"));
+                    });
+                    tablesSelectElement.parent().fadeIn();
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    new ParagraphUtils().handleError(paragraph, response.message);
+                }
             }
         });
     }
