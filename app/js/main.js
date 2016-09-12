@@ -5,7 +5,9 @@ var constants = {
     response : {
         SUCCESS : "SUCCESS",
         ERROR : "ERROR",
-        NOT_LOGGED_IN : "NOT_LOGGED_IN"
+        INVALID_QUERY : "INVALID_QUERY",
+        NOT_LOGGED_IN : "NOT_LOGGED_IN",
+        ALREADY_LOGGED_IN : "ALREADY_LOGGED_IN"
     },
     API_URI : "api/"
 };

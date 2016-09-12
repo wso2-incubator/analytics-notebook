@@ -36,7 +36,8 @@ function Authenticator() {
                 url : constants.API_URI + "auth/sign-in",
                 data : JSON.stringify(credentials),
                 success : function(response) {
-                    if (response.status == constants.response.SUCCESS) {
+                    if (response.status == constants.response.SUCCESS ||
+                        response.status == constants.response.ALREADY_LOGGED_IN) {
                         var redirectURI = new Utils().getQueryParameters().from;
                         if (redirectURI == undefined) {
                             redirectURI = "index.html";

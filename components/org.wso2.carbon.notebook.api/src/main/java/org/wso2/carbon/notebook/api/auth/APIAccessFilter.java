@@ -1,7 +1,7 @@
 package org.wso2.carbon.notebook.api.auth;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.notebook.commons.response.ErrorGeneralResponse;
+import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
 
 import javax.servlet.*;
@@ -51,13 +51,16 @@ public class APIAccessFilter implements Filter {
         boolean signUpRequest = currentURI.equals(signUpURI);
         boolean apiRequest = currentURI.substring(0, 13).equals(apiRequestURIPrefix);
 
-        if (loggedIn && (signInPageRequest || signUpPageRequest || signInRequest || signUpRequest)) {
+        if (loggedIn && (signInPageRequest || signUpPageRequest)) {
             response.sendRedirect(homePageURI);
+        } else if (loggedIn && (signInRequest || signUpRequest)) {
+            response.setHeader("Content-Type", "application/json");
+            response.getWriter().print(new Gson().toJson(new ErrorResponse(Status.ALREADY_LOGGED_IN, "You have already logged in")));
         } else if (loggedIn || signInPageRequest || signUpPageRequest || signInRequest || signUpRequest) {
             filterChain.doFilter(request, response);
         } else if (apiRequest) {
             response.setHeader("Content-Type", "application/json");
-            response.getWriter().print(new Gson().toJson(new ErrorGeneralResponse(Status.NOT_LOGGED_IN, "Please login first")));
+            response.getWriter().print(new Gson().toJson(new ErrorResponse(Status.NOT_LOGGED_IN, "Please login first")));
         } else {
             // Generating the uri to redirect to after logging in
             String uri = currentURI.substring(request.getContextPath().length()) + (request.getQueryString() == null ? "" : "?" + request.getQueryString());

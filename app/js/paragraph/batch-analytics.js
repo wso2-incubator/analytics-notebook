@@ -16,8 +16,8 @@ function BatchAnalyticsParagraphClient(paragraph) {
         });
 
         paragraph.find(".input-table").change(function (){
-            var button = paragraph.find(".add-table-button");
-            button.prop('disabled' , false);
+            paragraph.find(".add-table-button").prop('disabled' , false);
+            paragraph.find(".temporary-table").val("");
         });
     };
 
@@ -30,21 +30,23 @@ function BatchAnalyticsParagraphClient(paragraph) {
             data: JSON.stringify({query: query.val()}),
             url: constants.API_URI + "batch-analytics/execute-script",
             success: function (response) {
-                if (response.status == constants.response.SUCCESS) {
-                    $.each(response.tables, function (index, result) {
-                        if (result.columns.length == 0 || result.data.length == 0) {
-                            output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> Executed. No results to show. </p>'));
+                $.each(response.tables, function (index, result) {
+                    if (response.status == constants.response.SUCCESS) {
+                        if (result.status == constants.response.INVALID_QUERY){
+                            output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> ERROR'+ result.message +'</p>'));
                         } else {
-                            output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong></p>'));
-                            output.push(new Utils().generateDataTable(result.columns, result.data));
+                            if (result.columns.length == 0 || result.data.length == 0) {
+                                output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> Executed. No results to show. </p>'));
+                            } else {
+                                output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong></p>'));
+                                output.push(new Utils().generateDataTable(result.columns, result.data));
+                            }
                         }
-                    });
-                    callback(output);
-                } else if (response.status == constants.response.NOT_LOGGED_IN) {
-                    window.location.href = "sign-in.html";
-                } else {
-                    new ParagraphUtils().handleError(paragraph, response.message);
-                }
+                    } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                        window.location.href = "sign-in.html";
+                    }
+                });
+                callback(output);
             }
         });
     };

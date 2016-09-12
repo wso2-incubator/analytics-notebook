@@ -34,7 +34,7 @@ public class EventReceiverInformationRetrievalEndpoint {
             eventReceiverNames.add(eventReceiverConfiguration.getEventReceiverName());
         }
 
-        Map<String, Object> response = ResponseFactory.getCustomSuccessResponseObject();
+        Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
         response.put("eventReceiverNames", eventReceiverNames);
         jsonString = new Gson().toJson(response);
 

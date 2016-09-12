@@ -71,7 +71,7 @@ function PreprocessorParagraphClient(paragraph) {
                 if (response.status == constants.response.SUCCESS) {
                     var headerArray = ["Attribute", "Include", "Type", "Impute"];
                     var tableData = [];
-                    $.each(response.columns, function (index, columnName) {
+                    $.each(response.columnNames, function (index, columnName) {
                         var row = [
                             "<span class='feature-name'>" + columnName + "</span>",
                             "<input type='checkbox' class='feature-include' value='" + columnName + "'>",
@@ -86,7 +86,7 @@ function PreprocessorParagraphClient(paragraph) {
                         ];
                         tableData.push(row);
 
-                        if (index == response.columns.length - 1) {
+                        if (index == response.columnNames.length - 1) {
                             paragraph.find(".preprocessor-table").html(
                                 new Utils().generateListTable(headerArray, tableData)
                             );
