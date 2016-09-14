@@ -2,9 +2,10 @@ package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.notebook.commons.response.paragraph.DataExploreGeneralResponse;
+import org.wso2.carbon.notebook.commons.response.paragraph.DataExploreResponse;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.core.MLDataHolder;
+import org.wso2.carbon.notebook.core.util.paragraph.DataExploreUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -29,10 +30,11 @@ public class DataExploreEndpoint {
         String jsonString;
 
         try {
-            jsonString = new Gson().toJson(new DataExploreGeneralResponse(
+            DataExploreUtils dataExploreUtils = new DataExploreUtils(tableName, tenantID);
+            jsonString = new Gson().toJson(new DataExploreResponse(
                 MLDataHolder.getSamplePoints(tableName, tenantID),
-                null,
-                null
+                dataExploreUtils.getCategoricalFeatureNames(),
+                dataExploreUtils.getNumercalFeatureNames()
             ));
         } catch (MLMalformedDatasetException e) {
             jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));

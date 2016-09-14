@@ -6,24 +6,24 @@ import org.wso2.carbon.notebook.commons.response.Status;
 
 import java.util.List;
 
-public class DataExploreGeneralResponse extends GeneralResponse {
-    private SamplePoints samplePoints;
+public class DataExploreResponse extends GeneralResponse {
+    private SamplePoints sample;
     private List<String> categoricalFeatureNames;
     private List<String> numericalFeatureNames;
 
-    public DataExploreGeneralResponse(SamplePoints samplePoints, List<String> categoricalFeatureNames, List<String> numericalFeatureNames) {
+    public DataExploreResponse(SamplePoints sample, List<String> categoricalFeatureNames, List<String> numericalFeatureNames) {
         super(Status.SUCCESS);
-        this.samplePoints = samplePoints;
+        this.sample = sample;
         this.categoricalFeatureNames = categoricalFeatureNames;
         this.numericalFeatureNames = numericalFeatureNames;
     }
 
-    public SamplePoints getSamplePoints() {
-        return samplePoints;
+    public SamplePoints getSample() {
+        return sample;
     }
 
-    public void setSamplePoints(SamplePoints samplePoints) {
-        this.samplePoints = samplePoints;
+    public void setSample(SamplePoints sample) {
+        this.sample = sample;
     }
 
     public List<String> getCategoricalFeatureNames() {

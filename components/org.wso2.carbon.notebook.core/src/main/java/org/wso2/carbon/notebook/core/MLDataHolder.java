@@ -18,7 +18,8 @@ public class MLDataHolder {
         MLDataHolderKey key = new MLDataHolderKey(tableName, tenantID);
         SamplePoints samplePoints = samplePointsMap.get(key);
         if (samplePoints == null && !samplePointsMap.containsKey(key)) {
-            MLUtils.getSampleFromDAS(tableName, tenantID, SAMPLE_SIZE);
+            samplePoints = MLUtils.getSampleFromDAS(tableName, SAMPLE_SIZE, tenantID);
+            samplePointsMap.put(key, samplePoints);
         }
         return samplePoints;
     }
