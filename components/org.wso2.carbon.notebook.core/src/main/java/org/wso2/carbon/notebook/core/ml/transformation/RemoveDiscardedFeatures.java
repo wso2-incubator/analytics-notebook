@@ -1,7 +1,7 @@
 package org.wso2.carbon.notebook.core.ml.transformation;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.notebook.commons.request.dto.Feature;
+import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * This class removes columns with discarded features and also will restructure the columns such that the response
  * column is the last column.
  */
-public class RemoveDiscardedFeatures implements Function< String[], String[]> {
+public class RemoveDiscardedFeatures implements Function<String[], String[]> {
 
     private final List<Integer> newToOldIndicesList;
 

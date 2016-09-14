@@ -21,9 +21,9 @@ function DataExploreParagraphClient(paragraph, id) {
         new ParagraphUtils().loadTableNames(paragraph);
     };
 
-    self.run = function(callback) {
+    self.run = function (callback) {
         // Loading the chart into the output view
-        callback($("<div>").load("output-view-templates/data-explore.html", function() {
+        callback($("<div>").load("output-view-templates/data-explore.html", function () {
             // Generating ids for tabs
             var chartClasses = ["scatter-plot", "parallel-sets", "trellis-chart", "cluster-diagram"];
             for (var i = 0; i < chartClasses.length; i++) {
@@ -34,19 +34,19 @@ function DataExploreParagraphClient(paragraph, id) {
             }
 
             // Setting event listeners for redrawing charts upon changes in selections
-            paragraph.find("select[class='scatter-x'], select[class='scatter-y'], select[class='scatter-group']").change(function() {
+            paragraph.find("select[class='scatter-x'], select[class='scatter-y'], select[class='scatter-group']").change(function () {
                 paragraph.find(".scatter").html("Loading chart...");
                 drawPlotsAjax();
             });
-            paragraph.find("input[class='categoricalFeatureNames']").change(function() {
+            paragraph.find("input[class='categoricalFeatureNames']").change(function () {
                 paragraph.find(".parallelSets").html("Loading chart...");
                 drawParallelSets();
             });
-            paragraph.find("input[class='numericalFeatureNames'], select[class='trellis-cat-features']").change(function() {
+            paragraph.find("input[class='numericalFeatureNames'], select[class='trellis-cat-features']").change(function () {
                 paragraph.find(".trellisChart").html("Loading chart...");
                 drawTrellisChart();
             });
-            paragraph.find("select[class='cluster-independent'], select[class='cluster-dependent'], select[class='cluster-num-clusters']").change(function() {
+            paragraph.find("select[class='cluster-independent'], select[class='cluster-dependent'], select[class='cluster-num-clusters']").change(function () {
                 paragraph.find(".clusterDiagram").html("Loading chart...");
                 drawClusterDiagram();
             });
@@ -56,32 +56,32 @@ function DataExploreParagraphClient(paragraph, id) {
             clusterMarkerSize = paragraph.find('.cluster-marker-size-input').val();
 
             // Binding events to chart links
-            paragraph.find('.scatter-plot-link').click(function(e) {
+            paragraph.find('.scatter-plot-link').click(function (e) {
                 e.preventDefault();
                 drawScatterPlotBase();
             });
-            paragraph.find('.parallel-sets-link').click(function(e) {
+            paragraph.find('.parallel-sets-link').click(function (e) {
                 e.preventDefault();
                 drawParallelSetsBase();
             });
-            paragraph.find('.trellis-chart-link').click(function(e) {
+            paragraph.find('.trellis-chart-link').click(function (e) {
                 e.preventDefault();
                 drawTrellisChartBase();
             });
-            paragraph.find('.cluster-diagram-link').click(function(e) {
+            paragraph.find('.cluster-diagram-link').click(function (e) {
                 e.preventDefault();
                 drawClusterDiagramBase();
             });
 
             // Disabling tabs
-            paragraph.find(".wr-tabs-grphs > li").click(function() {
+            paragraph.find(".wr-tabs-grphs > li").click(function () {
                 if ($(this).hasClass("disabled")) {
                     return false;
                 }
             });
 
             // Event listeners for chart marker size changes
-            paragraph.find(".scatter-marker-size").on("click", function(e) {
+            paragraph.find(".scatter-marker-size").on("click", function (e) {
                 e.preventDefault();
                 var $button = $(this);
                 var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
@@ -103,7 +103,7 @@ function DataExploreParagraphClient(paragraph, id) {
                 drawPlotsAjax();
             });
 
-            paragraph.find(".trellis-marker-size").on("click", function(e) {
+            paragraph.find(".trellis-marker-size").on("click", function (e) {
                 e.preventDefault();
                 var $button = $(this);
                 var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
@@ -125,7 +125,7 @@ function DataExploreParagraphClient(paragraph, id) {
                 drawTrellisChart();
             });
 
-            paragraph.find(".cluster-marker-size").on("click", function(e) {
+            paragraph.find(".cluster-marker-size").on("click", function (e) {
                 e.preventDefault();
                 var $button = $(this);
                 var oldValue = $button.closest('.sp-quantity').find("input.quntity-input").val();
@@ -153,7 +153,7 @@ function DataExploreParagraphClient(paragraph, id) {
             $.ajax({
                 type: "GET",
                 url: constants.API_URI + "data-explore/sample?table-name=" + tableName + "&sample-size=" + sampleSize,
-                success: function(data) {
+                success: function (data) {
                     sampledData = data;
 
                     // Disable tabs based on the features
@@ -204,14 +204,14 @@ function DataExploreParagraphClient(paragraph, id) {
     function drawScatterPlotBase() {
         if (numericalFeatureNames.length > 1 && categoricalFeatureNames.length > 0) {
             paragraph.find('.scatter-x, .scatter-y, .scatter-group').empty();
-            $.each(numericalFeatureNames, function(index, feature) {
+            $.each(numericalFeatureNames, function (index, feature) {
                 paragraph.find('.scatter-x, .scatter-y').append($('<option>', {
                     value: sanitize(feature),
                     text: sanitize(feature)
                 }));
             });
             paragraph.find('.scatter-y option')[1].selected = true;
-            $.each(categoricalFeatureNames, function(index, feature) {
+            $.each(categoricalFeatureNames, function (index, feature) {
                 paragraph.find('.scatter-group').append($('<option>', {
                     value: sanitize(feature),
                     text: sanitize(feature)
@@ -242,7 +242,7 @@ function DataExploreParagraphClient(paragraph, id) {
             url: constants.API_URI + "/data-explorer/scatter-plot",
             data: jsonData,
             async: false,
-            success: function(data) {
+            success: function (data) {
                 // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
                 var scatterData = [];
                 for (var i = 0; i < data.length; i++) {
@@ -269,7 +269,7 @@ function DataExploreParagraphClient(paragraph, id) {
             type: "GET",
             url: constants.API_URI + "/api/analyses/" + analysisId + "/stats?feature=" + numFeatureIndependent,
             async: false,
-            success: function(res) {
+            success: function (res) {
                 var jsonObj = res;
                 var summary = "Mean: " + jsonObj[0].mean + "&emsp;&emsp;&emsp;  Median: " + jsonObj[0].median + "<br><br>Std: " + jsonObj[0].std + "&emsp;&emsp;&emsp; Skewness: " + jsonObj[0].skewness;
                 paragraph.find(".histogramIndependentTitle").html(numFeatureIndependent);
@@ -287,7 +287,7 @@ function DataExploreParagraphClient(paragraph, id) {
             },
             url: constants.API_URI + "/api/analyses/" + analysisId + "/stats?feature=" + numFeatureDependent,
             async: false,
-            success: function(res) {
+            success: function (res) {
                 var jsonObj = res;
                 var summary = "Mean: " + jsonObj[0].mean + "&emsp;&emsp;&emsp; Median: " + jsonObj[0].median + "<br><br>Std: " + jsonObj[0].std + "&emsp;&emsp;&emsp; Skewness: " + jsonObj[0].skewness;
                 paragraph.find(".histogramDependentTitle").html(numFeatureDependent);
@@ -300,7 +300,7 @@ function DataExploreParagraphClient(paragraph, id) {
     function drawHistogram(data, divID) {
         $(divID + ' svg').empty();
 
-        nv.addGraph(function() {
+        nv.addGraph(function () {
             var chart = nv.models.linePlusBarChart()
                 .margin({
                     top: 30,
@@ -308,17 +308,17 @@ function DataExploreParagraphClient(paragraph, id) {
                     bottom: 50,
                     left: 70
                 })
-                .x(function(d, i) {
+                .x(function (d, i) {
                     return i
                 })
-                .y(function(d) {
+                .y(function (d) {
                     return d[1]
                 })
                 .color(["#f16c20"]);
 
             chart.xAxis
                 .showMaxMin(false)
-                .tickFormat(function(d) {
+                .tickFormat(function (d) {
                     return data[0].values[d][0];
                 });
 
@@ -326,7 +326,7 @@ function DataExploreParagraphClient(paragraph, id) {
                 .tickFormat(d3.format(',f'));
 
             chart.y2Axis
-                .tickFormat(function(d) {
+                .tickFormat(function (d) {
                     return '$' + d3.format(',f')(d)
                 });
 
@@ -345,7 +345,7 @@ function DataExploreParagraphClient(paragraph, id) {
 
     function drawParallelSetsBase() {
         paragraph.find('.parallel-sets-features').empty();
-        $.each(categoricalFeatureNames, function(index, feature) {
+        $.each(categoricalFeatureNames, function (index, feature) {
             if (index < 4) {
                 paragraph.find('.parallel-sets-features').append("<label class='checkbox'><input type='checkbox' class='categoricalFeatureNames' id='inlineCheckbox1' value='" + categoricalFeatureNames[index].trim().replace(/"/g, "\\\"") + "' checked>" + categoricalFeatureNames[index] + "</label>");
             } else {
@@ -358,7 +358,7 @@ function DataExploreParagraphClient(paragraph, id) {
     function drawParallelSets() {
         // get categorical feature list from checkbox selection
         var catFeaturesDropdownValues = [];
-        paragraph.find('.categoricalFeatureNames:checked').each(function() {
+        paragraph.find('.categoricalFeatureNames:checked').each(function () {
             catFeaturesDropdownValues.push($(this).val().replace(/^\s+|\s+$/g, '').replace(/\\"/g, '"'));
         });
 
@@ -369,7 +369,7 @@ function DataExploreParagraphClient(paragraph, id) {
                 type: "GET",
                 url: constants.API_URI + "/api/datasets/" + datasetId + "/charts?features=" + catFeaturesDropdownValues.toString(),
                 async: false,
-                success: function(res) {
+                success: function (res) {
                     var categoricalFeatureArray = [catFeaturesDropdownValues.length];
                     for (var i = 0; i < noOfCategoricalFeatures; i++) {
                         categoricalFeatureArray[i] = catFeaturesDropdownValues[i];
@@ -391,7 +391,7 @@ function DataExploreParagraphClient(paragraph, id) {
     function drawTrellisChartBase() {
         if (categoricalFeatureNames.length > 0 && numericalFeatureNames.length > 0) {
             paragraph.find('#trellis-cat-features').empty();
-            $.each(categoricalFeatureNames, function(index, feature) {
+            $.each(categoricalFeatureNames, function (index, feature) {
                 $('#trellis-cat-features').append($('<option>', {
                     value: sanitize(feature).trim().replace(/"/g, "\\\""),
                     text: sanitize(feature)
@@ -399,7 +399,7 @@ function DataExploreParagraphClient(paragraph, id) {
             });
 
             $('#trellis-num-features').empty();
-            $.each(numericalFeatureNames, function(index, feature) {
+            $.each(numericalFeatureNames, function (index, feature) {
                 // first 4 categorical features are plotted by default
                 if (index < 4) {
                     paragraph.find('.trellis-num-features').append("<label class='checkbox'><input type='checkbox' class='numericalFeatureNames' value='" + numericalFeatureNames[index].trim().replace(/"/g, "\\\"") + "' checked>" + numericalFeatureNames[index] + "</label>");
@@ -417,7 +417,7 @@ function DataExploreParagraphClient(paragraph, id) {
         var categoricalHeader = paragraph.find(".trellis-cat-features").val().replace(/^\s+|\s+$/g, '');
         featureNames[0] = categoricalHeader.replace(/\\"/g, '"');
         // get numerical feature list from checkbox selection
-        paragraph.find('.numericalFeatureNames:checked').each(function() {
+        paragraph.find('.numericalFeatureNames:checked').each(function () {
             featureNames.push($(this).val().replace(/^\s+|\s+$/g, '').replace(/\\"/g, '"'));
         });
 
@@ -425,7 +425,7 @@ function DataExploreParagraphClient(paragraph, id) {
             type: "GET",
             url: constants.API_URI + "/api/datasets/" + datasetId + "/charts?features=" + featureNames.toString(),
             async: false,
-            success: function(res) {
+            success: function (res) {
                 /* D3.js Trellis Chart code */
                 var width = 960,
                     size = 155,
@@ -440,13 +440,13 @@ function DataExploreParagraphClient(paragraph, id) {
 
                 var domainByTrait = {},
                     traits = d3.keys(data[0]).filter(
-                        function(d) {
+                        function (d) {
                             return d !== categoricalHeader;
                         }),
                     n = traits.length;
 
-                traits.forEach(function(trait) {
-                    domainByTrait[trait] = d3.extent(data, function(d) {
+                traits.forEach(function (trait) {
+                    domainByTrait[trait] = d3.extent(data, function (d) {
                         return d[trait];
                     });
                 });
@@ -464,17 +464,17 @@ function DataExploreParagraphClient(paragraph, id) {
                         "translate(" + padding + "," + padding / 2 + ")");
 
                 svg.selectAll(".x.axis").data(traits).enter().append("g").attr(
-                    "class", "x axis").attr("transform", function(d, i) {
+                    "class", "x axis").attr("transform", function (d, i) {
                     return "translate(" + (n - i - 1) * size + ",0)";
-                }).each(function(d) {
+                }).each(function (d) {
                     x.domain(domainByTrait[d]);
                     d3.select(this).call(xAxis);
                 });
 
                 svg.selectAll(".y.axis").data(traits).enter().append("g").attr(
-                    "class", "y axis").attr("transform", function(d, i) {
+                    "class", "y axis").attr("transform", function (d, i) {
                     return "translate(0," + i * size + ")";
-                }).each(function(d) {
+                }).each(function (d) {
                     y.domain(domainByTrait[d]);
                     d3.select(this).call(yAxis);
                 });
@@ -482,15 +482,15 @@ function DataExploreParagraphClient(paragraph, id) {
                 var cell = svg.selectAll(".cell").data(cross(traits, traits))
                     .enter().append("g").attr("class", "cell").attr(
                         "transform",
-                        function(d) {
+                        function (d) {
                             return "translate(" + (n - d.i - 1) * size + "," + d.j * size + ")";
                         }).each(plot);
 
                 // Titles for the diagonal
-                cell.filter(function(d) {
+                cell.filter(function (d) {
                     return d.i === d.j;
                 }).append("text").attr("x", padding).attr("y", padding).attr("dy",
-                    ".71em").text(function(d) {
+                    ".71em").text(function (d) {
                     return d.x;
                 });
 
@@ -507,11 +507,11 @@ function DataExploreParagraphClient(paragraph, id) {
                         size - padding).attr("height", size - padding);
 
                     cell.selectAll("circle").data(data).enter().append("circle")
-                        .attr("cx", function(d) {
+                        .attr("cx", function (d) {
                             return x(d[p.x]);
-                        }).attr("cy", function(d) {
+                        }).attr("cy", function (d) {
                         return y(d[p.y]);
-                    }).attr("r", trellisMarkerSize).style("fill", function(d) {
+                    }).attr("r", trellisMarkerSize).style("fill", function (d) {
                         // replace current header of categorical feature header with common header
                         // can be accessed by color
                         var dString = JSON.stringify(d);
@@ -520,6 +520,7 @@ function DataExploreParagraphClient(paragraph, id) {
                         return color(dNew.categoricalFeature);
                     });
                 }
+
                 var brushCell;
 
                 // Clear the previously-active brush, if any.
@@ -537,7 +538,7 @@ function DataExploreParagraphClient(paragraph, id) {
                     var e = brush.extent();
                     svg.selectAll("circle").classed(
                         "hidden",
-                        function(d) {
+                        function (d) {
                             return e[0][0] > d[p.x] || d[p.x] > e[1][0] || e[0][1] > d[p.y] || d[p.y] > e[1][1];
                         });
                 }
@@ -573,7 +574,7 @@ function DataExploreParagraphClient(paragraph, id) {
     function drawClusterDiagramBase() {
         if (numericalFeatureNames.length > 1) {
             paragraph.find('.cluster-independent, .cluster-dependent').empty();
-            $.each(numericalFeatureNames, function(index, feature) {
+            $.each(numericalFeatureNames, function (index, feature) {
                 paragraph.find('.cluster-independent, #cluster-dependent').append($('<option>', {
                     value: sanitize(feature),
                     text: sanitize(feature)
@@ -599,7 +600,7 @@ function DataExploreParagraphClient(paragraph, id) {
         $.ajax({
             type: "GET",
             url: constants.API_URI + "/api/datasets/" + datasetId + "/cluster?features=" + numericalFeatureIndependent + "," + numericalFeatureDependent + "&noOfClusters=" + noOfClusters,
-            success: function(response) {
+            success: function (response) {
                 var dataArray = response;
                 // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
                 var clusterData = [];

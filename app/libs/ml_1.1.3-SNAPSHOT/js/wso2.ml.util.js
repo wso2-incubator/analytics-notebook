@@ -45,7 +45,7 @@ function buildNotification(message, notificationType) {
 }
 
 /* pagination plugin */
-$.fn.pageMe = function(opts) {
+$.fn.pageMe = function (opts) {
     var $this = this,
         defaults = {
             perPage: 7,
@@ -103,16 +103,16 @@ $.fn.pageMe = function(opts) {
     children.hide();
     children.slice(0, perPage).show();
 
-    pager.find('li .page_link').click(function() {
+    pager.find('li .page_link').click(function () {
         var clickedPage = $(this).html().valueOf() - 1;
         goTo(clickedPage, perPage);
         return false;
     });
-    pager.find('li .prev_link').click(function() {
+    pager.find('li .prev_link').click(function () {
         previous();
         return false;
     });
-    pager.find('li .next_link').click(function() {
+    pager.find('li .next_link').click(function () {
         next();
         return false;
     });
@@ -187,9 +187,9 @@ function sanitize(html) {
 
 // fix for vibrate issue on navfix
 /*function scrollVibrateFix() {
-    if (($(document).height() > $('body').height()) && (($(document).height() - $('body').height()) < 100)) {
-        $('body > .container').css('padding-bottom', ($('#nav').height() + $('header').height()));
-    } else {
-        $('body > .container').css('padding-bottom', $('#nav').height() + 15);
-    }
-}*/
+ if (($(document).height() > $('body').height()) && (($(document).height() - $('body').height()) < 100)) {
+ $('body > .container').css('padding-bottom', ($('#nav').height() + $('header').height()));
+ } else {
+ $('body > .container').css('padding-bottom', $('#nav').height() + 15);
+ }
+ }*/

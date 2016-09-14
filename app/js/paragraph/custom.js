@@ -11,7 +11,7 @@ function CustomParagraphClient(paragraph) {
         // TODO : initialize paragraph
     };
 
-    self.run = function(callback) {
+    self.run = function (callback) {
         // TODO : run custom paragraph
         callback("Test");
     };

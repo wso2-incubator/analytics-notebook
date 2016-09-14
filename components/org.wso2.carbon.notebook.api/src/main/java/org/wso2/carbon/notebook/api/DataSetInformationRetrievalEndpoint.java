@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.dto.Column;
-import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +17,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * HTTP GeneralResponse for data source information
@@ -37,8 +40,8 @@ public class DataSetInformationRetrievalEndpoint {
         try {
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
             response.put(
-                "tableNames",
-                ServiceHolder.getAnalyticsDataService().listTables(MultitenantConstants.SUPER_TENANT_ID)
+                    "tableNames",
+                    ServiceHolder.getAnalyticsDataService().listTables(MultitenantConstants.SUPER_TENANT_ID)
             );
             jsonString = new Gson().toJson(response);
         } catch (AnalyticsException e) {

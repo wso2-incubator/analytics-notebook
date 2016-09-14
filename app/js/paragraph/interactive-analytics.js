@@ -17,22 +17,22 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             paragraph.find(".search-by-container").fadeIn();
         });
 
-        paragraph.find(".search-by-time-range").click(function(event) {
+        paragraph.find(".search-by-time-range").click(function (event) {
             var sourceView = $(event.target).closest(".source");
             var dateRangeContainer = sourceView.find(".time-range-container");
             var queryContainer = sourceView.find(".query-container");
 
-            queryContainer.fadeOut(function() {
+            queryContainer.fadeOut(function () {
                 dateRangeContainer.fadeIn();
             });
         });
 
-        paragraph.find(".search-by-query").click(function(event) {
+        paragraph.find(".search-by-query").click(function (event) {
             var sourceView = $(event.target).closest(".source");
             var dateRangeContainer = sourceView.find(".time-range-container");
             var queryContainer = sourceView.find(".query-container");
 
-            dateRangeContainer.fadeOut(function() {
+            dateRangeContainer.fadeOut(function () {
                 queryContainer.fadeIn();
             });
         });
@@ -42,26 +42,26 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
 
         // Adding the date pickers
         paragraph.find(".time-range").daterangepicker({
-            timePicker : true,
-            autoApply : true,
-            timePicker24Hour : true
-        }, function(start, end, label) {
+            timePicker: true,
+            autoApply: true,
+            timePicker24Hour: true
+        }, function (start, end, label) {
             timeFrom = start.format('MM/DD/YYYY hh:mm:ss').getTime();
             timeTo = end.format('MM/DD/YYYY hh:mm:ss').getTime();
         });
     };
 
-    self.run = function(callback) {
+    self.run = function (callback) {
         var tableName = paragraph.find(".input-table").val();
         $.ajax({
             type: "GET",
-            url : constants.API_URI + "tables/" + tableName + "/columns",
-            success: function(response) {
+            url: constants.API_URI + "tables/" + tableName + "/columns",
+            success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     var columns = response.columnNames;
                     var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
                     var queryParameters = {
-                        tableName : tableName
+                        tableName: tableName
                     };
                     if (searchMethod == "query") {
                         queryParameters.query = paragraph.find(".query").val();

@@ -8,14 +8,15 @@ import org.wso2.carbon.event.receiver.core.EventReceiverService;
 import org.wso2.carbon.identity.authentication.AuthenticationService;
 
 /**
-* For holding services for the notebook
-*/
+ * For holding services for the notebook
+ */
 public class ServiceHolder {
     private static AuthenticationService authenticationService;
     private static AnalyticsDataService analyticsDataService;
     private static EventReceiverService eventReceiverService;
     private static AnalyticsProcessorService analyticsProcessorService;
     private static SparkContextService sparkContextService;
+
     private ServiceHolder() {
 
     }

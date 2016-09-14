@@ -12,11 +12,11 @@ function EventReceiverDefinitionParagraphClient(paragraph) {
         var eventReceiverSelectElement = $(paragraph).find(".event-receiver-name");
         $.ajax({
             type: "GET",
-            url : constants.API_URI + "event-receivers",
-            success: function(response) {
+            url: constants.API_URI + "event-receivers",
+            success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     eventReceiverSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
-                    $.each(response.eventReceiverNames, function(index, eventReceiver) {
+                    $.each(response.eventReceiverNames, function (index, eventReceiver) {
                         eventReceiverSelectElement.append($("<option>" + eventReceiver + "</option>"));
                     });
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
@@ -28,7 +28,7 @@ function EventReceiverDefinitionParagraphClient(paragraph) {
         });
     };
 
-    self.run = function(callback) {
+    self.run = function (callback) {
         // TODO : run data visualization paragraph
         callback();
     };

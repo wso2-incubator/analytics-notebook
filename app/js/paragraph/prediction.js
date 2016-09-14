@@ -9,12 +9,12 @@ function PredictionParagraphClient(paragraph) {
 
     self.initialize = function () {
         // Adding event listeners
-        paragraph.find(".input-model").focusin(function() {
-            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target) ,'model');
+        paragraph.find(".input-model").focusin(function () {
+            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target), 'model');
         });
     };
 
-    self.run = function(callback) {
+    self.run = function (callback) {
         // TODO : run prediction paragraph
         callback("Test");
     };

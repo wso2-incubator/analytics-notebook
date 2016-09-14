@@ -9,12 +9,12 @@ function RealTimeAnalyticsParagraphClient(paragraph) {
 
     self.initialize = function () {
         // Adding event listeners
-        paragraph.find(".input-table").focusin(function() {
-            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target) ,'stream');
+        paragraph.find(".input-table").focusin(function () {
+            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target), 'stream');
         });
     };
 
-    self.run = function(callback) {
+    self.run = function (callback) {
         // TODO : run real time analytics paragraph
         callback("Test");
     };

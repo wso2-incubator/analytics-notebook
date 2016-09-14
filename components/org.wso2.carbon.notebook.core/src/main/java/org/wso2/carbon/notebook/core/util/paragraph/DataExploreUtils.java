@@ -1,12 +1,5 @@
 package org.wso2.carbon.notebook.core.util.paragraph;
 
-import org.apache.commons.lang.math.NumberUtils;
-import org.wso2.carbon.ml.commons.domain.SamplePoints;
-import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.notebook.core.util.MLUtils;
-
-import java.util.*;
-
 /**
  * Data explorer utility functions for the notebook
  */

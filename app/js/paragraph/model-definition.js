@@ -7,14 +7,14 @@
 function ModelDefinitionParagraphClient(paragraph) {
     var self = this;
 
-    self.initialize = function() {
+    self.initialize = function () {
         // Adding event listeners
-        paragraph.find(".input-table").focusin(function() {
-            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target) ,'table');
+        paragraph.find(".input-table").focusin(function () {
+            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target), 'table');
         });
     };
 
-    self.run = function(callback) {
+    self.run = function (callback) {
         // TODO : run mode definition paragraph
         callback();
     };

@@ -9,20 +9,20 @@ function DataSourceDefinitionParagraphClient(paragraph) {
 
     self.initialize = function () {
         // Adding event listeners
-        paragraph.find(".data-source-type").change(function() {
+        paragraph.find(".data-source-type").change(function () {
             onTypeSelect();
         });
 
-        paragraph.find(".data-source-table").change(function() {
+        paragraph.find(".data-source-table").change(function () {
             onTableChange();
         });
 
-        paragraph.find(".output-table").keyup(function() {
+        paragraph.find(".output-table").keyup(function () {
             onOutputTableKeyUp();
         });
     };
 
-    self.run = function(callback) {
+    self.run = function (callback) {
         // TODO : run data source definition paragraph
     };
 
@@ -45,12 +45,12 @@ function DataSourceDefinitionParagraphClient(paragraph) {
         }
         $.ajax({
             type: type,
-            url : constants.API_URI + url,
-            success: function(response) {
+            url: constants.API_URI + url,
+            success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     var tablesSelectElement = selectElement.closest(".source").find(".data-source-table");
                     tablesSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
-                    $.each(response, function(index, table) {
+                    $.each(response, function (index, table) {
                         tablesSelectElement.append($("<option>" + table + "</option>"));
                     });
                     tablesSelectElement.parent().fadeIn();

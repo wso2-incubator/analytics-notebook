@@ -13,7 +13,7 @@ function Note() {
     /**
      * Initialize the note
      */
-    self.initialize = function() {
+    self.initialize = function () {
         // Initializing note
         $("#note-name").html(new Utils().getQueryParameters()["note"]);
 
@@ -45,7 +45,7 @@ function Note() {
      */
     function runAllParagraphs() {
         // Looping through the paragraphs and running them
-        $.each(self.paragraphs, function(index, paragraph) {
+        $.each(self.paragraphs, function (index, paragraph) {
             paragraph.run();
         });
     }
@@ -103,8 +103,8 @@ function Paragraph(id) {
 
     // Initializing paragraph
     self.paragraphElement = $("<div class='paragraph well fluid-container'>");
-    self.paragraphElement.css({ display : "none" });
-    self.paragraphElement.load('paragraph-template.html', function() {
+    self.paragraphElement.css({display: "none"});
+    self.paragraphElement.load('paragraph-template.html', function () {
         $("#paragraphs").append(self.paragraphElement);
         self.paragraphElement.slideDown();
 
@@ -139,15 +139,15 @@ function Paragraph(id) {
      *
      * @private
      */
-    self.run = function() {  // TODO : This method needs to be changed after deciding on the architecture
+    self.run = function () {  // TODO : This method needs to be changed after deciding on the architecture
         var outputView = self.paragraphElement.find(".output");
 
         /*
          * The function for running the run paragraph task
          * This is called later after checking if the output view is empty or not
          */
-        var runParagraphTask = function() {
-            self.paragraphClient.run(function(output) {
+        var runParagraphTask = function () {
+            self.paragraphClient.run(function (output) {
                 var newOutputView = $("<div class='output fluid-container' style='display: none;'>");
                 newOutputView.append($("<p>Output</p>"));
                 var newOutputViewContent = $("<div class='fluid-container'>");
@@ -161,7 +161,7 @@ function Paragraph(id) {
         };
 
         if (outputView.length > 0) {
-            outputView.slideUp(function() {
+            outputView.slideUp(function () {
                 outputView.remove();
                 runParagraphTask();
             });
@@ -197,7 +197,7 @@ function Paragraph(id) {
      */
     function remove() {
         // TODO : send the relevant query to the notebook server to delete
-        self.paragraphElement.slideUp(function() {
+        self.paragraphElement.slideUp(function () {
             self.paragraphElement.remove();
         });
     }
@@ -210,7 +210,7 @@ function Paragraph(id) {
     function loadSourceViewByType() {
         var selectElement = self.paragraphElement.find(".paragraph-type-select");
         var paragraphContent = self.paragraphElement.find(".paragraph-content");
-        paragraphContent.slideUp(function() {
+        paragraphContent.slideUp(function () {
             paragraphContent.children().remove();
 
             var sourceViewContent = $("<div>");
@@ -266,7 +266,7 @@ function Paragraph(id) {
                     break;
             }
 
-            sourceViewContent.load(paragraphTemplateLink, function() {
+            sourceViewContent.load(paragraphTemplateLink, function () {
                 var sourceView = $("<div class='source fluid-container'>");
                 sourceView.append($("<p>Source</p>"));
                 sourceView.append(sourceViewContent);
@@ -296,7 +296,7 @@ function ParagraphUtils() {
      * @param selectElement {jQuery} The select element which is located in the paragraph
      * @param type {string} Should be one of the following ["table", "stream", "model"]
      */
-    self.loadAvailableParagraphOutputsToInputElement = function(selectElement, type) {
+    self.loadAvailableParagraphOutputsToInputElement = function (selectElement, type) {
         var inputSelectElement = selectElement;
         inputSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
 
@@ -313,12 +313,12 @@ function ParagraphUtils() {
      *
      * @param paragraph The paragraph in which the input table select element is located
      */
-    self.loadTableNames = function(paragraph) {
+    self.loadTableNames = function (paragraph) {
         var inputTableSelectElement = paragraph.find(".input-table");
         $.ajax({
             type: "GET",
-            url : constants.API_URI + "tables",
-            success: function(response) {
+            url: constants.API_URI + "tables",
+            success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     inputTableSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
                     $.each(response.tableNames, function (index, table) {
@@ -331,7 +331,7 @@ function ParagraphUtils() {
         });
     };
 
-    self.handleError = function(paragraph, message) {
+    self.handleError = function (paragraph, message) {
 
     };
 }

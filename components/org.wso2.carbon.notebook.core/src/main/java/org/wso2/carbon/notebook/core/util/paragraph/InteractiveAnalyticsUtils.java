@@ -20,11 +20,11 @@ public class InteractiveAnalyticsUtils {
             throws AnalyticsException {
         // Running the Lucene Query
         List<SearchResultEntry> searchResultEntries = ServiceHolder.getAnalyticsDataService().search(
-            tenantID,
-            tableName,
-            query,
-            paginationFrom,
-            paginationCount
+                tenantID,
+                tableName,
+                query,
+                paginationFrom,
+                paginationCount
         );
 
         // Fetching the list of IDs from Lucene Result
@@ -53,26 +53,26 @@ public class InteractiveAnalyticsUtils {
             paginationFrom = 0;
         }
         AnalyticsDataResponse resp = ServiceHolder.getAnalyticsDataService().get(
-            tenantID,
-            tableName,
-            1,
-            null,
-            timeFrom,
-            timeTo,
-            paginationFrom,
-            paginationCount
+                tenantID,
+                tableName,
+                1,
+                null,
+                timeFrom,
+                timeTo,
+                paginationFrom,
+                paginationCount
         );
 
         // Fetching the list of records from the analytics response
         List<Record> records;
         if (!ServiceHolder.getAnalyticsDataService().isPaginationSupported(
-            ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
-                tenantID, tableName
-            )
+                ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
+                        tenantID, tableName
+                )
         )) {
             Iterator<Record> itr = AnalyticsDataServiceUtils.responseToIterator(
-                ServiceHolder.getAnalyticsDataService(),
-                resp
+                    ServiceHolder.getAnalyticsDataService(),
+                    resp
             );
             records = new ArrayList<Record>();
             for (int i = 0; i < originalFrom && itr.hasNext(); i++) {
@@ -97,10 +97,10 @@ public class InteractiveAnalyticsUtils {
         long actualCount = -1;
         if (isRecordCountSupported) {
             actualCount = ServiceHolder.getAnalyticsDataService().getRecordCount(
-                tenantID,
-                tableName,
-                timeFrom,
-                timeTo
+                    tenantID,
+                    tableName,
+                    timeFrom,
+                    timeTo
             );
         }
 
