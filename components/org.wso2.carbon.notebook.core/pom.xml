@@ -56,4 +56,8 @@
         </dependency>
         <!-- Third party dependencies end here -->
     </dependencies>
+
+    <build>
+        <finalName>notebook-core-${version}</finalName>
+    </build>
 </project>

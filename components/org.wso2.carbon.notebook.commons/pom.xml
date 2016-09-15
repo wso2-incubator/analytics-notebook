@@ -26,4 +26,8 @@
         </dependency>
         <!-- WSO2 dependencies end here -->
     </dependencies>
+
+    <build>
+        <finalName>notebook-commons-${version}</finalName>
+    </build>
 </project>

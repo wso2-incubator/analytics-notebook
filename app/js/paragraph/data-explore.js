@@ -240,14 +240,8 @@ function DataExploreParagraphClient(paragraph, id) {
                     points.push(data);
                 }
 
-                var categoricalFeatureArray = [parallelSetsFeatureNames.length];
-                for (var i = 0; i < noOfCategoricalFeatures; i++) {
-                    categoricalFeatureArray[i] = parallelSetsFeatureNames[i];
-                }
-                // clear the div contains parallel sets chart
                 var chartElement = $("<div>");
-
-                var chart = d3.parsets().dimensions(categoricalFeatureArray).tension(1.0).width(800).height(670);
+                var chart = d3.parsets().dimensions(parallelSetsFeatureNames).tension(1.0).width(800).height(670);
                 var vis = d3.select(chartElement.get(0)).append("svg").attr("width", chart.width()).attr("height", chart.height()).style("font-size", "12px");
                 vis.datum(points).call(chart);
                 callback(chartElement);
