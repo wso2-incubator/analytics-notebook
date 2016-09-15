@@ -9,12 +9,12 @@ function EventSimulationParagraphClientClient(paragraph) {
 
     self.initialize = function () {
         // Adding event listeners
-        paragraph.find(".input-table").focusin(function() {
-            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target) ,'table');
+        paragraph.find(".input-table").focusin(function () {
+            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target), 'table');
         });
     };
 
-    self.run = function() {
+    self.run = function () {
         // TODO : run preprocessor paragraph
     };
 }

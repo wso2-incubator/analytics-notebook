@@ -1,19 +1,19 @@
 // General Constants
 var constants = {
-    PRODUCT_NAME : "Notebook",
-    PRODUCT_VERSION : "1.0-SNAPSHOT",
-    response : {
-        SUCCESS : "SUCCESS",
-        ERROR : "ERROR",
-        INVALID_QUERY : "INVALID_QUERY",
-        NOT_LOGGED_IN : "NOT_LOGGED_IN",
-        ALREADY_LOGGED_IN : "ALREADY_LOGGED_IN"
+    PRODUCT_NAME: "Notebook",
+    PRODUCT_VERSION: "1.0-SNAPSHOT",
+    response: {
+        SUCCESS: "SUCCESS",
+        ERROR: "ERROR",
+        INVALID_QUERY: "INVALID_QUERY",
+        NOT_LOGGED_IN: "NOT_LOGGED_IN",
+        ALREADY_LOGGED_IN: "ALREADY_LOGGED_IN"
     },
-    API_URI : "api/"
+    API_URI: "api/"
 };
 
 // General Initializations
-$(document).ready(function() {
+$(document).ready(function () {
     document.title = constants.PRODUCT_NAME;
     $(".username").html("John Doe");
 });
@@ -32,7 +32,7 @@ function Utils() {
      *
      * @return {Object} The object with the attribute name and attribute values in the query parameter.
      */
-    self.getQueryParameters = function() {
+    self.getQueryParameters = function () {
         var keyValuePairMap = {};
         var query = window.location.search.substring(1);   // Removing the "?" from query string
         var parameters = query.split('&');
@@ -51,9 +51,9 @@ function Utils() {
      * @param message {string} Alert message
      * @return {jQuery} The element containing the alert
      */
-    self.generateAlert = function(type, title, message) {
+    self.generateAlert = function (type, title, message) {
         var alertClass;
-        switch(type) {
+        switch (type) {
             case "success" :
                 alertClass = "success";
                 break;
@@ -84,7 +84,7 @@ function Utils() {
      * @param dataRowArray {string[][]} 2D array of data
      * @return {jQuery} The table element
      */
-    self.generateDataTable = function(headerArray, dataRowArray) {
+    self.generateDataTable = function (headerArray, dataRowArray) {
         return generateTable(
             $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>"),
             headerArray,
@@ -99,7 +99,7 @@ function Utils() {
      * @param dataRowArray {string[][]} 2D array of data
      * @return {jQuery} The table element
      */
-    self.generateListTable = function(headerArray, dataRowArray) {
+    self.generateListTable = function (headerArray, dataRowArray) {
         return generateTable(
             $("<table class='table table-striped table-hover display' cellspacing='0'>"),
             headerArray,
@@ -107,19 +107,19 @@ function Utils() {
         );
     };
 
-    var generateTable = function(table, headerArray, dataRowArray) {
+    var generateTable = function (table, headerArray, dataRowArray) {
         var tableContainer = $("<div>");
         tableContainer.append(table);
 
         var columnArray = [];
         for (var i = 0; i < headerArray.length; i++) {
-            columnArray.push({ title : headerArray[i] });
+            columnArray.push({title: headerArray[i]});
         }
 
         table.DataTable({
             responsive: true,
-            data : dataRowArray,
-            columns : columnArray
+            data: dataRowArray,
+            columns: columnArray
         });
 
         return tableContainer;
@@ -134,45 +134,45 @@ function Utils() {
      * @param headerArray {string[]} The column names array of the tables
      * @return {jQuery} The table element
      */
-    self.generateDataTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray) {
+    self.generateDataTableWithLazyLoading = function (httpMethod, url, queryParameters, headerArray) {
         var tableContainer = $("<div>");
         var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
         tableContainer.append(table);
 
         var columnArray = [];
         for (var i = 0; i < headerArray.length; i++) {
-            columnArray.push({ data : headerArray[i], title : headerArray[i] });
+            columnArray.push({data: headerArray[i], title: headerArray[i]});
         }
 
         table.DataTable({
-            serverSide : true,
-            searching : false,
-            ordering:  false,
-            columns : columnArray,
-            ajax : function(data, callback, settings) {
+            serverSide: true,
+            searching: false,
+            ordering: false,
+            columns: columnArray,
+            ajax: function (data, callback, settings) {
                 queryParameters.draw = data.draw;
                 queryParameters.paginationFrom = data.start;
                 queryParameters.paginationCount = data.length;
                 $.ajax({
                     type: httpMethod,
-                    url : url,
-                    data : JSON.stringify(queryParameters),
-                    success : function(returnedData) {
+                    url: url,
+                    data: JSON.stringify(queryParameters),
+                    success: function (returnedData) {
                         var options;
                         if (returnedData.status == constants.response.SUCCESS) {
                             options = {
-                                draw : returnedData.draw,
-                                recordsTotal : returnedData.recordsCount,
-                                recordsFiltered : returnedData.recordsCount,
-                                data : returnedData.data
+                                draw: returnedData.draw,
+                                recordsTotal: returnedData.recordsCount,
+                                recordsFiltered: returnedData.recordsCount,
+                                data: returnedData.data
                             };
-                        } else  {
+                        } else {
                             options = {
-                                draw : data.draw,
-                                recordsTotal : 0,
-                                recordsFiltered : 0,
-                                data : [],
-                                error : returnedData.message
+                                draw: data.draw,
+                                recordsTotal: 0,
+                                recordsFiltered: 0,
+                                data: [],
+                                error: returnedData.message
                             };
                         }
                         callback(options)

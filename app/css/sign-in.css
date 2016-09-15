@@ -1,18 +1,18 @@
 html {
-	position: relative;
-	min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-	font-family:'font-wso2';
+    font-family: 'font-wso2';
 }
 
 .col-centered {
-	float: none;
-	margin: 0 auto;
+    float: none;
+    margin: 0 auto;
 }
 
 br.spacer-lg {
-  display: block;
-  line-height: 100px;
+    display: block;
+    line-height: 100px;
 }

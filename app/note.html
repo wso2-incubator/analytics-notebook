@@ -7,29 +7,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Favion -->
-    <link href="libs/theme-wso2_1.0.0/images/favicon.png" rel="icon" type="image/png" sizes="16x16" />
+    <link href="libs/theme-wso2_1.0.0/images/favicon.png" rel="icon" type="image/png" sizes="16x16"/>
 
     <!-- DataTable CSS -->
-    <link href="libs/data-tables_1.10.7/extensions/Bootstrap/css/dataTables.bootstrap.css" rel="stylesheet" type="text/css" />
-    <link href="libs/data-tables_1.10.7/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet" type="text/css" />
+    <link href="libs/data-tables_1.10.7/extensions/Bootstrap/css/dataTables.bootstrap.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="libs/data-tables_1.10.7/extensions/Responsive/css/dataTables.responsive.css" rel="stylesheet"
+          type="text/css"/>
 
     <!-- Select2 CSS -->
-    <link href="libs/select2_4.0.0/css/select2.min.css" rel="stylesheet" type="text/css" />
+    <link href="libs/select2_4.0.0/css/select2.min.css" rel="stylesheet" type="text/css"/>
 
     <!-- Animate CSS -->
-    <link href="libs/animate/animate.css" rel="stylesheet" type="text/css" />
+    <link href="libs/animate/animate.css" rel="stylesheet" type="text/css"/>
 
     <!-- jsTree CSS -->
-    <link href="libs/jstree_3.3.0/themes/default/style.min.css" rel="stylesheet" type="text/css" />
+    <link href="libs/jstree_3.3.0/themes/default/style.min.css" rel="stylesheet" type="text/css"/>
 
     <!-- Date Range Picker CSS -->
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css"/>
 
     <!-- Font WSO2 CSS -->
-    <link href="libs/font-wso2_1.0.0/css/font-wso2.min.css" rel="stylesheet" type="text/css" />
+    <link href="libs/font-wso2_1.0.0/css/font-wso2.min.css" rel="stylesheet" type="text/css"/>
 
     <!-- Theme WSO2 CSS -->
-    <link href="libs/theme-wso2_1.0.0/css/theme.css" rel="stylesheet" type="text/css" />
+    <link href="libs/theme-wso2_1.0.0/css/theme.css" rel="stylesheet" type="text/css"/>
     <!--[if IE]>
     <link href="libs/theme-wso2_1.0.0/css/theme-ie.min.css" rel="stylesheet" type="text/css"/>
     <![endif]-->
@@ -110,117 +112,128 @@
     <script type="text/javascript" src="js/paragraph/event-simulation.js"></script>
 </head>
 <body>
-    <header class="header header-default">
-        <div class="container-fluid">
-            <div class="pull-left brand float-remove-xs text-center-xs">
-                <a href="#">
-                    <img src="libs/theme-wso2_1.0.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
-                    <h1 class="display-block-xs"><script>document.write(constants.PRODUCT_NAME);</script></h1>
-                </a>
-            </div>
-            <ul class="nav navbar-right float-remove-xs text-center-xs">
-                <li class="visible-inline-block">
-                    <a class="dropdown" data-toggle="dropdown">
+<header class="header header-default">
+    <div class="container-fluid">
+        <div class="pull-left brand float-remove-xs text-center-xs">
+            <a href="#">
+                <img src="libs/theme-wso2_1.0.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
+                <h1 class="display-block-xs">
+                    <script>document.write(constants.PRODUCT_NAME);</script>
+                </h1>
+            </a>
+        </div>
+        <ul class="nav navbar-right float-remove-xs text-center-xs">
+            <li class="visible-inline-block">
+                <a class="dropdown" data-toggle="dropdown">
                             <span class="icon fw-stack fw-lg">
                                <i class="fw fw-circle fw-stack-2x"></i>
                                <i class="fw fw-user fw-stack-1x fw-inverse"></i>
                             </span>
-                        <span id= class="hidden-xs"><span class="username"></span> <span class="caret"></span></span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown" role="menu">
-                        <li class="dropdown-header visible-xs"> <span class="username"></span> <span class="caret"></span></li>
-                        <li class="divider visible-xs"></li>
-                        <li><a href="#">Profile Settings</a></li>
-                        <li><a href="#">Sign out</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </header>
-
-    <div class="navbar-wrapper">
-        <nav class="navbar navbar-default affix-top" data-spy="affix" data-offset-top="50" data-offset-bottom="40">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <ol class="breadcrumb navbar-brand">
-                        <li><a href="index.html"><i class="icon fw fw-home"></i> <span class="hidden-xs">Home</span></a></li>
-                        <li class="active"><i class="fw fw-document"></i> <span class="hidden-xs">Note</span></li>
-                    </ol>
-                </div>
-                <div id="navbar" class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav">
-                        <li><a href="#">Create Note</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Configuration <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a href="#">Data Sources</a></li>
-                                <li><a href="#">Event Receivers</a></li>
-                                <li><a href="#">Event Publishers</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div><!--/.nav-collapse -->
-            </div>
-        </nav>
+                    <span id=class="hidden-xs"><span class="username"></span> <span class="caret"></span></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
+                    role="menu">
+                    <li class="dropdown-header visible-xs"><span class="username"></span> <span class="caret"></span>
+                    </li>
+                    <li class="divider visible-xs"></li>
+                    <li><a href="#">Profile Settings</a></li>
+                    <li><a href="#">Sign out</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
+</header>
 
-    <div class="page-content-wrapper">
-        <!-- page content -->
+<div class="navbar-wrapper">
+    <nav class="navbar navbar-default affix-top" data-spy="affix" data-offset-top="50" data-offset-bottom="40">
         <div class="container-fluid">
-            <div class="body-wrapper">
-                <div class="page-header">
-                    <h1 id="note-name"></h1>
-                </div>
+            <div class="navbar-header">
+                <ol class="breadcrumb navbar-brand">
+                    <li><a href="index.html"><i class="icon fw fw-home"></i> <span class="hidden-xs">Home</span></a>
+                    </li>
+                    <li class="active"><i class="fw fw-document"></i> <span class="hidden-xs">Note</span></li>
+                </ol>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">Create Note</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Configuration
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Data Sources</a></li>
+                            <li><a href="#">Event Receivers</a></li>
+                            <li><a href="#">Event Publishers</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
+</div>
 
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <div class="col-sm-12">
-                            <div class="input-group input-wrap">
-                                <div class="input-group-btn">
-                                    <button id="run-all-paragraphs-button" class="btn">
-                                        <i class="fw fw-build"></i> Run All
-                                    </button>
-                                    <button id="toggle-all-source-views-button" class="btn">
-                                        <i class="fw fw-hide"></i> Hide Source
-                                    </button>
-                                    <button id="toggle-all-output-views-button" class="btn">
-                                        <i class="fw fw-hide"></i> Hide Output
-                                    </button>
-                                </div>
-                                <div class="input-group-btn">
-                                    <button id="add-paragraph-button" class="btn">
-                                        <i class="fw fw-add"></i> Add Paragraph
-                                    </button>
-                                </div>
-                                <div class="input-group-btn">
-                                    <button id="delete-note-button" class="btn">
-                                        <i class="fw fw-delete"></i> Delete Note
-                                    </button>
-                                </div>
+<div class="page-content-wrapper">
+    <!-- page content -->
+    <div class="container-fluid">
+        <div class="body-wrapper">
+            <div class="page-header">
+                <h1 id="note-name"></h1>
+            </div>
+
+            <div class="form-horizontal">
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <div class="input-group input-wrap">
+                            <div class="input-group-btn">
+                                <button id="run-all-paragraphs-button" class="btn">
+                                    <i class="fw fw-build"></i> Run All
+                                </button>
+                                <button id="toggle-all-source-views-button" class="btn">
+                                    <i class="fw fw-hide"></i> Hide Source
+                                </button>
+                                <button id="toggle-all-output-views-button" class="btn">
+                                    <i class="fw fw-hide"></i> Hide Output
+                                </button>
+                            </div>
+                            <div class="input-group-btn">
+                                <button id="add-paragraph-button" class="btn">
+                                    <i class="fw fw-add"></i> Add Paragraph
+                                </button>
+                            </div>
+                            <div class="input-group-btn">
+                                <button id="delete-note-button" class="btn">
+                                    <i class="fw fw-delete"></i> Delete Note
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Note Body -->
-                <div id="paragraphs"></div>
             </div>
+
+            <!-- Note Body -->
+            <div id="paragraphs"></div>
         </div>
-        <!-- /page content -->
     </div>
+    <!-- /page content -->
+</div>
 
-    <footer class="footer">
-        <div class="container-fluid">
-            <p>
-                WSO2 <script>document.write(constants.PRODUCT_NAME);</script> <script>document.write(constants.PRODUCT_VERSION);</script> | &copy; <script>document.write((new Date().getFullYear()).toString());</script> <a href="http://wso2.com/" target="_blank"><i class="icon fw fw-wso2"></i> Inc</a>.
-            </p>
-        </div>
-    </footer>
+<footer class="footer">
+    <div class="container-fluid">
+        <p>
+            WSO2
+            <script>document.write(constants.PRODUCT_NAME);</script>
+            <script>document.write(constants.PRODUCT_VERSION);</script>
+            | &copy;
+            <script>document.write((new Date().getFullYear()).toString());</script>
+            <a href="http://wso2.com/" target="_blank"><i class="icon fw fw-wso2"></i> Inc</a>.
+        </p>
+    </div>
+</footer>
 
-    <script>
-        $(document).ready(function() {
-            new Note().initialize();
-        });
-    </script>
+<script>
+    $(document).ready(function () {
+        new Note().initialize();
+    });
+</script>
 </body>
 </html>

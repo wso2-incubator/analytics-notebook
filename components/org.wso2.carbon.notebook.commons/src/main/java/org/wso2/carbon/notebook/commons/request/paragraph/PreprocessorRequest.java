@@ -1,6 +1,7 @@
 package org.wso2.carbon.notebook.commons.request.paragraph;
 
-import org.wso2.carbon.notebook.commons.request.dto.Feature;
+
+import org.wso2.carbon.ml.commons.domain.Feature;
 
 import java.util.List;
 

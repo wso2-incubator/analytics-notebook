@@ -7,11 +7,11 @@ function Authenticator() {
     var self = this;
 
     self.initialize = function () {
-        $("#sign-in").click(function() {
+        $("#sign-in").click(function () {
             singIn();
         });
 
-        $(".form-control").keyup(function(event) {
+        $(".form-control").keyup(function (event) {
             if (event.keyCode == 13 && $("#username").val().length > 0 && $("#password").val().length > 0) {
                 singIn();
             }
@@ -27,15 +27,15 @@ function Authenticator() {
      */
     function singIn() {
         var credentials = {
-            username : $("#username").val(),
-            password : $("#password").val()
+            username: $("#username").val(),
+            password: $("#password").val()
         };
         if (credentials.username.length > 0 && credentials.password.length > 0) {
             $.ajax({
                 type: "POST",
-                url : constants.API_URI + "auth/sign-in",
-                data : JSON.stringify(credentials),
-                success : function(response) {
+                url: constants.API_URI + "auth/sign-in",
+                data: JSON.stringify(credentials),
+                success: function (response) {
                     if (response.status == constants.response.SUCCESS ||
                         response.status == constants.response.ALREADY_LOGGED_IN) {
                         var redirectURI = new Utils().getQueryParameters().from;

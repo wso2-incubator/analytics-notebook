@@ -17,165 +17,175 @@
  */
 
 /*This css class defines few properties which are
-commond to all type of graphs.*/ 
+commond to all type of graphs.*/
 
-.basegraph
-{
-	font: 12px sans-serif;
+.basegraph {
+    font: 12px sans-serif;
 }
 
-.axis .text
-{
-	font: 12px sans-serif;
+.axis .text {
+    font: 12px sans-serif;
 }
 
-.axis path,.axis line
-{
-	fill: none;	
-	stroke: #000;
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
 }
-
 
 /*model summery weights chart styles*/
 #weights-chart svg {
-	height: 426px;
-	width: 650px;
+    height: 426px;
+    width: 650px;
 }
 
 #weights-chart .tick line {
-	display: none;
+    display: none;
 }
 
 /*confusion matrix table styles*/
 #confusion-matrix table {
-	text-align: center;
-	width: 100%;
-	height:200px;
-	table-layout: fixed;
-	border-color: #999999;
+    text-align: center;
+    width: 100%;
+    height: 200px;
+    table-layout: fixed;
+    border-color: #999999;
 }
+
 #confusion-matrix .header-level-1 {
-	font-weight:bold;
+    font-weight: bold;
 }
+
 #confusion-matrix .header-level-2 {
-	font-style: italic;
+    font-style: italic;
 }
+
 #confusion-matrix .rotate {
-	/* Safari */
-	-webkit-transform: rotate(-90deg);
+    /* Safari */
+    -webkit-transform: rotate(-90deg);
 
-	/* Firefox */
-	-moz-transform: rotate(-90deg);
+    /* Firefox */
+    -moz-transform: rotate(-90deg);
 
-	/* IE */
-	-ms-transform: rotate(-90deg);
+    /* IE */
+    -ms-transform: rotate(-90deg);
 
-	/* Opera */
-	-o-transform: rotate(-90deg);
+    /* Opera */
+    -o-transform: rotate(-90deg);
 
-	/* Internet Explorer */
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
+
 #confusion-matrix .correct {
-	background-color: #ECFFEC;
+    background-color: #ECFFEC;
 }
+
 #confusion-matrix .incorrect {
-	background-color: #FFF0F0;
+    background-color: #FFF0F0;
 }
 
 /*Other measures table styles*/
 #other-measures table {
-	text-align: center;
-	width: 100%;
-	height:200px;
-	table-layout: fixed;
-	border-color: #999999;
+    text-align: center;
+    width: 100%;
+    height: 200px;
+    table-layout: fixed;
+    border-color: #999999;
 }
 
 #other-measures .header-level-1 {
-	font-weight:bold;
+    font-weight: bold;
 }
+
 #other-measures .header-level-2 {
-	font-style: italic;
+    font-style: italic;
 }
+
 #other-measures .rotate {
-	/* Safari */
-	-webkit-transform: rotate(-90deg);
+    /* Safari */
+    -webkit-transform: rotate(-90deg);
 
-	/* Firefox */
-	-moz-transform: rotate(-90deg);
+    /* Firefox */
+    -moz-transform: rotate(-90deg);
 
-	/* IE */
-	-ms-transform: rotate(-90deg);
+    /* IE */
+    -ms-transform: rotate(-90deg);
 
-	/* Opera */
-	-o-transform: rotate(-90deg);
+    /* Opera */
+    -o-transform: rotate(-90deg);
 
-	/* Internet Explorer */
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    /* Internet Explorer */
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
 #other-measures .values {
-	background-color: #ECFFEC;
+    background-color: #ECFFEC;
 }
 
 .ui-slider-horizontal {
     width: 100%;
 }
+
 .threshold-value {
     border: 0;
 }
 
 /* stepper */
 .sp-quantity {
-    width:124px;
-    height:42px;
-    font-family:"ProximaNova Bold", Helvetica, Arial;
+    width: 124px;
+    height: 42px;
+    font-family: "ProximaNova Bold", Helvetica, Arial;
 }
+
 .sp-minus {
-    width:27px;
-    height:27px;
-    border:0px solid #e4e4e4;
-    float:left;
-    text-align:center;
-	background:#fff;
-	font-size:12px;
-	color:#555;
+    width: 27px;
+    height: 27px;
+    border: 0px solid #e4e4e4;
+    float: left;
+    text-align: center;
+    background: #fff;
+    font-size: 12px;
+    color: #555;
 }
+
 .sp-input {
-    width:27px;
-    height:27px;
-    border:0px solid #e4e4e4;
-    border-left:0px solid black;
-    float:left;
+    width: 27px;
+    height: 27px;
+    border: 0px solid #e4e4e4;
+    border-left: 0px solid black;
+    float: left;
 }
+
 .sp-plus {
-    width:27px;
-    height:27px;
-    border:0px solid #e1e1e1;
-    border-left:0px solid #e1e1e1;
-    float:left;
-    text-align:center;
-	margin-left:4px;
-	font-size:12px;
-	background:#fff;	
-	color:#555;	
-	font-weight:normal !important;
+    width: 27px;
+    height: 27px;
+    border: 0px solid #e1e1e1;
+    border-left: 0px solid #e1e1e1;
+    float: left;
+    text-align: center;
+    margin-left: 4px;
+    font-size: 12px;
+    background: #fff;
+    color: #555;
+    font-weight: normal !important;
 }
+
 .sp-input input {
-    width:30px;
-    height:27px;
-    text-align:center;
-    font-family:"ProximaNova Bold", Helvetica, Arial;
+    width: 30px;
+    height: 27px;
+    text-align: center;
+    font-family: "ProximaNova Bold", Helvetica, Arial;
     border: none;
-	background:#fff;
-	color:#888;
-	border:1px solid #e4e4e4;
+    background: #fff;
+    color: #888;
+    border: 1px solid #e4e4e4;
 }
+
 .sp-input input:focus {
-    border:0px solid #e1e1e1;
+    border: 0px solid #e1e1e1;
     border: none;
 }
+
 .sp-minus a, .sp-plus a {
     display: block;
     width: 100%;
@@ -184,6 +194,6 @@ commond to all type of graphs.*/
 }
 
 .sp-plus a, .sp-minus a {
-	color:#666;
-	font-weight:normal !important;
+    color: #666;
+    font-weight: normal !important;
 }

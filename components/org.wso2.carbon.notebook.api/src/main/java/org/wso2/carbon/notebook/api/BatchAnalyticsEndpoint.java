@@ -1,14 +1,13 @@
 package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
-import org.apache.spark.sql.AnalysisException;
 import org.wso2.carbon.analytics.spark.core.exception.AnalyticsExecutionException;
 import org.wso2.carbon.analytics.spark.core.util.AnalyticsQueryResult;
 import org.wso2.carbon.notebook.commons.request.paragraph.BatchAnalyticsRequest;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
-import org.wso2.carbon.notebook.commons.response.paragraph.BatchAnalyticsGeneralResponse;
 import org.wso2.carbon.notebook.commons.response.dto.Table;
+import org.wso2.carbon.notebook.commons.response.paragraph.BatchAnalyticsGeneralResponse;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 
 import javax.servlet.http.HttpServletRequest;

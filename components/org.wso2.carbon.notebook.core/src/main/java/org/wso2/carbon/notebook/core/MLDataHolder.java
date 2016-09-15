@@ -7,8 +7,8 @@ import org.wso2.carbon.notebook.core.util.MLUtils;
 import java.util.HashMap;
 
 public class MLDataHolder {
-    private static HashMap<MLDataHolderKey, SamplePoints> samplePointsMap;
     private static final int SAMPLE_SIZE = 1000;
+    private static HashMap<MLDataHolderKey, SamplePoints> samplePointsMap;
 
     public static SamplePoints getSamplePoints(String tableName, int tenantID) throws MLMalformedDatasetException {
         if (samplePointsMap == null) {

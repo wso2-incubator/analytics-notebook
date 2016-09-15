@@ -1,8 +1,8 @@
 package org.wso2.carbon.notebook.core.ml.transformation;
 
 import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.notebook.commons.request.dto.Feature;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 
 import java.util.ArrayList;

@@ -2,7 +2,6 @@ package org.wso2.carbon.notebook.commons.response.paragraph;
 
 import org.wso2.carbon.notebook.commons.response.GeneralResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
-import org.wso2.carbon.notebook.commons.response.dto.Table;
 
 import java.util.List;
 

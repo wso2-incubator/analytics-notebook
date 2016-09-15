@@ -7,7 +7,7 @@
 function BatchAnalyticsParagraphClient(paragraph) {
     var self = this;
 
-    self.initialize = function() {
+    self.initialize = function () {
         new ParagraphUtils().loadTableNames(paragraph);
 
         // Adding event listeners for the batch analytics paragraph
@@ -15,8 +15,8 @@ function BatchAnalyticsParagraphClient(paragraph) {
             addTable($(event.target));
         });
 
-        paragraph.find(".input-table").change(function (){
-            paragraph.find(".add-table-button").prop('disabled' , false);
+        paragraph.find(".input-table").change(function () {
+            paragraph.find(".add-table-button").prop('disabled', false);
             paragraph.find(".temporary-table").val("");
         });
     };
@@ -32,8 +32,8 @@ function BatchAnalyticsParagraphClient(paragraph) {
             success: function (response) {
                 $.each(response.tables, function (index, result) {
                     if (response.status == constants.response.SUCCESS) {
-                        if (result.status == constants.response.INVALID_QUERY){
-                            output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> ERROR'+ result.message +'</p>'));
+                        if (result.status == constants.response.INVALID_QUERY) {
+                            output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> ERROR' + result.message + '</p>'));
                         } else {
                             if (result.columns.length == 0 || result.data.length == 0) {
                                 output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> Executed. No results to show. </p>'));
@@ -67,8 +67,8 @@ function BatchAnalyticsParagraphClient(paragraph) {
         }
         tempTableName = tempTable.val();
 
-        generateSparkQuery(tableName , tempTableName ,  function (createTempTableQuery) {
-            textArea.val( textArea.val() + createTempTableQuery + "\n");
+        generateSparkQuery(tableName, tempTableName, function (createTempTableQuery) {
+            textArea.val(textArea.val() + createTempTableQuery + "\n");
         });
     }
 
