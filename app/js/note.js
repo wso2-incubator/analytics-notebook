@@ -140,34 +140,19 @@ function Paragraph(id) {
      * @private
      */
     self.run = function () {  // TODO : This method needs to be changed after deciding on the architecture
-        var outputView = self.paragraphElement.find(".output");
-
-        /*
-         * The function for running the run paragraph task
-         * This is called later after checking if the output view is empty or not
-         */
-        var runParagraphTask = function () {
-            self.paragraphClient.run(function (output) {
-                var newOutputView = $("<div class='output fluid-container' style='display: none;'>");
-                newOutputView.append($("<p>Output</p>"));
+        self.paragraphClient.run(function (output) {
+            var outputView = self.paragraphElement.find(".output");
+            outputView.slideUp(function() {
+                outputView.empty();
+                outputView.append($("<p>Output</p>"));
                 var newOutputViewContent = $("<div class='fluid-container'>");
                 newOutputViewContent.append(output);
-                newOutputView.append(newOutputViewContent);
-                self.paragraphElement.find(".paragraph-content").append(newOutputView);
+                outputView.append(newOutputViewContent);
 
-                newOutputView.slideDown();
+                outputView.slideDown();
                 self.paragraphElement.find(".toggle-output-view").prop('disabled', false);
             });
-        };
-
-        if (outputView.length > 0) {
-            outputView.slideUp(function () {
-                outputView.remove();
-                runParagraphTask();
-            });
-        } else {
-            runParagraphTask();
-        }
+        });
     };
 
     /**
@@ -211,8 +196,6 @@ function Paragraph(id) {
         var selectElement = self.paragraphElement.find(".paragraph-type-select");
         var paragraphContent = self.paragraphElement.find(".paragraph-content");
         paragraphContent.slideUp(function () {
-            paragraphContent.children().remove();
-
             var sourceViewContent = $("<div>");
             var paragraphTemplateLink;
             switch (selectElement.val()) {
@@ -267,10 +250,11 @@ function Paragraph(id) {
             }
 
             sourceViewContent.load(paragraphTemplateLink, function () {
-                var sourceView = $("<div class='source fluid-container'>");
+                var sourceView = paragraphContent.find(".source");
+                sourceView.empty();
+                paragraphContent.find(".output").empty();
                 sourceView.append($("<p>Source</p>"));
                 sourceView.append(sourceViewContent);
-                paragraphContent.append(sourceView);
                 self.paragraphClient.initialize();
                 paragraphContent.slideDown();
 
