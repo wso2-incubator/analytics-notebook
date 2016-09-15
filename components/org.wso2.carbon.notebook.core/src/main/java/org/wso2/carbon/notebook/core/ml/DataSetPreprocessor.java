@@ -1,17 +1,15 @@
 package org.wso2.carbon.notebook.core.ml;
 
 import org.apache.spark.api.java.JavaRDD;
+import org.wso2.carbon.databridge.commons.exception.MalformedEventException;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.core.spark.transformations.RemoveResponseColumn;
-import org.wso2.carbon.notebook.core.ml.transformation.DiscardedRowsFilter;
-import org.wso2.carbon.notebook.core.ml.transformation.HeaderFilter;
-import org.wso2.carbon.notebook.core.ml.transformation.LineToTokens;
-import org.wso2.carbon.notebook.core.ml.transformation.RemoveDiscardedFeatures;
+import org.wso2.carbon.notebook.core.ml.transformation.*;
 
 import java.util.List;
 
 public class DataSetPreprocessor {
-    public List<String[]> preProcess(JavaRDD<String> lines, String header, String columnSeparator,
+    public List<String[]> preProcess(int tenantID , String tableName, JavaRDD<String> lines, String header, String columnSeparator,
                                      List<Feature> features) {
         List<String[]> resultantArray = null;
         try {
@@ -27,8 +25,10 @@ public class DataSetPreprocessor {
 
             RemoveResponseColumn responseColumnFilter = new RemoveResponseColumn();
 
+            MeanImputation meanImputationFilter = new MeanImputation.Builder().init(tenantID, tableName, features).build();
+
             JavaRDD<String[]> preprocessedLines = lines.filter(headerFilter).map(lineToTokens).filter(discardedRowsFilter)
-                    .map(removeDiscardedFeatures).map(responseColumnFilter).cache();
+                    .map(removeDiscardedFeatures).map(responseColumnFilter).map(meanImputationFilter).cache();
             resultantArray = preprocessedLines.collect();
         } catch (Exception e) {
             e.printStackTrace();

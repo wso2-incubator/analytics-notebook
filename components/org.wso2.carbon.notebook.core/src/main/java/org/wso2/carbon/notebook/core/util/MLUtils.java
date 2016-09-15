@@ -25,6 +25,7 @@ import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -123,7 +124,7 @@ public class MLUtils {
         JavaRDD<Row> rows = dataFrame.drop("_timestamp").javaRDD();
 
         lines = rows.map(new RowsToLines.Builder().separator(CSVFormat.RFC4180.getDelimiter() + "").build());
-        List<String> testResult = lines.collect();
+        List<String> testResult =lines.collect();
         return lines;
     }
 
@@ -333,8 +334,7 @@ public class MLUtils {
 
     /**
      * @param workflow Workflow
-     * @return A list of indices of features to be included in the model
-     */
+     * @return A list of indices of features to be included in the model*/
     public static SortedMap<Integer, String> getIncludedFeatures(Workflow workflow, int responseIndex) {
         SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
         List<org.wso2.carbon.ml.commons.domain.Feature> features = workflow.getFeatures();
@@ -347,7 +347,7 @@ public class MLUtils {
     }
 
     /**
-     * @param features list of features of the dataset
+     * @param features      list of features of the dataset
      * @return A list of indices of features to be included after processed
      */
     public static List<Integer> getIncludedFeatureIndices(List<Feature> features) {
