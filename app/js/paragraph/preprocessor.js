@@ -23,13 +23,16 @@ function PreprocessorParagraphClient(paragraph) {
         // TODO : run preprocessor paragraph
         var tableName = paragraph.find(".input-table").val();
         var features = [];
-        var i = 0;
+        var output;
+        var data;
+        var headerArray =[];
         table.find("tbody > tr").each(function () {
             var feature = $(this);
             var feature_name = feature.find(".feature-include").val();
             var feature_include = false;
             if (feature.find(".feature-include").is(':checked')) {
                 feature_include = true;
+                headerArray.push(feature_name);
             }
             var feature_type = feature.find(".feature-type").val();
             var impute_option = feature.find(".impute-option").val();
@@ -40,7 +43,6 @@ function PreprocessorParagraphClient(paragraph) {
                 imputeOption: impute_option,
                 include: feature_include
             };
-            i += 1;
             features.push(featureResponse);
         });
         $.ajax({
@@ -50,8 +52,12 @@ function PreprocessorParagraphClient(paragraph) {
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     $.each(response, function (index, result) {
-                        console.log(result);
+                        if (index == "resultList"){
+                            data = result;
+                        }
                     });
+                    output = new Utils().generateDataTable(headerArray, data);
+                    callback(output);
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
@@ -59,7 +65,6 @@ function PreprocessorParagraphClient(paragraph) {
                 }
             }
         });
-
     };
 
     /**

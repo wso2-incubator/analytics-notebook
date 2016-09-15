@@ -16,6 +16,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class BatchAnalyticsEndpoint {
      */
     @POST
     @Path("/execute-script")
-    public javax.ws.rs.core.Response executeScript(@Context HttpServletRequest request, String scriptContent) {
+    public Response executeScript(@Context HttpServletRequest request, String scriptContent) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         BatchAnalyticsRequest batchAnalyticsRequest = new Gson().fromJson(scriptContent, BatchAnalyticsRequest.class);
@@ -58,7 +59,7 @@ public class BatchAnalyticsEndpoint {
         response.setTables(tables);
         jsonString = new Gson().toJson(response);
 
-        return javax.ws.rs.core.Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
+        return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }
 

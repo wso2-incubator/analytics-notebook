@@ -5,6 +5,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.notebook.commons.request.paragraph.PreprocessorRequest;
+import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.ml.DataSetPreprocessor;
 import org.wso2.carbon.notebook.core.util.MLUtils;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 
 /**
  * HTTP response to perform pre-processing tasks
@@ -44,6 +46,8 @@ public class PreprocessorEndpoint {
         DataSetPreprocessor preprocessor = new DataSetPreprocessor();
         String jsonString;
         List<String[]> resultantArray = null;
+
+        Map<String,Object> response = ResponseFactory.getCustomSuccessResponse();
         try {
             JavaRDD<String> lines = MLUtils.getLinesFromDASTable(tableName, tenantID, ServiceHolder.getSparkContextService().getJavaSparkContext());
             headerLine = MLUtils.extractHeaderLine(tableName, tenantID);
@@ -57,8 +61,9 @@ public class PreprocessorEndpoint {
             e.printStackTrace();
         }
 
+        response.put("resultList" , resultantArray);
 
-        jsonString = new Gson().toJson(resultantArray);
+        jsonString = new Gson().toJson(response);
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }
