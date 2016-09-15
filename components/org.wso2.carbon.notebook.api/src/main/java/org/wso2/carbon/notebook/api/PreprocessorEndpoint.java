@@ -17,6 +17,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,13 @@ public class PreprocessorEndpoint {
         PreprocessorRequest preprocessRequest = new Gson().fromJson(preProcessParameters, PreprocessorRequest.class);
         String tableName = preprocessRequest.getTableName();
         List<Feature> featureList = preprocessRequest.getFeatureList();
+        List<Feature> orderedFeatureList = new ArrayList<>();
+
+        for (Feature feature : featureList){
+            orderedFeatureList.add(new Feature());
+        }
         String headerLine;
+        List<String> headerArray = new ArrayList<>() ;
         String columnSeparator = ",";
         DataSetPreprocessor preprocessor = new DataSetPreprocessor();
         String jsonString;
@@ -52,15 +59,20 @@ public class PreprocessorEndpoint {
             JavaRDD<String> lines = MLUtils.getLinesFromDASTable(tableName, tenantID, ServiceHolder.getSparkContextService().getJavaSparkContext());
             headerLine = MLUtils.extractHeaderLine(tableName, tenantID);
             for (Feature feature : featureList) {
-                feature.setIndex(MLUtils.getFeatureIndex(feature.getName(), headerLine, columnSeparator));
-
+                int index= MLUtils.getFeatureIndex(feature.getName(), headerLine, columnSeparator);
+                feature.setIndex(index);
+                orderedFeatureList.set(index, feature);
+                if (feature.isInclude()){
+                    headerArray.add(feature.getName());
+                }
             }
-            resultantArray = preprocessor.preProcess(lines, headerLine, columnSeparator, featureList);
+            resultantArray = preprocessor.preProcess(tenantID, tableName, lines, headerLine, columnSeparator, orderedFeatureList);
 
         } catch (AnalyticsException e) {
             e.printStackTrace();
         }
 
+        response.put("headerArray" , headerArray.toArray());
         response.put("resultList" , resultantArray);
 
         jsonString = new Gson().toJson(response);

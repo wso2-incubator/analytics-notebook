@@ -5,7 +5,7 @@ public class MLConstants {
 
     // feature settings
     public static final String DISCARD = "DISCARD";
-    public static final String MEAN_IMPUTATION = "REPLACE_WTH_MEAN";
+    public static final String MEAN_IMPUTATION = "REPLACE_WITH_MEAN";
     private MLConstants() {
 
     }

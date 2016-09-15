@@ -32,7 +32,6 @@ function PreprocessorParagraphClient(paragraph) {
             var feature_include = false;
             if (feature.find(".feature-include").is(':checked')) {
                 feature_include = true;
-                headerArray.push(feature_name);
             }
             var feature_type = feature.find(".feature-type").val();
             var impute_option = feature.find(".impute-option").val();
@@ -52,7 +51,10 @@ function PreprocessorParagraphClient(paragraph) {
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     $.each(response, function (index, result) {
-                        if (index == "resultList"){
+                        if( index == "headerArray"){
+                            headerArray = result;
+                        }
+                        else if (index == "resultList"){
                             data = result;
                         }
                     });
