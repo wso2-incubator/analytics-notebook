@@ -34,6 +34,7 @@
             <param-name>jaxrs.serviceClasses</param-name>
             <param-value>
                 org.wso2.carbon.notebook.api.auth.AuthenticationEndpoint
+                org.wso2.carbon.notebook.api.NotebookEndpoint
                 org.wso2.carbon.notebook.api.BatchAnalyticsEndpoint
                 org.wso2.carbon.notebook.api.DataExploreEndpoint
                 org.wso2.carbon.notebook.api.DataSetInformationRetrievalEndpoint

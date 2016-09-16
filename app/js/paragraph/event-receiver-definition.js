@@ -9,6 +9,9 @@ function EventReceiverDefinitionParagraphClient(paragraph) {
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
+    /**
+     * Initialize the event receiver definition paragraph
+     */
     self.initialize = function () {
         // Loading event receiver names into the  event receiver select element
         var eventReceiverSelectElement = $(paragraph).find(".event-receiver-name");
@@ -36,6 +39,11 @@ function EventReceiverDefinitionParagraphClient(paragraph) {
         });
     };
 
+    /**
+     * Run the event receiver definition paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
     self.run = function (callback) {
         // TODO : run data visualization paragraph
         callback();

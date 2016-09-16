@@ -9,6 +9,9 @@ function BatchAnalyticsParagraphClient(paragraph) {
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
+    /**
+     * Initialize the batch analytics paragraph
+     */
     self.initialize = function () {
         paragraphUtils.loadTableNames();
 
@@ -23,6 +26,11 @@ function BatchAnalyticsParagraphClient(paragraph) {
         });
     };
 
+    /**
+     * Run the batch analytics paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
     self.run = function (callback) {
         // TODO : run batch analytics paragraph
         var query = paragraph.find(".query");
@@ -84,7 +92,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
      * Callback function for generate spark query
      *
      * @callback GenerateSparkQueryCallback
-     * @param Query {string}
+     * @param Query {string} The query which will be generated
      */
 
     /**
@@ -136,6 +144,5 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             }
         });
-
     }
 }

@@ -9,14 +9,22 @@ function EventSimulationParagraphClientClient(paragraph) {
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
+    /**
+     * Initialize the event simulation paragraph
+     */
     self.initialize = function () {
         // Adding event listeners
         paragraph.find(".input-table").focusin(function () {
-            paragraphUtils.loadAvailableParagraphOutputsToInputElement($(event.target), 'table');
+            paragraphUtils.loadAvailableParagraphOutputsToInputElement('table');
         });
     };
 
-    self.run = function () {
+    /**
+     * Run the event simulation paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
+    self.run = function (callback) {
         // TODO : run preprocessor paragraph
     };
 }

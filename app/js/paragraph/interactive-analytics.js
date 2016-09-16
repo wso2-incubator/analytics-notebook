@@ -12,6 +12,9 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
     var timeFrom;
     var timeTo;
 
+    /**
+     * Initialize the interactive analytics paragraph
+     */
     self.initialize = function () {
         // Adding event listeners
         paragraph.find(".input-table").change(function () {
@@ -52,6 +55,11 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
         });
     };
 
+    /**
+     * Run the interactive analytics paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
     self.run = function (callback) {
         var tableName = paragraph.find(".input-table").val();
         utils.showLoadingOverlay(paragraph);
@@ -73,7 +81,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                     }
                     columns.push("_timestamp");
                     columns.push("_version");
-                    callback(new Utils().generateDataTableWithLazyLoading(
+                    callback(utils.generateDataTableWithLazyLoading(
                         "POST",
                         constants.API_URI + "interactive-analytics/search/" + searchMethod,
                         queryParameters,

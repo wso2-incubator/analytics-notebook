@@ -19,6 +19,9 @@ function DataExploreParagraphClient(paragraph, id) {
 
     var markerSize = 2;
 
+    /**
+     * Initialize the data explore paragraph
+     */
     self.initialize = function () {
         paragraphUtils.loadTableNames();
 
@@ -74,10 +77,27 @@ function DataExploreParagraphClient(paragraph, id) {
         });
     };
 
+    /**
+     * Run the data explore paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
     self.run = function(callback) {
         chart.draw(callback);
     };
 
+    /**
+     * Callback function for chart run
+     *
+     * @callback ChartRunCallback
+     * @param output {jQuery} The chart
+     */
+
+    /**
+     * Scatter plot prototype constructor
+     *
+     * @constructor
+     */
     function ScatterPlotDiagram() {
         var scatterPlotSelf = this;
 
@@ -101,6 +121,11 @@ function DataExploreParagraphClient(paragraph, id) {
             );
         }
 
+        /**
+         * Draw the scatter plot
+         *
+         * @param callback {ChartRunCallback} The callback that will be called after drawing the chart
+         */
         scatterPlotSelf.draw = function(callback) {
             utils.showLoadingOverlay(paragraph);
             var numFeatureIndependent = paragraph.find(".scatter-plot-x").val().replace(/^\s+|\s+$/g, '');
@@ -138,6 +163,11 @@ function DataExploreParagraphClient(paragraph, id) {
         };
     }
 
+    /**
+     * Parallel sets prototype constructor
+     *
+     * @constructor
+     */
     function ParallelSets() {
         var parallelSetsSelf = this;
 
@@ -156,6 +186,11 @@ function DataExploreParagraphClient(paragraph, id) {
         paragraph.find(".cluster-diagram-options").fadeOut();
         paragraph.find(".parallel-sets-options").fadeIn();
 
+        /**
+         * Draw the parallel sets
+         *
+         * @param callback {ChartRunCallback} The callback that will be called after drawing the chart
+         */
         parallelSetsSelf.draw = function(callback) {
             utils.showLoadingOverlay(paragraph);
             // get categorical feature list from checkbox selection
@@ -183,6 +218,11 @@ function DataExploreParagraphClient(paragraph, id) {
         };
     }
 
+    /**
+     * Trellis chart prototype constructor
+     *
+     * @constructor
+     */
     function TrellisChart() {
         var trellisChartSelf = this;
 
@@ -216,6 +256,11 @@ function DataExploreParagraphClient(paragraph, id) {
             );
         }
 
+        /**
+         * Draw the trellis chart
+         *
+         * @param callback {ChartRunCallback} The callback that will be called after drawing the chart
+         */
         trellisChartSelf.draw = function(callback) {
             utils.showLoadingOverlay(paragraph);
             var featureNames = [];
@@ -371,6 +416,11 @@ function DataExploreParagraphClient(paragraph, id) {
         };
     }
 
+    /**
+     * Cluster diagram prototype constructor
+     *
+     * @constructor
+     */
     function ClusterDiagram() {
         var clusterDiagramSelf = this;
 
@@ -390,6 +440,11 @@ function DataExploreParagraphClient(paragraph, id) {
             paragraph.find(".cluster-diagram-options").fadeIn();
         }
 
+        /**
+         * Draw the cluster diagram
+         *
+         * @param callback {ChartRunCallback} The callback that will be called after drawing the chart
+         */
         clusterDiagramSelf.draw = function(callback) {
             drawClusterDiagram();
 

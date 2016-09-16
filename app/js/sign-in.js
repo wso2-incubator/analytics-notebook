@@ -1,13 +1,16 @@
 /**
- * Utility prototype for sign in page
+ * Utility prototype constructor for sign in page
  *
  * @constructor
  */
 function Authenticator() {
     var self = this;
     var utils = new Utils();
-    var pageContentWrapper = $(".page-content-wrapper");
+    var errorContainer = $("#error-container");
 
+    /**
+     * Initialize the sign in page
+     */
     self.initialize = function () {
         $("#sign-in").click(function () {
             singIn();
@@ -20,7 +23,7 @@ function Authenticator() {
         });
 
         $("#username").focus();
-        utils.hideLoadingOverlay(pageContentWrapper);
+        utils.hideLoadingOverlay(errorContainer);
     };
 
     /**
@@ -34,7 +37,7 @@ function Authenticator() {
             password: $("#password").val()
         };
         if (credentials.username.length > 0 && credentials.password.length > 0) {
-            utils.showLoadingOverlay(pageContentWrapper);
+            utils.showLoadingOverlay(errorContainer);
             $.ajax({
                 type: "POST",
                 url: constants.API_URI + "auth/sign-in",
@@ -50,16 +53,21 @@ function Authenticator() {
                     } else {
                         showError(response.message);
                     }
-                    utils.hideLoadingOverlay(pageContentWrapper);
+                    utils.hideLoadingOverlay(errorContainer);
                 },
                 error : function(response) {
                     showError(response.responseText);
-                    utils.hideLoadingOverlay(pageContentWrapper);
+                    utils.hideLoadingOverlay(errorContainer);
                 }
             });
         }
     }
 
+    /**
+     * Show error in the sign in page
+     *
+     * @private
+     */
     function showError(message) {
         $("#error-container").html(utils.generateAlert("error", "Login Error", message));
     }

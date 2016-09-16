@@ -1,7 +1,7 @@
 /**
  * Model definition paragraph client prototype
  *
- * @param paragraph The paragraph in which the client resides in
+ * @param paragraph {jQuery} The paragraph in which the client resides in
  * @constructor
  */
 function ModelDefinitionParagraphClient(paragraph) {
@@ -9,13 +9,21 @@ function ModelDefinitionParagraphClient(paragraph) {
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
+    /**
+     * Initialize the model definition paragraph
+     */
     self.initialize = function () {
         // Adding event listeners
         paragraph.find(".input-table").focusin(function () {
-            paragraphUtils.loadAvailableParagraphOutputsToInputElement($(event.target), 'table');
+            paragraphUtils.loadAvailableParagraphOutputsToInputElement('table');
         });
     };
 
+    /**
+     * Run the model definition paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
     self.run = function (callback) {
         // TODO : run mode definition paragraph
         callback();

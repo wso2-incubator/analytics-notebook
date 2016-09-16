@@ -20,7 +20,7 @@ $(document).ready(function() {
 
 
 /**
- * General utilities prototype
+ * General utilities prototype constructor
  *
  * @constructor
  */
@@ -48,7 +48,7 @@ function Utils() {
      *
      * @param type {string} Should be one of ["success", "info", "warning", "error"]
      * @param title {string} Title of the error message
-     * @param message {string} Alert message
+     * @param message {string} The Alert message
      * @return {jQuery} The element containing the alert
      */
     self.generateAlert = function(type, title, message) {
@@ -80,49 +80,43 @@ function Utils() {
     /**
      * Generates a data table with client side pagination, ordering and searching
      *
-     * @param headerArray {string[]} Array of column names
-     * @param dataRowArray {string[][]} 2D array of data
+     * @param headerArray {string[]} The array of column names
+     * @param dataRowArray {string[][]} The 2D array of data
+     * @param [tableOptions] {Object} The table options object for the data tables plugin
+     * @param [cellClassNames] {Object} Cell class names with the column name as key and the class as value
      * @return {jQuery} The table element
      */
-    self.generateDataTable = function(headerArray, dataRowArray) {
+    self.generateDataTable = function(headerArray, dataRowArray, tableOptions, cellClassNames) {
+        if(tableOptions == undefined) {
+            tableOptions = {};
+        }
+        tableOptions.columns = headerArray;
+        tableOptions.data = dataRowArray;
         return generateTable(
             $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>"),
-            headerArray,
-            dataRowArray
+            tableOptions, cellClassNames
         );
     };
 
     /**
      * Generates a list table with client side pagination, ordering and searching
      *
-     * @param headerArray {string[]} Array of column names
-     * @param dataRowArray {string[][]} 2D array of data
+     * @param headerArray {string[]} The array of column names
+     * @param dataRowArray {string[][]} The 2D array of data
+     * @param [tableOptions] {Object} The table options object for the data tables plugin
+     * @param [cellClassNames] {Object} Cell class names with the column name as key and the class as value
      * @return {jQuery} The table element
      */
-    self.generateListTable = function(headerArray, dataRowArray) {
+    self.generateListTable = function(headerArray, dataRowArray, tableOptions, cellClassNames) {
+        if(tableOptions == undefined) {
+            tableOptions = {};
+        }
+        tableOptions.columns = headerArray;
+        tableOptions.data = dataRowArray;
         return generateTable(
             $("<table class='table table-striped table-hover display' cellspacing='0'>"),
-            headerArray,
-            dataRowArray
+            tableOptions, cellClassNames
         );
-    };
-
-    var generateTable = function (table, headerArray, dataRowArray) {
-        var tableContainer = $("<div>");
-        tableContainer.append(table);
-
-        var columnArray = [];
-        for (var i = 0; i < headerArray.length; i++) {
-            columnArray.push({title: headerArray[i]});
-        }
-
-        table.DataTable({
-            responsive: true,
-            data: dataRowArray,
-            columns: columnArray
-        });
-
-        return tableContainer;
     };
 
     /**
@@ -132,67 +126,107 @@ function Utils() {
      * @param url {string} The uri that should be used in the request sent for each draw
      * @param queryParameters {Object} The custom parameters that should be added in the request sent for each draw
      * @param headerArray {string[]} The column names array of the tables
+     * @param [tableOptions] {Object} The table options object for the data tables plugin
+     * @param [cellClassNames] {Object} Cell class names with the column name as key and the class as value
      * @return {jQuery} The table element
      */
-    self.generateDataTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray) {
-        var tableContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
+    self.generateDataTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray, tableOptions, cellClassNames) {
+        if(tableOptions == undefined) {
+            tableOptions = {};
+        }
+        tableOptions.searching = false;
+        tableOptions.ordering = false;
+        tableOptions.serverSide = true;
+        tableOptions.columns = headerArray;
+        tableOptions.ajax = function(data, callback, settings) {
+            queryParameters.draw = data.draw;
+            queryParameters.paginationFrom = data.start;
+            queryParameters.paginationCount = data.length;
+            self.showLoadingOverlay(table);
+            $.ajax({
+                type: httpMethod,
+                url: url,
+                data: JSON.stringify(queryParameters),
+                success: function (returnedData) {
+                    var options;
+                    if (returnedData.status == constants.response.SUCCESS) {
+                        options = {
+                            draw: returnedData.draw,
+                            recordsTotal: returnedData.recordsCount,
+                            recordsFiltered: returnedData.recordsCount,
+                            data: returnedData.data
+                        };
+                    } else {
+                        options = {
+                            draw: data.draw,
+                            recordsTotal: 0,
+                            recordsFiltered: 0,
+                            data: [],
+                            error: returnedData.message
+                        };
+                    }
+                    callback(options);
+                    self.hideLoadingOverlay(table);
+                },
+                error : function() {
+                    self.hideLoadingOverlay(table);
+                }
+            });
+        };
+
         var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
+        return generateTable(table, tableOptions, cellClassNames);
+    };
+
+    /**
+     * Generate a table with the options provided
+     *
+     * @private
+     * @param table {jQuery} The table Element in which the table will be generated
+     * @param options {Object} The table options to be used by the data tables plugin
+     * @param [cellClassNames] {Object} Cell class names with the column name as key and the class as value
+     * @returns {jQuery} The div element containing the table
+     */
+    var generateTable = function (table, options, cellClassNames) {
+        var tableContainer = $("<div>");
         tableContainer.append(table);
 
-        var columnArray = [];
-        for (var i = 0; i < headerArray.length; i++) {
-            columnArray.push({data: headerArray[i], title: headerArray[i]});
+        if(!options.serverSide) {
+            options.responsive = true;
         }
 
-        table.DataTable({
-            serverSide: true,
-            searching: false,
-            ordering: false,
-            columns: columnArray,
-            ajax: function (data, callback, settings) {
-                queryParameters.draw = data.draw;
-                queryParameters.paginationFrom = data.start;
-                queryParameters.paginationCount = data.length;
-                self.showLoadingOverlay(table);
-                $.ajax({
-                    type: httpMethod,
-                    url: url,
-                    data: JSON.stringify(queryParameters),
-                    success: function (returnedData) {
-                        var options;
-                        if (returnedData.status == constants.response.SUCCESS) {
-                            options = {
-                                draw: returnedData.draw,
-                                recordsTotal: returnedData.recordsCount,
-                                recordsFiltered: returnedData.recordsCount,
-                                data: returnedData.data
-                            };
-                        } else {
-                            options = {
-                                draw: data.draw,
-                                recordsTotal: 0,
-                                recordsFiltered: 0,
-                                data: [],
-                                error: returnedData.message
-                            };
-                        }
-                        callback(options);
-                        self.hideLoadingOverlay(table);
-                    },
-                    error : function() {
-                        self.hideLoadingOverlay(table);
-                    }
-                });
+        var columnArray = [];
+        for (var i = 0; i < options.columns.length; i++) {
+            var columnData = {title: options.columns[i]};
+            if(options.serverSide) {
+                columnData.data = options.columns[i];
             }
-        });
+            if(cellClassNames != undefined && cellClassNames[options.columns[i]] != undefined) {
+                columnData.className = cellClassNames[options.columns[i]];
+            }
+            columnArray.push(columnData);
+        }
+        options.columns = columnArray;
+
+        table.DataTable(options);
 
         return tableContainer;
     };
 
+    /**
+     * Shows the loading overlay over the element specified
+     *
+     * @param element {jQuery} The element which is enclosed inside the loading overlay
+     */
     self.showLoadingOverlay = function(element) {
         $(element).closest(".loading-overlay").loading("show");
     };
 
+    /**
+     * Hides the loading overlay over the element specified
+     *
+     * @param element {jQuery} The element which is enclosed inside the loading overlay
+     */
     self.hideLoadingOverlay = function(element) {
         $(element).closest(".loading-overlay").loading("hide");
     }

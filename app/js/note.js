@@ -1,5 +1,5 @@
 /**
- * Note prototype
+ * Note prototype constructor
  *
  * @constructor
  */
@@ -54,11 +54,11 @@ function Note() {
      * Toggle the visibility of all views (source or output views) in the current note
      *
      * @private
-     * @param type Should be one of ["source", "output"]
+     * @param type {string} One of ["source", "output"]
      */
     function toggleVisibilityOfMultipleViews(type) {
-        var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views");
-        var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view");
+        var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views-button");
+        var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view-button");
         var buttonTemplate;
         if (toggleAllSourceOrOutputViewsButton.html().indexOf("Show") != -1) {
             buttonTemplate = "<i class='fw fw-hide'></i> Hide " + type;
@@ -93,7 +93,7 @@ function Note() {
 }
 
 /**
- * Paragraph prototype
+ * Paragraph prototype constructor
  *
  * @param id {int} unique paragraph id assigned to the paragraph
  * @constructor
@@ -104,6 +104,10 @@ function Paragraph(id) {
     // Initializing paragraph
     var paragraphContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
     self.paragraphElement = $("<div class='paragraph well fluid-container'>");
+
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(self.paragraphElement);
+
     self.paragraphElement.css({display: "none"});
     self.paragraphElement.load('paragraph-template.html', function () {
         paragraphContainer.append(self.paragraphElement);
@@ -132,17 +136,12 @@ function Paragraph(id) {
         });
     });
 
-    var utils = new Utils();
-    var paragraphUtils = new ParagraphUtils(self.paragraphElement);
-
     // Prototype variables
     self.paragraphClient = null;    // The client will be set when the paragraph type is selected
     self.paragraphID = id;
 
     /**
-     * Run the paragraph specified
-     *
-     * @private
+     * Run the paragraph
      */
     self.run = function () {  // TODO : This method needs to be changed after deciding on the architecture
         self.paragraphClient.run(function (output) {
@@ -156,13 +155,13 @@ function Paragraph(id) {
                 outputView.append(newOutputViewContent);
 
                 outputView.slideDown();
-                self.paragraphElement.find(".toggle-output-view").prop('disabled', false);
+                self.paragraphElement.find(".toggle-output-view-button").prop('disabled', false);
             });
         });
     };
 
     /**
-     * Toggle the visibility of a view (source or output view) in the paragraph in which the toggle is located in
+     * Toggle the visibility of a view (source or output view) in the paragraph
      *
      * @private
      * @param type {string} The type of views to toggle. Should be one of ["output", "source"]
@@ -182,7 +181,7 @@ function Paragraph(id) {
     }
 
     /**
-     * Delete the specified paragraph
+     * Delete the paragraph
      *
      * @private
      */
@@ -194,7 +193,7 @@ function Paragraph(id) {
     }
 
     /**
-     * Load the source view of the paragraph in which the select element is located in
+     * Load the source view of the paragraph
      *
      * @private
      */
@@ -252,15 +251,15 @@ function Paragraph(id) {
                 var sourceView = paragraphContent.find(".source");
                 sourceView.empty();
                 paragraphContent.find(".output").empty();
-                paragraphUtils.clearError();
+                paragraphUtils.clearError(self.paragraphElement);
                 sourceView.append($("<p>Source</p>"));
                 sourceView.append(sourceViewContent);
                 self.paragraphClient.initialize();
                 paragraphContent.slideDown();
 
                 // paragraph.find(".run").prop('disabled', true);
-                self.paragraphElement.find(".toggle-source-view").prop('disabled', false);
-                self.paragraphElement.find(".toggle-output-view").prop('disabled', true);
+                self.paragraphElement.find(".toggle-source-view-button").prop('disabled', false);
+                self.paragraphElement.find(".toggle-output-view-button").prop('disabled', true);
 
                 utils.hideLoadingOverlay(self.paragraphElement);
             });
@@ -269,22 +268,22 @@ function Paragraph(id) {
 }
 
 /**
- * Utility prototype for paragraphs
+ * Paragraph utilities prototype constructor
  *
  * @constructor
+ * @param paragraph {jQuery} The paragraph for which the utilities will be used
  */
 function ParagraphUtils(paragraph) {
     var self = this;
     var utils = new Utils();
 
     /**
-     * Loads all available output tables/streams/models into the paragraph in which the select element is located in
+     * Loads all available output tables/streams/models into the paragraph in which this is located in
      *
-     * @param selectElement {jQuery} The select element which is located in the paragraph
-     * @param type {string} Should be one of the following ["table", "stream", "model"]
+     * @param type {string} One of ["table", "stream", "model"]
      */
-    self.loadAvailableParagraphOutputsToInputElement = function (selectElement, type) {
-        var inputSelectElement = selectElement;
+    self.loadAvailableParagraphOutputsToInputElement = function (type) {
+        var inputSelectElement = paragraph.find(".input-table");
         inputSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
 
         $(".output-" + type).each(function (index, selectElement) {
@@ -296,7 +295,7 @@ function ParagraphUtils(paragraph) {
 
 
     /**
-     * Load names of all the tables available in the server into the input table element in the paragraph specified
+     * Load names of all the tables available in the server into the input table element in the paragraph
      */
     self.loadTableNames = function () {
         var inputTableSelectElement = paragraph.find(".input-table");
@@ -316,11 +315,26 @@ function ParagraphUtils(paragraph) {
         });
     };
 
+    /**
+     * Handles paragraph error messages in the paragraph
+     *
+     * @param message {string} Error message to be displayed in the paragraph
+     */
     self.handleError = function (message) {
         paragraph.find(".error-container").html(utils.generateAlert("error", "Error", message))
     };
 
+    /**
+     * Clear the paragraph error messages in the paragraph
+     */
     self.clearError = function() {
         paragraph.find(".error-container").empty();
     };
 }
+
+/**
+ * Callback function for paragraph client run
+ *
+ * @callback ParagraphClientRunCallback
+ * @param output {jQuery} The output of the paragraph client run task
+ */

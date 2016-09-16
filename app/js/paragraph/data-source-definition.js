@@ -9,6 +9,9 @@ function DataSourceDefinitionParagraphClient(paragraph) {
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
+    /**
+     * Initialize the data source definition paragraph
+     */
     self.initialize = function () {
         // Adding event listeners
         paragraph.find(".data-source-type").change(function () {
@@ -24,6 +27,11 @@ function DataSourceDefinitionParagraphClient(paragraph) {
         });
     };
 
+    /**
+     * Initialize the data source definition paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
     self.run = function (callback) {
         // TODO : run data source definition paragraph
     };
@@ -80,7 +88,7 @@ function DataSourceDefinitionParagraphClient(paragraph) {
     }
 
     /**
-     * Run on output table keyup tasks
+     * Run on output table key up tasks
      *
      * @private
      */
