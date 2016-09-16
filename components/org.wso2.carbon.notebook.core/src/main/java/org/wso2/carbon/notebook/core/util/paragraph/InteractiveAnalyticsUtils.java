@@ -87,27 +87,4 @@ public class InteractiveAnalyticsUtils {
 
         return NotebookUtils.getTableDataFromRecords(records);
     }
-
-    public static long getRecordCount(int tenantID, String tableName, long timeFrom, long timeTo)
-            throws AnalyticsException {
-        String recordStoreName = ServiceHolder.getAnalyticsDataService()
-                .getRecordStoreNameByTable(tenantID, tableName);
-        boolean isRecordCountSupported = ServiceHolder.getAnalyticsDataService().isRecordCountSupported(recordStoreName);
-
-        long actualCount = -1;
-        if (isRecordCountSupported) {
-            actualCount = ServiceHolder.getAnalyticsDataService().getRecordCount(
-                    tenantID,
-                    tableName,
-                    timeFrom,
-                    timeTo
-            );
-        }
-
-        return actualCount;
-    }
-
-    public static int getRecordCount(int tenantID, String tableName, String query) throws AnalyticsIndexException {
-        return ServiceHolder.getAnalyticsDataService().searchCount(tenantID, tableName, query);
-    }
 }

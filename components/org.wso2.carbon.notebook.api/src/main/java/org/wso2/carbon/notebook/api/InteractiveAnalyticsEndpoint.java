@@ -5,6 +5,7 @@ import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException
 import org.wso2.carbon.notebook.commons.request.paragraph.InteractiveAnalyticsRequest;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.dto.LazyLoadedTable;
+import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.util.paragraph.InteractiveAnalyticsUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,20 +38,20 @@ public class InteractiveAnalyticsEndpoint {
 
         try {
             List<Map<String, Object>> data = InteractiveAnalyticsUtils.executeSearchQuery(
-                    tenantID,
-                    interactiveAnalyticsRequest.getTableName(),
-                    interactiveAnalyticsRequest.getQuery(),
-                    interactiveAnalyticsRequest.getPaginationFrom(),
-                    interactiveAnalyticsRequest.getPaginationCount()
+                tenantID,
+                interactiveAnalyticsRequest.getTableName(),
+                interactiveAnalyticsRequest.getQuery(),
+                interactiveAnalyticsRequest.getPaginationFrom(),
+                interactiveAnalyticsRequest.getPaginationCount()
             );
             jsonString = new Gson().toJson(new LazyLoadedTable(
-                    interactiveAnalyticsRequest.getDraw(),
-                    InteractiveAnalyticsUtils.getRecordCount(
-                            tenantID,
-                            interactiveAnalyticsRequest.getTableName(),
-                            interactiveAnalyticsRequest.getQuery()
-                    ),
-                    data
+                interactiveAnalyticsRequest.getDraw(),
+                ServiceHolder.getAnalyticsDataService().searchCount(
+                        tenantID,
+                        interactiveAnalyticsRequest.getTableName(),
+                        interactiveAnalyticsRequest.getQuery()
+                ),
+                data
             ));
         } catch (AnalyticsException e) {
             jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
@@ -66,7 +67,7 @@ public class InteractiveAnalyticsEndpoint {
      * @return response
      */
     @POST
-    @Path("/search/date-range")
+    @Path("/search/time-range")
     public javax.ws.rs.core.Response searchByDateRange(@Context HttpServletRequest request, String queryString) {
         InteractiveAnalyticsRequest interactiveAnalyticsRequest = new Gson().fromJson(queryString, InteractiveAnalyticsRequest.class);
         HttpSession session = request.getSession();
@@ -75,22 +76,22 @@ public class InteractiveAnalyticsEndpoint {
 
         try {
             List<Map<String, Object>> data = InteractiveAnalyticsUtils.searchByDateRange(
+                tenantID,
+                interactiveAnalyticsRequest.getTableName(),
+                interactiveAnalyticsRequest.getTimeFrom(),
+                interactiveAnalyticsRequest.getTimeTo(),
+                interactiveAnalyticsRequest.getPaginationFrom(),
+                interactiveAnalyticsRequest.getPaginationCount()
+            );
+            jsonString = new Gson().toJson(new LazyLoadedTable(
+                interactiveAnalyticsRequest.getDraw(),
+                ServiceHolder.getAnalyticsDataService().getRecordCount(
                     tenantID,
                     interactiveAnalyticsRequest.getTableName(),
                     interactiveAnalyticsRequest.getTimeFrom(),
-                    interactiveAnalyticsRequest.getTimeTo(),
-                    interactiveAnalyticsRequest.getPaginationFrom(),
-                    interactiveAnalyticsRequest.getPaginationCount()
-            );
-            jsonString = new Gson().toJson(new LazyLoadedTable(
-                    interactiveAnalyticsRequest.getDraw(),
-                    InteractiveAnalyticsUtils.getRecordCount(
-                            tenantID,
-                            interactiveAnalyticsRequest.getTableName(),
-                            interactiveAnalyticsRequest.getTimeFrom(),
-                            interactiveAnalyticsRequest.getTimeTo()
-                    ),
-                    data
+                    interactiveAnalyticsRequest.getTimeTo()
+                ),
+                data
             ));
         } catch (AnalyticsException e) {
             jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));

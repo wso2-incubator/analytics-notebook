@@ -47,8 +47,8 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             autoApply: true,
             timePicker24Hour: true
         }, function (start, end, label) {
-            timeFrom = start.format('MM/DD/YYYY hh:mm:ss').getTime();
-            timeTo = end.format('MM/DD/YYYY hh:mm:ss').getTime();
+            timeFrom = new Date(start).getTime();
+            timeTo = new Date(end).getTime();
         });
     };
 
