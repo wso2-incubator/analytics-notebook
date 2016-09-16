@@ -6,6 +6,8 @@
  */
 function DataSourceDefinitionParagraphClient(paragraph) {
     var self = this;
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(paragraph);
 
     self.initialize = function () {
         // Adding event listeners
@@ -43,6 +45,7 @@ function DataSourceDefinitionParagraphClient(paragraph) {
             case "CSV File" :
                 break;
         }
+        utils.showLoadingOverlay(paragraph);
         $.ajax({
             type: type,
             url: constants.API_URI + url,
@@ -57,8 +60,12 @@ function DataSourceDefinitionParagraphClient(paragraph) {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    new ParagraphUtils().handleError(paragraph, response.message);
+                    paragraphUtils.handleError(response.message);
                 }
+            },
+            error : function(response) {
+                paragraphUtils.handleError(response.responseText);
+                utils.hideLoadingOverlay(paragraph);
             }
         });
     }

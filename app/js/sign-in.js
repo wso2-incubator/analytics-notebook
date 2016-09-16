@@ -5,6 +5,8 @@
  */
 function Authenticator() {
     var self = this;
+    var utils = new Utils();
+    var pageContentWrapper = $(".page-content-wrapper");
 
     self.initialize = function () {
         $("#sign-in").click(function () {
@@ -18,6 +20,7 @@ function Authenticator() {
         });
 
         $("#username").focus();
+        utils.hideLoadingOverlay(pageContentWrapper);
     };
 
     /**
@@ -31,6 +34,7 @@ function Authenticator() {
             password: $("#password").val()
         };
         if (credentials.username.length > 0 && credentials.password.length > 0) {
+            utils.showLoadingOverlay(pageContentWrapper);
             $.ajax({
                 type: "POST",
                 url: constants.API_URI + "auth/sign-in",
@@ -43,11 +47,20 @@ function Authenticator() {
                             redirectURI = "index.html";
                         }
                         window.location.href = redirectURI;
-                    } else if (response.status == constants.response.ERROR) {
-                        $("#error-msg").html(new Utils().generateAlert("error", "Login Error", response.message));
+                    } else {
+                        showError(response.message);
                     }
+                    utils.hideLoadingOverlay(pageContentWrapper);
+                },
+                error : function(response) {
+                    showError(response.responseText);
+                    utils.hideLoadingOverlay(pageContentWrapper);
                 }
             });
         }
+    }
+
+    function showError(message) {
+        $("#error-container").html(utils.generateAlert("error", "Login Error", message));
     }
 }

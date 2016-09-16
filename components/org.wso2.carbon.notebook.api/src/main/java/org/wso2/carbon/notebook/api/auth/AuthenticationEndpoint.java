@@ -2,6 +2,7 @@ package org.wso2.carbon.notebook.api.auth;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.identity.authentication.AuthenticationException;
 import org.wso2.carbon.notebook.commons.request.LoginRequest;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.GeneralResponse;
@@ -32,20 +33,31 @@ public class AuthenticationEndpoint {
         LoginRequest loginRequest = new Gson().fromJson(credentialsString, LoginRequest.class);
         HttpSession session = request.getSession();
         String jsonString;
+        boolean loginSuccess;
 
-        if (ServiceHolder.getAuthenticationService()
-                .authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {
-            String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(loginRequest.getUsername());
-            String tenantDomain = MultitenantUtils.getTenantDomain(loginRequest.getPassword());
+        try {
+            if (ServiceHolder.getAuthenticationService()
+                    .authenticate(loginRequest.getUsername(), loginRequest.getPassword())) {
+                String tenantAwareUsername = MultitenantUtils.getTenantAwareUsername(loginRequest.getUsername());
+                String tenantDomain = MultitenantUtils.getTenantDomain(loginRequest.getPassword());
 
-            PrivilegedCarbonContext.startTenantFlow();
-            PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, false);
-            int tenantID = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
-            PrivilegedCarbonContext.endTenantFlow();
+                PrivilegedCarbonContext.startTenantFlow();
+                PrivilegedCarbonContext.getThreadLocalCarbonContext().setTenantDomain(tenantDomain, false);
+                int tenantID = PrivilegedCarbonContext.getThreadLocalCarbonContext().getTenantId(true);
+                PrivilegedCarbonContext.endTenantFlow();
 
-            session.setAttribute("username", tenantAwareUsername);
-            session.setAttribute("tenantDomain", tenantDomain);
-            session.setAttribute("tenantID", tenantID);
+                session.setAttribute("username", tenantAwareUsername);
+                session.setAttribute("tenantDomain", tenantDomain);
+                session.setAttribute("tenantID", tenantID);
+                loginSuccess = true;
+            } else {
+                loginSuccess = false;
+            }
+        } catch(AuthenticationException e) {
+            loginSuccess = false;
+        }
+
+        if (loginSuccess) {
             jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
         } else {
             jsonString = new Gson().toJson(new ErrorResponse("Invalid Credentials"));

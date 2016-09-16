@@ -6,7 +6,8 @@
  */
 function PreprocessorParagraphClient(paragraph) {
     var self = this;
-
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(paragraph);
     var table;
 
     self.initialize = function () {
@@ -16,7 +17,7 @@ function PreprocessorParagraphClient(paragraph) {
         });
 
         // Initializing paragraph
-        new ParagraphUtils().loadTableNames(paragraph);
+        paragraphUtils.loadTableNames();
     };
 
     self.run = function (callback) {
@@ -58,12 +59,12 @@ function PreprocessorParagraphClient(paragraph) {
                             data = result;
                         }
                     });
-                    output = new Utils().generateDataTable(headerArray, data);
+                    output = utils.generateDataTable(headerArray, data);
                     callback(output);
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    new ParagraphUtils().handleError(paragraph, response.message);
+                    paragraphUtils.handleError(response.message);
                 }
             }
         });
@@ -101,14 +102,14 @@ function PreprocessorParagraphClient(paragraph) {
                         tableData.push(row);
 
                         if (index == response.columnNames.length - 1) {
-                            table = new Utils().generateListTable(headerArray, tableData);
+                            table = utils.generateListTable(headerArray, tableData);
                             paragraph.find(".preprocessor-table").html(table);
                         }
                     });
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    new ParagraphUtils().handleError(paragraph, response.message);
+                    paragraphUtils.handleError(response.message);
                 }
             }
         });

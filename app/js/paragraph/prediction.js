@@ -6,11 +6,13 @@
  */
 function PredictionParagraphClient(paragraph) {
     var self = this;
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(paragraph);
 
     self.initialize = function () {
         // Adding event listeners
         paragraph.find(".input-model").focusin(function () {
-            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target), 'model');
+            paragraphUtils.loadAvailableParagraphOutputsToInputElement($(event.target), 'model');
         });
     };
 

@@ -6,11 +6,13 @@
  */
 function EventSimulationParagraphClientClient(paragraph) {
     var self = this;
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(paragraph);
 
     self.initialize = function () {
         // Adding event listeners
         paragraph.find(".input-table").focusin(function () {
-            new ParagraphUtils().loadAvailableParagraphOutputsToInputElement($(event.target), 'table');
+            paragraphUtils.loadAvailableParagraphOutputsToInputElement($(event.target), 'table');
         });
     };
 

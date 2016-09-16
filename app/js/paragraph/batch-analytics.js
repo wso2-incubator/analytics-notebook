@@ -6,9 +6,11 @@
  */
 function BatchAnalyticsParagraphClient(paragraph) {
     var self = this;
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(paragraph);
 
     self.initialize = function () {
-        new ParagraphUtils().loadTableNames(paragraph);
+        paragraphUtils.loadTableNames();
 
         // Adding event listeners for the batch analytics paragraph
         paragraph.find(".add-table-button").click(function (event) {
@@ -25,10 +27,11 @@ function BatchAnalyticsParagraphClient(paragraph) {
         // TODO : run batch analytics paragraph
         var query = paragraph.find(".query");
         var output = [];
+        utils.showLoadingOverlay(paragraph);
         $.ajax({
-            type: "POST",
-            data: JSON.stringify({query: query.val()}),
-            url: constants.API_URI + "batch-analytics/execute-script",
+            type : "POST",
+            data : JSON.stringify({query: query.val()}),
+            url : constants.API_URI + "batch-analytics/execute-script",
             success: function (response) {
                 $.each(response.tables, function (index, result) {
                     if (response.status == constants.response.SUCCESS) {
@@ -39,7 +42,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
                                 output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong> Executed. No results to show. </p>'));
                             } else {
                                 output.push($('<p><strong>Query ' + ( index + 1 ) + ' : </strong></p>'));
-                                output.push(new Utils().generateDataTable(result.columns, result.data));
+                                output.push(utils.generateDataTable(result.columns, result.data));
                             }
                         }
                     } else if (response.status == constants.response.NOT_LOGGED_IN) {
@@ -47,6 +50,11 @@ function BatchAnalyticsParagraphClient(paragraph) {
                     }
                 });
                 callback(output);
+                utils.hideLoadingOverlay(paragraph);
+            },
+            error : function(response) {
+                paragraphUtils.handleError(response.responseText);
+                utils.hideLoadingOverlay(paragraph);
             }
         });
     };
@@ -88,6 +96,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
      */
     function generateSparkQuery(tableName, tempTableName, callback) {
         var schema = '';
+        utils.showLoadingOverlay(paragraph);
         $.ajax({
             type: "GET",
             url: constants.API_URI + "tables/" + tableName + "/schema",
@@ -118,8 +127,13 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    new ParagraphUtils().handleError(paragraph, response.message);
+                    paragraphUtils.handleError(response.message);
                 }
+                utils.hideLoadingOverlay(paragraph);
+            },
+            error : function(response) {
+                paragraphUtils.handleError(response.responseText);
+                utils.hideLoadingOverlay(paragraph);
             }
         });
 

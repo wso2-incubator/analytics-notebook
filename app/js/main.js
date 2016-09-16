@@ -13,7 +13,7 @@ var constants = {
 };
 
 // General Initializations
-$(document).ready(function () {
+$(document).ready(function() {
     document.title = constants.PRODUCT_NAME;
     $(".username").html("John Doe");
 });
@@ -32,7 +32,7 @@ function Utils() {
      *
      * @return {Object} The object with the attribute name and attribute values in the query parameter.
      */
-    self.getQueryParameters = function () {
+    self.getQueryParameters = function() {
         var keyValuePairMap = {};
         var query = window.location.search.substring(1);   // Removing the "?" from query string
         var parameters = query.split('&');
@@ -51,7 +51,7 @@ function Utils() {
      * @param message {string} Alert message
      * @return {jQuery} The element containing the alert
      */
-    self.generateAlert = function (type, title, message) {
+    self.generateAlert = function(type, title, message) {
         var alertClass;
         switch (type) {
             case "success" :
@@ -63,7 +63,7 @@ function Utils() {
             case "warning" :
                 alertClass = "warning";
                 break;
-            case "danger" :
+            case "error" :
                 alertClass = "danger";
                 break;
         }
@@ -84,7 +84,7 @@ function Utils() {
      * @param dataRowArray {string[][]} 2D array of data
      * @return {jQuery} The table element
      */
-    self.generateDataTable = function (headerArray, dataRowArray) {
+    self.generateDataTable = function(headerArray, dataRowArray) {
         return generateTable(
             $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>"),
             headerArray,
@@ -99,7 +99,7 @@ function Utils() {
      * @param dataRowArray {string[][]} 2D array of data
      * @return {jQuery} The table element
      */
-    self.generateListTable = function (headerArray, dataRowArray) {
+    self.generateListTable = function(headerArray, dataRowArray) {
         return generateTable(
             $("<table class='table table-striped table-hover display' cellspacing='0'>"),
             headerArray,
@@ -134,8 +134,8 @@ function Utils() {
      * @param headerArray {string[]} The column names array of the tables
      * @return {jQuery} The table element
      */
-    self.generateDataTableWithLazyLoading = function (httpMethod, url, queryParameters, headerArray) {
-        var tableContainer = $("<div>");
+    self.generateDataTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray) {
+        var tableContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
         var table = $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>");
         tableContainer.append(table);
 
@@ -153,6 +153,7 @@ function Utils() {
                 queryParameters.draw = data.draw;
                 queryParameters.paginationFrom = data.start;
                 queryParameters.paginationCount = data.length;
+                self.showLoadingOverlay(table);
                 $.ajax({
                     type: httpMethod,
                     url: url,
@@ -175,7 +176,11 @@ function Utils() {
                                 error: returnedData.message
                             };
                         }
-                        callback(options)
+                        callback(options);
+                        self.hideLoadingOverlay(table);
+                    },
+                    error : function() {
+                        self.hideLoadingOverlay(table);
                     }
                 });
             }
@@ -183,4 +188,12 @@ function Utils() {
 
         return tableContainer;
     };
+
+    self.showLoadingOverlay = function(element) {
+        $(element).closest(".loading-overlay").loading("show");
+    };
+
+    self.hideLoadingOverlay = function(element) {
+        $(element).closest(".loading-overlay").loading("hide");
+    }
 }

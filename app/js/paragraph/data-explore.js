@@ -7,6 +7,8 @@
  */
 function DataExploreParagraphClient(paragraph, id) {
     var self = this;
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(paragraph);
 
     var sample;
 
@@ -18,10 +20,11 @@ function DataExploreParagraphClient(paragraph, id) {
     var markerSize = 2;
 
     self.initialize = function () {
-        new ParagraphUtils().loadTableNames(paragraph);
+        paragraphUtils.loadTableNames();
 
         paragraph.find(".input-table").change(function () {
             var tableName = paragraph.find(".input-table").val();
+            utils.showLoadingOverlay(paragraph);
             $.ajax({
                 type: "GET",
                 url: constants.API_URI + "data-explore/sample?table-name=" + tableName,
@@ -38,8 +41,13 @@ function DataExploreParagraphClient(paragraph, id) {
                     } else if (response.status == constants.response.NOT_LOGGED_IN) {
                         window.location.href = "sign-in.html";
                     } else {
-                        new ParagraphUtils().handleError(paragraph, response.message);
+                        paragraphUtils.handleError(response.message);
                     }
+                    utils.hideLoadingOverlay(paragraph);
+                },
+                error : function(response) {
+                    paragraphUtils.handleError(response.responseText);
+                    utils.hideLoadingOverlay(paragraph);
                 }
             });
             paragraph.find(".scatter-plot-options").fadeOut();
@@ -88,13 +96,13 @@ function DataExploreParagraphClient(paragraph, id) {
             paragraph.find(".cluster-diagram-options").fadeOut();
             paragraph.find(".scatter-plot-options").fadeIn();
         } else {
-            new Utils().handleError(
-                paragraph,
+            utils.handleError(
                 "Minimum of two numerical features and one categorical feature required to draw a scatter plot"
             );
         }
 
         scatterPlotSelf.draw = function(callback) {
+            utils.showLoadingOverlay(paragraph);
             var numFeatureIndependent = paragraph.find(".scatter-plot-x").val().replace(/^\s+|\s+$/g, '');
             var numFeatureDependent = paragraph.find(".scatter-plot-y").val().replace(/^\s+|\s+$/g, '');
 
@@ -125,6 +133,7 @@ function DataExploreParagraphClient(paragraph, id) {
                 chartContainer.append(chart);
                 chartContainer.append(generateMarkerSizeCalibrator());
                 callback(chartContainer);
+                utils.hideLoadingOverlay(paragraph);
             }, numFeatureIndependent, numFeatureDependent, markerSize, true);
         };
     }
@@ -148,6 +157,7 @@ function DataExploreParagraphClient(paragraph, id) {
         paragraph.find(".parallel-sets-options").fadeIn();
 
         parallelSetsSelf.draw = function(callback) {
+            utils.showLoadingOverlay(paragraph);
             // get categorical feature list from checkbox selection
             var parallelSetsFeatureNames = [];
             paragraph.find('.parallel-sets-features:checked').each(function() {
@@ -160,15 +170,16 @@ function DataExploreParagraphClient(paragraph, id) {
                 var points = getChartPoints(parallelSetsFeatureNames);
                 var chartElement = $("<div class='chart'>");
                 var chart = d3.parsets().dimensions(parallelSetsFeatureNames).tension(1.0).width(800).height(670);
-                var vis = d3.select(chartElement.get(0)).append("svg").attr("width", chart.width()).attr("height", chart.height()).style("font-size", "12px");
+                var vis = d3.select(chartElement.get(0)).append("svg")
+                    .attr("width", chart.width())
+                    .attr("height", chart.height())
+                    .style("font-size", "12px");
                 vis.datum(points).call(chart);
                 callback(chartElement);
             } else {
-                new Utils().handleError(
-                    paragraph,
-                    "Minimum of two categorical features required for parallel sets"
-                );
+                utils.handleError("Minimum of two categorical features required for parallel sets");
             }
+            utils.hideLoadingOverlay(paragraph);
         };
     }
 
@@ -200,13 +211,13 @@ function DataExploreParagraphClient(paragraph, id) {
             paragraph.find(".cluster-diagram-options").fadeOut();
             paragraph.find(".trellis-chart-options").fadeIn();
         } else {
-            new Utils().handleError(
-                paragraph,
+            utils.handleError(
                 "Minimum of one numerical features and one categorical feature required to draw a trellis chart"
             );
         }
 
         trellisChartSelf.draw = function(callback) {
+            utils.showLoadingOverlay(paragraph);
             var featureNames = [];
             // get selected categorical feature
             var categoricalHeader = paragraph.find(".trellis-chart-categorical-feature").val().replace(/^\s+|\s+$/g, '');
@@ -356,6 +367,7 @@ function DataExploreParagraphClient(paragraph, id) {
             chartContainer.append(chartElement);
             chartContainer.append(generateMarkerSizeCalibrator());
             callback(chartContainer);
+            utils.hideLoadingOverlay(paragraph);
         };
     }
 
@@ -391,6 +403,7 @@ function DataExploreParagraphClient(paragraph, id) {
                 var noOfClusters = paragraph.find(".cluster-diagram-features-count").val().replace(/^\s+|\s+$/g, '');
                 var tableName = paragraph.find(".input-table").val();
 
+                utils.showLoadingOverlay(paragraph);
                 // make ajax call
                 $.ajax({
                     type : "GET",
@@ -410,7 +423,17 @@ function DataExploreParagraphClient(paragraph, id) {
                             clusterData.push(dataRow);
                         }
                         redrawClusterData = clusterData;
-                        drawScatterPlot(clusterData, "#clusterDiagram", numericalFeatureIndependent, numericalFeatureDependent, markerSize, false);
+                        drawScatterPlot(clusterData, function(chart) {
+                            var chartContainer = $("<div>");
+                            chartContainer.append(chart);
+                            chartContainer.append(generateMarkerSizeCalibrator());
+                            callback(chartContainer);
+                            utils.hideLoadingOverlay(paragraph);
+                        }, numericalFeatureIndependent, numericalFeatureDependent, markerSize, false);
+                    },
+                    error : function(response) {
+                        paragraphUtils.handleError(response.responseText);
+                        utils.hideLoadingOverlay(paragraph);
                     }
                 });
             }

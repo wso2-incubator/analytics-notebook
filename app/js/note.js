@@ -102,10 +102,12 @@ function Paragraph(id) {
     var self = this;
 
     // Initializing paragraph
+    var paragraphContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
     self.paragraphElement = $("<div class='paragraph well fluid-container'>");
     self.paragraphElement.css({display: "none"});
     self.paragraphElement.load('paragraph-template.html', function () {
-        $("#paragraphs").append(self.paragraphElement);
+        paragraphContainer.append(self.paragraphElement);
+        $("#paragraphs").append(paragraphContainer);
         self.paragraphElement.slideDown();
 
         // Adding event listeners for the new paragraph main controls
@@ -130,6 +132,9 @@ function Paragraph(id) {
         });
     });
 
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(self.paragraphElement);
+
     // Prototype variables
     self.paragraphClient = null;    // The client will be set when the paragraph type is selected
     self.paragraphID = id;
@@ -144,6 +149,7 @@ function Paragraph(id) {
             var outputView = self.paragraphElement.find(".output");
             outputView.slideUp(function() {
                 outputView.empty();
+                paragraphUtils.clearError();
                 outputView.append($("<p>Output</p>"));
                 var newOutputViewContent = $("<div class='fluid-container'>");
                 newOutputViewContent.append(output);
@@ -211,10 +217,6 @@ function Paragraph(id) {
                     self.paragraphClient = new DataExploreParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/data-explore.html";
                     break;
-                case "Data Visualization" :
-                    self.paragraphClient = new DataVisualizationParagraphClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/data-visualization.html";
-                    break;
                 case "Batch Analytics" :
                     self.paragraphClient = new BatchAnalyticsParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/batch-analytics.html";
@@ -243,16 +245,14 @@ function Paragraph(id) {
                     self.paragraphClient = new EventSimulationParagraphClientClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/event-simulation.html";
                     break;
-                case "Custom" :
-                    self.paragraphClient = new CustomParagraphClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/custom.html";
-                    break;
             }
 
+            utils.showLoadingOverlay(self.paragraphElement);
             sourceViewContent.load(paragraphTemplateLink, function () {
                 var sourceView = paragraphContent.find(".source");
                 sourceView.empty();
                 paragraphContent.find(".output").empty();
+                paragraphUtils.clearError();
                 sourceView.append($("<p>Source</p>"));
                 sourceView.append(sourceViewContent);
                 self.paragraphClient.initialize();
@@ -261,6 +261,8 @@ function Paragraph(id) {
                 // paragraph.find(".run").prop('disabled', true);
                 self.paragraphElement.find(".toggle-source-view").prop('disabled', false);
                 self.paragraphElement.find(".toggle-output-view").prop('disabled', true);
+
+                utils.hideLoadingOverlay(self.paragraphElement);
             });
         });
     }
@@ -271,8 +273,9 @@ function Paragraph(id) {
  *
  * @constructor
  */
-function ParagraphUtils() {
+function ParagraphUtils(paragraph) {
     var self = this;
+    var utils = new Utils();
 
     /**
      * Loads all available output tables/streams/models into the paragraph in which the select element is located in
@@ -294,10 +297,8 @@ function ParagraphUtils() {
 
     /**
      * Load names of all the tables available in the server into the input table element in the paragraph specified
-     *
-     * @param paragraph The paragraph in which the input table select element is located
      */
-    self.loadTableNames = function (paragraph) {
+    self.loadTableNames = function () {
         var inputTableSelectElement = paragraph.find(".input-table");
         $.ajax({
             type: "GET",
@@ -309,13 +310,17 @@ function ParagraphUtils() {
                         inputTableSelectElement.append($("<option>" + table + "</option>"));
                     });
                 } else {
-                    self.handleError(paragraph, response.message);
+                    self.handleError(response.message);
                 }
             }
         });
     };
 
-    self.handleError = function (paragraph, message) {
+    self.handleError = function (message) {
+        paragraph.find(".error-container").html(utils.generateAlert("error", "Error", message))
+    };
 
+    self.clearError = function() {
+        paragraph.find(".error-container").empty();
     };
 }

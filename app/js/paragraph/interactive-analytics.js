@@ -5,9 +5,10 @@
  * @constructor
  */
 function InteractiveAnalyticsParagraphClient(paragraph) {
-    var self = this;
-
     // Private variables used in the prototype
+    var self = this;
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(paragraph);
     var timeFrom;
     var timeTo;
 
@@ -38,7 +39,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
         });
 
         // Initializing the interactive analytics paragraph
-        new ParagraphUtils().loadTableNames(paragraph);
+        paragraphUtils.loadTableNames();
 
         // Adding the date pickers
         paragraph.find(".time-range").daterangepicker({
@@ -53,6 +54,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
 
     self.run = function (callback) {
         var tableName = paragraph.find(".input-table").val();
+        utils.showLoadingOverlay(paragraph);
         $.ajax({
             type: "GET",
             url: constants.API_URI + "tables/" + tableName + "/columns",
@@ -72,13 +74,21 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                     columns.push("_timestamp");
                     columns.push("_version");
                     callback(new Utils().generateDataTableWithLazyLoading(
-                        "POST", constants.API_URI + "interactive-analytics/search/" + searchMethod, queryParameters, columns
+                        "POST",
+                        constants.API_URI + "interactive-analytics/search/" + searchMethod,
+                        queryParameters,
+                        columns
                     ));
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    new ParagraphUtils().handleError(paragraph, response.message);
+                    paragraphUtils.handleError(response.message);
                 }
+                utils.hideLoadingOverlay(paragraph);
+            },
+            error : function(response) {
+                paragraphUtils.handleError(response.responseText);
+                utils.hideLoadingOverlay(paragraph);
             }
         });
     };
