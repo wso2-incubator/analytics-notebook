@@ -42,7 +42,6 @@ public class DataExploreEndpoint {
             ));
         } catch (MLMalformedDatasetException e) {
             jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
-            e.printStackTrace();
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
@@ -62,7 +61,6 @@ public class DataExploreEndpoint {
             jsonString = new Gson().toJson(DataExploreUtils.getClusterPoints(tableName, tenantID, featureListString, noOfClusters));
         } catch (MLMalformedDatasetException | MLModelHandlerException | AnalyticsException e) {
             jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
-            e.printStackTrace();
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();

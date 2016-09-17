@@ -90,6 +90,35 @@ function Note() {
     function remove() {
         // TODO : send the request to delete the note to the notebook server
     }
+
+    /**
+     * Get the contents of the note as an array of objects.
+     * Each object contains the contents of the relevant paragraph and the paragraph type
+     *
+     * @return {Object[]} Array of objects containing the paragraph content and the paragraph type
+     */
+    function getContent() {
+        var noteContent = [];
+        // Looping through the paragraphs and getting the contents of them
+        $.each(self.paragraphs, function (index, paragraph) {
+            noteContent.push(paragraph.getContent());
+        });
+        return noteContent;
+    }
+
+    /**
+     * Set the contents of the note using the array of objects provided
+     * Each object contains the contents of a paragraph and the paragraph type
+     *
+     * @param noteContent {Object[]} Array of paragraph contents and the paragraph type
+     */
+    function setContent(noteContent) {
+        $.each(noteContent, function (index, paragraphContent) {
+            var newParagraph = new Paragraph();
+            self.paragraphs.push(newParagraph);
+            newParagraph.setContent(paragraphContent)
+        });
+    }
 }
 
 /**
@@ -132,7 +161,7 @@ function Paragraph(id) {
         });
 
         self.paragraphElement.find(".paragraph-type-select").change(function () {
-            loadSourceViewByType();
+            loadSourceViewByType(self.paragraphElement.find(".paragraph-type-select").val());
         });
     });
 
@@ -193,17 +222,41 @@ function Paragraph(id) {
     }
 
     /**
+     * Get the contents of the paragraph and the paragraph type encoded into an object
+     *
+     * @return {Object} The paragraph contents and the type encoded into an object
+     */
+    self.getContent = function() {
+        return self.paragraphClient.getContent();
+    };
+
+    /**
+     * Set the contents of the object into the paragraph paragraph
+     * The type of paragraph depends on the type specified in the object provided
+     *
+     * @param paragraphContent {Object} object to be used for setting the content of the paragraph
+     */
+    self.setContent = function(paragraphContent) {
+        if(paragraphContent.type != undefined) {
+            loadSourceViewByType(paragraphContent.type);
+            if(paragraphContent.content != undefined) {
+                self.paragraphClient.setContent(paragraphContent.content);
+            }
+        }
+    };
+
+    /**
      * Load the source view of the paragraph
      *
+     * @param paragraphType {string} The type of the paragraph to be loaded
      * @private
      */
-    function loadSourceViewByType() {
-        var selectElement = self.paragraphElement.find(".paragraph-type-select");
+    function loadSourceViewByType(paragraphType) {
         var paragraphContent = self.paragraphElement.find(".paragraph-content");
         paragraphContent.slideUp(function () {
             var sourceViewContent = $("<div>");
             var paragraphTemplateLink;
-            switch (selectElement.val()) {
+            switch (paragraphType) {
                 case "Data Source Definition" :
                     self.paragraphClient = new DataSourceDefinitionParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/data-source-definition.html";
@@ -321,7 +374,7 @@ function ParagraphUtils(paragraph) {
      * @param message {string} Error message to be displayed in the paragraph
      */
     self.handleError = function (message) {
-        paragraph.find(".error-container").html(utils.generateAlert("error", "Error", message))
+        paragraph.find(".error-container").html(utils.generateAlertMessage("error", "Error", message))
     };
 
     /**

@@ -52,7 +52,6 @@ public class BatchAnalyticsEndpoint {
             }
         } catch (AnalyticsExecutionException | RuntimeException e) {
             tables.add(new ErrorResponse(Status.INVALID_QUERY, e.getMessage()));
-            e.printStackTrace();
         }
 
         BatchAnalyticsGeneralResponse response = new BatchAnalyticsGeneralResponse();

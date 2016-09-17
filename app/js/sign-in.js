@@ -17,7 +17,9 @@ function Authenticator() {
         });
 
         $(".form-control").keyup(function (event) {
-            if (event.keyCode == 13 && $("#username").val().length > 0 && $("#password").val().length > 0) {
+            if (event.keyCode == 13 &&
+                    $.trim($("#username").val()).length > 0 &&
+                    $.trim($("#password").val()).length > 0) {
                 singIn();
             }
         });
@@ -36,6 +38,13 @@ function Authenticator() {
             username: $("#username").val(),
             password: $("#password").val()
         };
+
+        // Checking if the username and password had been entered by the user
+        if($.trim(credentials.username).length <= 0 ||
+                $.trim(credentials.password).length <= 0) {
+            showError("Error", "Please enter both username and password");
+        }
+
         if (credentials.username.length > 0 && credentials.password.length > 0) {
             utils.showLoadingOverlay(errorContainer);
             $.ajax({
@@ -51,12 +60,12 @@ function Authenticator() {
                         }
                         window.location.href = redirectURI;
                     } else {
-                        showError(response.message);
+                        showError("Login Error", response.message);
                     }
                     utils.hideLoadingOverlay(errorContainer);
                 },
                 error : function(response) {
-                    showError(response.responseText);
+                    showError("Error", utils.generateErrorMessageFromStatusCode(response.readyState));
                     utils.hideLoadingOverlay(errorContainer);
                 }
             });
@@ -68,7 +77,7 @@ function Authenticator() {
      *
      * @private
      */
-    function showError(message) {
-        $("#error-container").html(utils.generateAlert("error", "Login Error", message));
+    function showError(title, message) {
+        $("#error-container").html(utils.generateAlertMessage("error", title, message));
     }
 }

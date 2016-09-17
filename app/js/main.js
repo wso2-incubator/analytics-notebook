@@ -51,7 +51,7 @@ function Utils() {
      * @param message {string} The Alert message
      * @return {jQuery} The element containing the alert
      */
-    self.generateAlert = function(type, title, message) {
+    self.generateAlertMessage = function(type, title, message) {
         var alertClass;
         switch (type) {
             case "success" :
@@ -75,6 +75,22 @@ function Utils() {
             "</button>" +
             "</div>"
         );
+    };
+
+    /**
+     * Generated an error message for the http status code
+     *
+     * @param statusCode {int} http status code
+     * @return {string} error message for the status code
+     */
+    self.generateErrorMessageFromStatusCode = function(statusCode) {
+        var message;
+        if(statusCode == 0) {
+            message = "Server refused connection";
+        } else {
+            message = "Unknown error";
+        }
+        return message;
     };
 
     /**
