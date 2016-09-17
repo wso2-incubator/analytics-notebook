@@ -43,12 +43,12 @@ function DataExploreParagraphClient(paragraph) {
                     } else if (response.status == constants.response.NOT_LOGGED_IN) {
                         window.location.href = "sign-in.html";
                     } else {
-                        paragraphUtils.handleError(response.message);
+                        paragraphUtils.handleNotification("error", "Error", response.message);
                     }
                     utils.hideLoadingOverlay(paragraph);
                 },
                 error : function(response) {
-                    paragraphUtils.handleError(response.responseText);
+                    paragraphUtils.handleNotification("error", "Error", response.responseText);
                     utils.hideLoadingOverlay(paragraph);
                 }
             });
@@ -138,10 +138,11 @@ function DataExploreParagraphClient(paragraph) {
                     if(selectElement.selectedIndex == 0) {
                         runButton.prop('disabled', true);
                     }
-                })
+                });
+                paragraphUtils.clearNotification();
             });
         } else {
-            utils.handleError(
+            utils.handleNotification("info", "Scatter plot cannot be drawn",
                 "Minimum of two numerical features and one categorical feature required to draw a scatter plot"
             );
         }
@@ -221,6 +222,7 @@ function DataExploreParagraphClient(paragraph) {
             } else {
                 runButton.prop('disabled', true);
             }
+            paragraphUtils.clearNotification();
         });
 
         /**
@@ -286,17 +288,25 @@ function DataExploreParagraphClient(paragraph) {
 
             paragraph.find(".trellis-chart-categorical-feature option").eq(0).prop("selected", true);
 
-            paragraph.find(".trellis-chart-numerical-features, .trellis-chart-categorical-feature").click(function () {
-                var runButton = paragraph.find(".run-paragraph-button");
-                if(paragraph.find(".trellis-chart-categorical-feature").get(0).selectedIndex != 0 &&
-                    paragraph.find('.trellis-chart-numerical-features:checked').size() > 0) {
+            var runButton = paragraph.find(".run-paragraph-button");
+            paragraph.find(".trellis-chart-numerical-features").click(function () {
+                if(paragraph.find('.trellis-chart-numerical-features:checked').size() > 0) {
                     runButton.prop('disabled', false);
                 } else {
                     runButton.prop('disabled', true);
                 }
+                paragraphUtils.clearNotification();
+            });
+            paragraph.find(".trellis-chart-categorical-feature").change(function () {
+                if(paragraph.find(".trellis-chart-categorical-feature").get(0).selectedIndex != 0) {
+                    runButton.prop('disabled', false);
+                } else {
+                    runButton.prop('disabled', true);
+                }
+                paragraphUtils.clearNotification();
             });
         } else {
-            utils.handleError(
+            utils.handleNotification("info", "Trellis chart cannot be drawn",
                 "Minimum of one numerical features and one categorical feature required to draw a trellis chart"
             );
         }
@@ -500,7 +510,8 @@ function DataExploreParagraphClient(paragraph) {
                     if(selectElement.selectedIndex == 0) {
                         runButton.prop('disabled', true);
                     }
-                })
+                });
+                paragraphUtils.clearNotification();
             });
         }
 
@@ -551,7 +562,7 @@ function DataExploreParagraphClient(paragraph) {
                         }, numericalFeatureIndependent, numericalFeatureDependent, markerSize, false);
                     },
                     error : function(response) {
-                        paragraphUtils.handleError(response.responseText);
+                        paragraphUtils.handleNotification("error", "Error", response.responseText);
                         utils.hideLoadingOverlay(paragraph);
                     }
                 });

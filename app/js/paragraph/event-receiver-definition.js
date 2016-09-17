@@ -28,12 +28,12 @@ function EventReceiverDefinitionParagraphClient(paragraph) {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    paragraphUtils.handleError(response.message);
+                    paragraphUtils.handleNotification("error", "Error", response.message);
                 }
                 utils.hideLoadingOverlay(paragraph);
             },
             error : function(response) {
-                paragraphUtils.handleError(response.responseText);
+                paragraphUtils.handleNotification("error", "Error", response.responseText);
                 utils.hideLoadingOverlay(paragraph);
             }
         });

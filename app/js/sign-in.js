@@ -8,7 +8,9 @@ function Authenticator() {
 
     // Private variables
     var utils = new Utils();
-    var errorContainer = $("#error-container");
+    var notificationContainer = $("#notification-container");
+    var usernameField = $("#username");
+    var passwordField = $("#password");
 
     /**
      * Initialize the sign in page
@@ -16,19 +18,25 @@ function Authenticator() {
     self.initialize = function () {
         // Registering event listeners
         $("#sign-in").click(function () {
+            clearError();
             singIn();
         });
 
         $(".form-control").keyup(function (event) {
-            if (event.keyCode == 13 &&
-                    $.trim($("#username").val()).length > 0 &&
-                    $.trim($("#password").val()).length > 0) {
-                singIn();
+            if (event.keyCode == 13) {
+                if($.trim(usernameField.val()).length > 0 && $.trim(passwordField.val()).length > 0) {
+                    singIn();
+                } else if($.trim(usernameField.val()).length > 0) {
+                    passwordField.focus();
+                } else if($.trim(passwordField.val()).length > 0) {
+                    usernameField.focus();
+                }
             }
+            clearError();
         });
 
-        $("#username").focus();
-        utils.hideLoadingOverlay(errorContainer);
+        usernameField.focus();
+        utils.hideLoadingOverlay(notificationContainer);
     };
 
     /**
@@ -38,8 +46,8 @@ function Authenticator() {
      */
     function singIn() {
         var credentials = {
-            username: $("#username").val(),
-            password: $("#password").val()
+            username: usernameField.val(),
+            password: passwordField.val()
         };
 
         // Checking if the username and password had been entered by the user
@@ -48,7 +56,7 @@ function Authenticator() {
             showError("Error", "Please enter both username and password");
         } else {
             // Authenticating the user
-            utils.showLoadingOverlay(errorContainer);
+            utils.showLoadingOverlay(notificationContainer);
             $.ajax({
                 type: "POST",
                 url: constants.API_URI + "auth/sign-in",
@@ -64,11 +72,11 @@ function Authenticator() {
                     } else {
                         showError("Login Error", response.message);
                     }
-                    utils.hideLoadingOverlay(errorContainer);
+                    utils.hideLoadingOverlay(notificationContainer);
                 },
                 error : function(response) {
                     showError("Error", utils.generateErrorMessageFromStatusCode(response.readyState));
-                    utils.hideLoadingOverlay(errorContainer);
+                    utils.hideLoadingOverlay(notificationContainer);
                 }
             });
         }
@@ -80,6 +88,16 @@ function Authenticator() {
      * @private
      */
     function showError(title, message) {
-        $("#error-container").html(utils.generateAlertMessage("error", title, message));
+        var notification = utils.generateAlertMessage("error", title, message);
+        notification.addClass("collapse");
+        notificationContainer.html(notification);
+        notification.slideDown();
+    }
+
+    function clearError() {
+        var notification = notificationContainer.children().first();
+        notification.slideUp(function() {
+            notification.remove();
+        });
     }
 }

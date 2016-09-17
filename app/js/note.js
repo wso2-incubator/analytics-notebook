@@ -139,7 +139,7 @@ function Paragraph(id) {
 
     // Initializing paragraph
     var paragraphContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
-    self.paragraphElement = $("<div class='paragraph well fluid-container'>");
+    self.paragraphElement = $("<div class='paragraph well fluid-container collapse'>");
 
     // Private variables
     var utils = new Utils();
@@ -149,7 +149,6 @@ function Paragraph(id) {
     self.paragraphClient = null;    // The client will be set when the paragraph type is selected
     self.paragraphID = id;
 
-    self.paragraphElement.css({display: "none"});
     self.paragraphElement.load('paragraph-template.html', function () {
         paragraphContainer.append(self.paragraphElement);
         $("#paragraphs").append(paragraphContainer);
@@ -185,8 +184,8 @@ function Paragraph(id) {
             var outputView = self.paragraphElement.find(".output");
             outputView.slideUp(function() {
                 outputView.empty();
-                paragraphUtils.clearError();
-                outputView.append($("<p>Output</p>"));
+                paragraphUtils.clearNotification();
+                outputView.append($("<p class='add-padding-bottom-2x lead'>Output</p>"));
                 var newOutputViewContent = $("<div class='fluid-container'>");
                 newOutputViewContent.append(output);
                 outputView.append(newOutputViewContent);
@@ -322,18 +321,21 @@ function Paragraph(id) {
             utils.showLoadingOverlay(self.paragraphElement);
             sourceViewContent.load(paragraphTemplateLink, function () {
                 var sourceView = paragraphContent.find(".source");
+                var outputView = paragraphContent.find(".output");
+
                 sourceView.empty();
-                paragraphContent.find(".output").empty();
-                paragraphUtils.clearError(self.paragraphElement);
-                sourceView.append($("<p>Source</p>"));
+                outputView.empty();
+                paragraphUtils.clearNotification(self.paragraphElement);
+                sourceView.append($("<p class='add-padding-bottom-2x lead'>Source</p>"));
                 sourceView.append(sourceViewContent);
                 self.paragraphClient.initialize();
-                paragraphContent.slideDown();
 
                 self.paragraphElement.find(".run-paragraph-button").prop('disabled', true);
                 self.paragraphElement.find(".toggle-source-view-button").prop('disabled', false);
                 self.paragraphElement.find(".toggle-output-view-button").prop('disabled', true);
 
+                outputView.css({ display : "none" });
+                paragraphContent.slideDown();
                 utils.hideLoadingOverlay(self.paragraphElement);
             });
         });
@@ -383,7 +385,7 @@ function ParagraphUtils(paragraph) {
                         inputTableSelectElement.append($("<option>" + table + "</option>"));
                     });
                 } else {
-                    self.handleError(response.message);
+                    self.handleNotification("error", "Error", response.message);
                 }
                 utils.hideLoadingOverlay(self.paragraphElement);
             },
@@ -396,17 +398,25 @@ function ParagraphUtils(paragraph) {
     /**
      * Handles paragraph error messages in the paragraph
      *
-     * @param message {string} Error message to be displayed in the paragraph
+     * @param type {string} The type of notification to be displayed. Should be one of ["success", "info", "warning", "error"]
+     * @param title {string} The title of the notification
+     * @param message {string} Message to be displayed in the notification area
      */
-    self.handleError = function (message) {
-        paragraph.find(".error-container").html(utils.generateAlertMessage("error", "Error", message))
+    self.handleNotification = function (type, title, message) {
+        var notification = utils.generateAlertMessage(type, title, message);
+        notification.addClass("collapse");
+        paragraph.find(".notification-container").html(notification);
+        notification.slideDown();
     };
 
     /**
-     * Clear the paragraph error messages in the paragraph
+     * Clear the notifications in the paragraph
      */
-    self.clearError = function() {
-        paragraph.find(".error-container").empty();
+    self.clearNotification = function() {
+        var notification =  paragraph.find(".notification-container").children().first();
+        notification.slideUp(function() {
+            notification.remove();
+        });
     };
 }
 

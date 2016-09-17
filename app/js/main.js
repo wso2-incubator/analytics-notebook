@@ -52,20 +52,49 @@ function Utils() {
      * @return {jQuery} The element containing the alert
      */
     self.generateAlertMessage = function(type, title, message) {
-        var alertClass;
-        if(type == "error") {
-            alertClass = "danger";
-        } else {
-            alertClass = type;
-        }
-        return $("<div id='login-" + type + "' class='alert alert-" + alertClass + "' role='alert'>" +
-            "<i class='icon fw fw-" + type + "'></i>" +
-            "<strong>" + title + "</strong> " + message +
-            "<button type='button' class='close' aria-label='close' data-dismiss='alert'>" +
-            "<span aria-hidden='true'><i class='fw fw-cancel'></i></span>" +
-            "</button>" +
+        return $(
+            "<div id='login-" + type + "' class='alert alert-" + getClassByType(type) + "' role='alert'>" +
+                "<i class='icon fw fw-" + type + "'></i>" +
+                "<strong>" + title + "</strong> " + message +
+                "<button type='button' class='close' aria-label='close' data-dismiss='alert'>" +
+                    "<span aria-hidden='true'><i class='fw fw-cancel'></i></span>" +
+                "</button>" +
             "</div>"
         );
+    };
+
+    /**
+     * Generates status element
+     *
+     * @param type {string} Should be one of ["success", "info", "warning", "error"]
+     * @param title {string} Title of the error message
+     * @param message {string} The Alert message
+     * @return {jQuery} The element containing the alert
+     */
+    self.generateStatusMessage = function(type, title, message) {
+        return $(
+            "<div class='message message-" + getClassByType(type) + "'>" +
+                "<h4><i class='icon fw fw-" + type + "'></i>" + title + "</h4>" +
+                "<p>" + message + "</p>" +
+            "</div>"
+        );
+    };
+
+    /**
+     * Returns the class name for alert/status type
+     * Support function for generateAlertMessage() and generateStatusMessage() functions
+     *
+     * @param type {string} Should be one of ["success", "info", "warning", "error"]
+     * @return {string} The relevant class name for the type. Will be one of  ["success", "info", "warning", "danger"]
+     */
+    var getClassByType = function(type) {
+        var className;
+        if(type == "error") {
+            className = "danger";
+        } else {
+            className = type;
+        }
+        return className;
     };
 
     /**
