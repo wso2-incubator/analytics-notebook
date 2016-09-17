@@ -5,6 +5,8 @@
  */
 function Notebook() {
     var self = this;
+
+    // Private variables
     var utils = new Utils();
     var notesList = $("#notes-list");
 
@@ -19,6 +21,8 @@ function Notebook() {
                 if (response.status == constants.response.SUCCESS) {
                     var notes = response.notes;
                     var columns = ["Note", "Running Status", "Deployed Status", "Actions"];
+
+                    // Creating the 2D data array for the notes list table
                     var data = [];
                     for(var i = 0; i < notes.length; i++) {
                         var row = [];
@@ -43,6 +47,7 @@ function Notebook() {
                         );
                         data.push(row);
                     }
+
                     notesList.html(utils.generateListTable(columns, data,
                         { ordering : false, searching : false },
                         { "Actions" : "text-right" }
@@ -54,7 +59,7 @@ function Notebook() {
                 }
                 utils.hideLoadingOverlay(notesList);
             },
-            error : function(response) {
+            error : function() {
                 utils.hideLoadingOverlay(notesList);
             }
         });

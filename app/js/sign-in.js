@@ -5,6 +5,8 @@
  */
 function Authenticator() {
     var self = this;
+
+    // Private variables
     var utils = new Utils();
     var errorContainer = $("#error-container");
 
@@ -12,6 +14,7 @@ function Authenticator() {
      * Initialize the sign in page
      */
     self.initialize = function () {
+        // Registering event listeners
         $("#sign-in").click(function () {
             singIn();
         });
@@ -43,9 +46,8 @@ function Authenticator() {
         if($.trim(credentials.username).length <= 0 ||
                 $.trim(credentials.password).length <= 0) {
             showError("Error", "Please enter both username and password");
-        }
-
-        if (credentials.username.length > 0 && credentials.password.length > 0) {
+        } else {
+            // Authenticating the user
             utils.showLoadingOverlay(errorContainer);
             $.ajax({
                 type: "POST",

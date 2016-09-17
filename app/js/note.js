@@ -6,7 +6,7 @@
 function Note() {
     var self = this;
 
-    // Prototype fields
+    // Public fields
     self.paragraphs = [];
     self.uniqueParagraphIDCounter = 0;
 
@@ -17,6 +17,7 @@ function Note() {
         // Initializing note
         $("#note-name").html(new Utils().getQueryParameters()["note"]);
 
+        // Registering event listeners
         $("#run-all-paragraphs-button").click(function () {
             runAllParagraphs();
         });
@@ -61,15 +62,21 @@ function Note() {
         var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view-button");
         var buttonTemplate;
         if (toggleAllSourceOrOutputViewsButton.html().indexOf("Show") != -1) {
-            buttonTemplate = "<i class='fw fw-hide'></i> Hide " + type;
+            buttonTemplate = "<i class='fw fw-hide'></i> Hide " + type.charAt(0).toUpperCase() + type.slice(1);
             toggleAllSourceOrOutputViewsButton.html(buttonTemplate);
             toggleSourceOrOutputViewButton.html(buttonTemplate);
             $("." + type).slideDown();
+            if(type == "source") {
+                $(".paragraph-type-select-container").slideDown();
+            }
         } else {
-            buttonTemplate = "<i class='fw fw-view'></i> Show " + type;
+            buttonTemplate = "<i class='fw fw-view'></i> Show " + type.charAt(0).toUpperCase() + type.slice(1);
             toggleAllSourceOrOutputViewsButton.html(buttonTemplate);
             toggleSourceOrOutputViewButton.html(buttonTemplate);
             $("." + type).slideUp();
+            if(type == "source") {
+                $(".paragraph-type-select-container").slideUp();
+            }
         }
     }
 
@@ -134,8 +141,13 @@ function Paragraph(id) {
     var paragraphContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
     self.paragraphElement = $("<div class='paragraph well fluid-container'>");
 
+    // Private variables
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(self.paragraphElement);
+
+    // Public variables
+    self.paragraphClient = null;    // The client will be set when the paragraph type is selected
+    self.paragraphID = id;
 
     self.paragraphElement.css({display: "none"});
     self.paragraphElement.load('paragraph-template.html', function () {
@@ -165,10 +177,6 @@ function Paragraph(id) {
         });
     });
 
-    // Prototype variables
-    self.paragraphClient = null;    // The client will be set when the paragraph type is selected
-    self.paragraphID = id;
-
     /**
      * Run the paragraph
      */
@@ -185,6 +193,12 @@ function Paragraph(id) {
 
                 outputView.slideDown();
                 self.paragraphElement.find(".toggle-output-view-button").prop('disabled', false);
+
+                // Updating the hide/show output button text
+                self.paragraphElement.find(".output").slideDown();
+                self.paragraphElement.find(".toggle-output-view-button").html(
+                    "<i class='fw fw-hide'></i> Hide Output"
+                );
             });
         });
     };
@@ -200,11 +214,17 @@ function Paragraph(id) {
         var toggleButton = self.paragraphElement.find(".toggle-" + type + "-view-button");
         var toggleButtonInnerHTML = toggleButton.html();
         if (toggleButton.html().indexOf("Show") != -1) {
-            toggleButtonInnerHTML = "<i class='fw fw-hide'></i> Hide " + type;
+            toggleButtonInnerHTML = "<i class='fw fw-hide'></i> Hide " + type.charAt(0).toUpperCase() + type.slice(1);
             view.slideDown();
+            if(type == "source") {
+                self.paragraphElement.find(".paragraph-type-select-container").slideDown();
+            }
         } else {
-            toggleButtonInnerHTML = "<i class='fw fw-view'></i> Show " + type;
+            toggleButtonInnerHTML = "<i class='fw fw-view'></i> Show " + type.charAt(0).toUpperCase() + type.slice(1);
             view.slideUp();
+            if(type == "source") {
+                self.paragraphElement.find(".paragraph-type-select-container").slideUp();
+            }
         }
         toggleButton.html(toggleButtonInnerHTML);
     }
@@ -310,7 +330,7 @@ function Paragraph(id) {
                 self.paragraphClient.initialize();
                 paragraphContent.slideDown();
 
-                // paragraph.find(".run").prop('disabled', true);
+                self.paragraphElement.find(".run-paragraph-button").prop('disabled', true);
                 self.paragraphElement.find(".toggle-source-view-button").prop('disabled', false);
                 self.paragraphElement.find(".toggle-output-view-button").prop('disabled', true);
 
@@ -352,6 +372,7 @@ function ParagraphUtils(paragraph) {
      */
     self.loadTableNames = function () {
         var inputTableSelectElement = paragraph.find(".input-table");
+        utils.showLoadingOverlay(self.paragraphElement);
         $.ajax({
             type: "GET",
             url: constants.API_URI + "tables",
@@ -364,6 +385,10 @@ function ParagraphUtils(paragraph) {
                 } else {
                     self.handleError(response.message);
                 }
+                utils.hideLoadingOverlay(self.paragraphElement);
+            },
+            error: function() {
+                utils.hideLoadingOverlay(self.paragraphElement);
             }
         });
     };
@@ -389,5 +414,5 @@ function ParagraphUtils(paragraph) {
  * Callback function for paragraph client run
  *
  * @callback ParagraphClientRunCallback
- * @param output {jQuery} The output of the paragraph client run task
+ * @param output {jQuery} The output of the paragraph client run task as a jQuery object
  */

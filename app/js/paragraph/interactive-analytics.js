@@ -1,7 +1,7 @@
 /**
  * Interactive analytics paragraph client prototype
  *
- * @param paragraph The paragraph in which the client resides in
+ * @param paragraph {jQuery} The paragraph in which the client resides in
  * @constructor
  */
 function InteractiveAnalyticsParagraphClient(paragraph) {
@@ -12,33 +12,47 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
     var timeFrom;
     var timeTo;
 
+    var searchByContainer;
+    var timeRangeContainer;
+    var queryContainer;
+
     /**
      * Initialize the interactive analytics paragraph
      */
     self.initialize = function () {
+        searchByContainer = paragraph.find(".search-by-container");
+        timeRangeContainer = paragraph.find(".time-range-container");
+        queryContainer = paragraph.find(".query-container");
+
         // Adding event listeners
         paragraph.find(".input-table").change(function () {
-            paragraph.find(".search-by-container").fadeIn();
+            var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
+            switch(searchMethod) {
+                case "time-range" :
+                    timeRangeContainer.slideUp(function() {
+                        searchByContainer.slideDown();
+                    });
+                    break;
+                case "query" :
+                    queryContainer.slideUp(function() {
+                        searchByContainer.slideDown();
+                    });
+                    break;
+                default :
+                    searchByContainer.slideDown();
+            }
+            paragraph.find("input[name=search-by-option]").prop('checked', false);
+            paragraph.find(".run-paragraph-button").prop('disabled', false);
         });
 
         paragraph.find(".search-by-time-range").click(function (event) {
-            var sourceView = $(event.target).closest(".source");
-            var dateRangeContainer = sourceView.find(".time-range-container");
-            var queryContainer = sourceView.find(".query-container");
-
-            queryContainer.fadeOut(function () {
-                dateRangeContainer.fadeIn();
-            });
+            queryContainer.slideUp();
+            timeRangeContainer.slideDown();
         });
 
         paragraph.find(".search-by-query").click(function (event) {
-            var sourceView = $(event.target).closest(".source");
-            var dateRangeContainer = sourceView.find(".time-range-container");
-            var queryContainer = sourceView.find(".query-container");
-
-            dateRangeContainer.fadeOut(function () {
-                queryContainer.fadeIn();
-            });
+            timeRangeContainer.slideUp();
+            queryContainer.slideDown();
         });
 
         // Initializing the interactive analytics paragraph
@@ -69,18 +83,24 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     var columns = response.columnNames;
+                    columns.push("_timestamp");
+                    columns.push("_version");
+
                     var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
+                    if(searchMethod == undefined) {
+                        searchMethod = "query";
+                    }
+
                     var queryParameters = {
                         tableName: tableName
                     };
-                    if (searchMethod == "query") {
-                        queryParameters.query = paragraph.find(".query").val();
-                    } else {
+                    if (searchMethod == "time-range") {
                         queryParameters.timeFrom = timeFrom;
                         queryParameters.timeTo = timeTo;
+                    } else {
+                        queryParameters.query = paragraph.find(".query").val();
                     }
-                    columns.push("_timestamp");
-                    columns.push("_version");
+
                     callback(utils.generateDataTableWithLazyLoading(
                         "POST",
                         constants.API_URI + "interactive-analytics/search/" + searchMethod,

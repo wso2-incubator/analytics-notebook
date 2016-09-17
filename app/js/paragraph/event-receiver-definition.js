@@ -1,7 +1,7 @@
 /**
  * Event receiver paragraph client prototype
  *
- * @param paragraph The paragraph in which the client resides in
+ * @param paragraph {jQuery} The paragraph in which the client resides in
  * @constructor
  */
 function EventReceiverDefinitionParagraphClient(paragraph) {

@@ -1,23 +1,22 @@
 /**
  * Data explore paragraph client prototype
  *
- * @param paragraph The paragraph in which the client resides in
- * @param id {int} unique paragraph id assigned to the paragraph
+ * @param paragraph {jQuery} The paragraph in which the client resides in
  * @constructor
  */
-function DataExploreParagraphClient(paragraph, id) {
+function DataExploreParagraphClient(paragraph) {
     var self = this;
+
+    // Private variables
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
-    var sample;
+    var chart;
+    var markerSize = 2;
 
+    var sample;
     var categoricalFeatureNames = [];
     var numericalFeatureNames = [];
-
-    var chart;
-
-    var markerSize = 2;
 
     /**
      * Initialize the data explore paragraph
@@ -53,13 +52,19 @@ function DataExploreParagraphClient(paragraph, id) {
                     utils.hideLoadingOverlay(paragraph);
                 }
             });
-            paragraph.find(".scatter-plot-options").fadeOut();
-            paragraph.find(".chart-type-container").fadeIn();
+
+            paragraph.find(".scatter-plot-options").slideUp();
+            paragraph.find(".parallel-sets-options").slideUp();
+            paragraph.find(".trellis-chart-options").slideUp();
+            paragraph.find(".cluster-diagram-options").slideUp();
+            paragraph.find(".chart-type-container").slideDown();
+
+            paragraph.find(".chart-type option").eq(0).prop("selected", true);
         });
 
-        paragraph.find(".chart-type").change(function(event) {
-            var chartType = $(event.target).val();
-
+        var chartTypeElement = paragraph.find(".chart-type");
+        chartTypeElement.change(function() {
+            var chartType = chartTypeElement.val();
             switch(chartType) {
                 case "Scatter Plot" :
                     chart = new ScatterPlotDiagram();
@@ -74,6 +79,7 @@ function DataExploreParagraphClient(paragraph, id) {
                     chart = new ClusterDiagram();
                     break;
             }
+            paragraph.find(".run-paragraph-button").prop("disabled", true);
         });
     };
 
@@ -103,7 +109,9 @@ function DataExploreParagraphClient(paragraph, id) {
 
         if (numericalFeatureNames.length > 1 && categoricalFeatureNames.length > 0) {
             // Showing the relevant options for the chart
-            paragraph.find('.scatter-plot-x, .scatter-plot-y, .scatter-plot-group').html("<option disabled selected value> -- select an option -- </option>");
+            paragraph.find('.scatter-plot-x, .scatter-plot-y, .scatter-plot-group').html(
+                "<option disabled selected value> -- select an option -- </option>"
+            );
             $.each(numericalFeatureNames, function(index, feature) {
                 paragraph.find('.scatter-plot-x, .scatter-plot-y').append("<option>" + sanitize(feature) + "</option>");
             });
@@ -111,10 +119,27 @@ function DataExploreParagraphClient(paragraph, id) {
                 paragraph.find('.scatter-plot-group').append("<option>" + sanitize(feature) + "</option>");
             });
 
-            paragraph.find(".parallel-sets-options").fadeOut();
-            paragraph.find(".trellis-chart-options").fadeOut();
-            paragraph.find(".cluster-diagram-options").fadeOut();
-            paragraph.find(".scatter-plot-options").fadeIn();
+            paragraph.find(".parallel-sets-options").slideUp();
+            paragraph.find(".trellis-chart-options").slideUp();
+            paragraph.find(".cluster-diagram-options").slideUp();
+            paragraph.find(".scatter-plot-options").slideDown();
+
+            paragraph.find(
+                ".scatter-plot-x option," +
+                ".scatter-plot-y option," +
+                ".scatter-plot-group option"
+            ).eq(0).prop('selected', true);
+
+            var chartOptionsInputElements = paragraph.find(".scatter-plot-x, .scatter-plot-y, .scatter-plot-group");
+            chartOptionsInputElements.change(function() {
+                var runButton = paragraph.find(".run-paragraph-button");
+                runButton.prop('disabled', false);
+                chartOptionsInputElements.each(function (index, selectElement) {
+                    if(selectElement.selectedIndex == 0) {
+                        runButton.prop('disabled', true);
+                    }
+                })
+            });
         } else {
             utils.handleError(
                 "Minimum of two numerical features and one categorical feature required to draw a scatter plot"
@@ -171,20 +196,32 @@ function DataExploreParagraphClient(paragraph, id) {
     function ParallelSets() {
         var parallelSetsSelf = this;
 
-        paragraph.find('.parallel-sets-features').empty();
+        var parallelSetsFeatureContainer = paragraph.find('.parallel-sets-feature-container');
+        parallelSetsFeatureContainer.empty();
         $.each(categoricalFeatureNames, function(index, feature) {
-            paragraph.find('.parallel-sets-feature-container').append(
+            parallelSetsFeatureContainer.append(
                 "<div class='row'><label class='checkbox'>" +
-                    "<input type='checkbox' class='parallel-sets-features' value='" + feature.trim().replace(/"/g, "\\\"") + "' " + (index < 4 ? "checked" : "") + ">" +
+                    "<input type='checkbox' class='parallel-sets-features' value='" + feature.trim().replace(/"/g, "\\\"") + "'>" +
                     "<span class='helper'>" + feature + "</span>" +
                 "</label></div>"
             );
         });
 
-        paragraph.find(".scatter-plot-options").fadeOut();
-        paragraph.find(".trellis-chart-options").fadeOut();
-        paragraph.find(".cluster-diagram-options").fadeOut();
-        paragraph.find(".parallel-sets-options").fadeIn();
+        paragraph.find(".scatter-plot-options").slideUp();
+        paragraph.find(".trellis-chart-options").slideUp();
+        paragraph.find(".cluster-diagram-options").slideUp();
+        paragraph.find(".parallel-sets-options").slideDown();
+
+        paragraph.find(".run-paragraph-button").prop("disabled", false);
+
+        paragraph.find(".parallel-sets-features").click(function () {
+            var runButton = paragraph.find(".run-paragraph-button");
+            if(paragraph.find('.parallel-sets-features:checked').size() > 1) {
+                runButton.prop('disabled', false);
+            } else {
+                runButton.prop('disabled', true);
+            }
+        });
 
         /**
          * Draw the parallel sets
@@ -199,21 +236,16 @@ function DataExploreParagraphClient(paragraph, id) {
                 parallelSetsFeatureNames.push($(this).val().replace(/^\s+|\s+$/g, '').replace(/\\"/g, '"'));
             });
 
-            var noOfCategoricalFeatures = parallelSetsFeatureNames.length;
+            var points = getChartPoints(parallelSetsFeatureNames);
+            var chartElement = $("<div class='chart'>");
+            var chart = d3.parsets().dimensions(parallelSetsFeatureNames).tension(1.0).width(800).height(670);
+            var vis = d3.select(chartElement.get(0)).append("svg")
+                .attr("width", chart.width())
+                .attr("height", chart.height())
+                .style("font-size", "12px");
+            vis.datum(points).call(chart);
+            callback(chartElement);
 
-            if (noOfCategoricalFeatures > 1) {
-                var points = getChartPoints(parallelSetsFeatureNames);
-                var chartElement = $("<div class='chart'>");
-                var chart = d3.parsets().dimensions(parallelSetsFeatureNames).tension(1.0).width(800).height(670);
-                var vis = d3.select(chartElement.get(0)).append("svg")
-                    .attr("width", chart.width())
-                    .attr("height", chart.height())
-                    .style("font-size", "12px");
-                vis.datum(points).call(chart);
-                callback(chartElement);
-            } else {
-                utils.handleError("Minimum of two categorical features required for parallel sets");
-            }
             utils.hideLoadingOverlay(paragraph);
         };
     }
@@ -236,20 +268,33 @@ function DataExploreParagraphClient(paragraph, id) {
                 );
             });
 
-            paragraph.find('.trellis-chart-numerical-features').empty();
+            var trellisChartNumericalFeatureContainer = paragraph.find('.trellis-chart-numerical-feature-container');
+            trellisChartNumericalFeatureContainer.empty();
             $.each(numericalFeatureNames, function(index, feature) {
-                paragraph.find('.trellis-chart-numerical-feature-container').append(
+                trellisChartNumericalFeatureContainer.append(
                     "<div class='row'><label class='checkbox'>" +
-                        "<input type='checkbox' class='trellis-chart-numerical-features' value='" + feature.trim().replace(/"/g, "\\\"") + "' " + (index < 4 ? "checked" : "") + ">" +
+                        "<input type='checkbox' class='trellis-chart-numerical-features' value='" + feature.trim().replace(/"/g, "\\\"") + "'>" +
                         "<span class='helper'>" + feature + "</span>" +
                     "</label></div>"
                 );
             });
 
-            paragraph.find(".scatter-plot-options").fadeOut();
-            paragraph.find(".parallel-sets-options").fadeOut();
-            paragraph.find(".cluster-diagram-options").fadeOut();
-            paragraph.find(".trellis-chart-options").fadeIn();
+            paragraph.find(".scatter-plot-options").slideUp();
+            paragraph.find(".parallel-sets-options").slideUp();
+            paragraph.find(".cluster-diagram-options").slideUp();
+            paragraph.find(".trellis-chart-options").slideDown();
+
+            paragraph.find(".trellis-chart-categorical-feature option").eq(0).prop("selected", true);
+
+            paragraph.find(".trellis-chart-numerical-features, .trellis-chart-categorical-feature").click(function () {
+                var runButton = paragraph.find(".run-paragraph-button");
+                if(paragraph.find(".trellis-chart-categorical-feature").get(0).selectedIndex != 0 &&
+                    paragraph.find('.trellis-chart-numerical-features:checked').size() > 0) {
+                    runButton.prop('disabled', false);
+                } else {
+                    runButton.prop('disabled', true);
+                }
+            });
         } else {
             utils.handleError(
                 "Minimum of one numerical features and one categorical feature required to draw a trellis chart"
@@ -265,11 +310,11 @@ function DataExploreParagraphClient(paragraph, id) {
             utils.showLoadingOverlay(paragraph);
             var featureNames = [];
             // get selected categorical feature
-            var categoricalHeader = paragraph.find(".trellis-chart-categorical-feature").val().replace(/^\s+|\s+$/g, '');
+            var categoricalHeader = paragraph.find(".trellis-chart-categorical-feature").val().replace(/^\s+|\s+$/g, "");
             featureNames[0] = categoricalHeader.replace(/\\"/g, '"');
             // get numerical feature list from checkbox selection
-            paragraph.find('.trellis-chart-numerical-features:checked').each(function() {
-                featureNames.push($(this).val().replace(/^\s+|\s+$/g, '').replace(/\\"/g, '"'));
+            paragraph.find(".trellis-chart-numerical-features:checked").each(function() {
+                featureNames.push($(this).val().replace(/^\s+|\s+$/g, "").replace(/\\"/g, '"'));
             });
 
             var data = getChartPoints(featureNames);
@@ -434,10 +479,29 @@ function DataExploreParagraphClient(paragraph, id) {
                 );
             });
 
-            paragraph.find(".scatter-plot-options").fadeOut();
-            paragraph.find(".parallel-sets-options").fadeOut();
-            paragraph.find(".trellis-chart-options").fadeOut();
-            paragraph.find(".cluster-diagram-options").fadeIn();
+            paragraph.find(".scatter-plot-options").slideUp();
+            paragraph.find(".parallel-sets-options").slideUp();
+            paragraph.find(".trellis-chart-options").slideUp();
+            paragraph.find(".cluster-diagram-options").slideDown();
+
+            paragraph.find(
+                ".cluster-diagram-independent-feature option," +
+                ".cluster-diagram-dependent-feature option," +
+                ".cluster-diagram-features-count option"
+            ).eq(0).prop("selected", true);
+
+            var chartOptionsInputElements = paragraph.find(".cluster-diagram-independent-feature, " +
+                ".cluster-diagram-dependent-feature, " +
+                ".cluster-diagram-features-count");
+            chartOptionsInputElements.change(function() {
+                var runButton = paragraph.find(".run-paragraph-button");
+                runButton.prop('disabled', false);
+                chartOptionsInputElements.each(function (index, selectElement) {
+                    if(selectElement.selectedIndex == 0) {
+                        runButton.prop('disabled', true);
+                    }
+                })
+            });
         }
 
         /**

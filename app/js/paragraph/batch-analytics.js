@@ -1,7 +1,7 @@
 /**
  * Batch analytics paragraph client prototype constructor
  *
- * @param paragraph The paragraph in which the client resides in
+ * @param paragraph {jQuery} The paragraph in which the client resides in
  * @constructor
  */
 function BatchAnalyticsParagraphClient(paragraph) {
@@ -23,6 +23,10 @@ function BatchAnalyticsParagraphClient(paragraph) {
         paragraph.find(".input-table").change(function () {
             paragraph.find(".add-table-button").prop('disabled', false);
             paragraph.find(".temporary-table").val("");
+        });
+
+        paragraph.find(".query").keyup(function() {
+            adjustRunButton();
         });
     };
 
@@ -137,6 +141,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 } else {
                     paragraphUtils.handleError(response.message);
                 }
+                adjustRunButton();
                 utils.hideLoadingOverlay(paragraph);
             },
             error : function(response) {
@@ -144,5 +149,18 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             }
         });
+    }
+
+    /**
+     * Update the paragraph run button disabled status
+     *
+     * @private
+     */
+    function adjustRunButton() {
+        if($.trim(paragraph.find(".query").val()).length > 0) {
+            paragraph.find(".run-paragraph-button").prop('disabled', false);
+        } else {
+            paragraph.find(".run-paragraph-button").prop('disabled', true);
+        }
     }
 }

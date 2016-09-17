@@ -1,15 +1,15 @@
 // General Constants
 var constants = {
-    PRODUCT_NAME: "Notebook",
-    PRODUCT_VERSION: "1.0-SNAPSHOT",
-    response: {
-        SUCCESS: "SUCCESS",
-        ERROR: "ERROR",
-        INVALID_QUERY: "INVALID_QUERY",
-        NOT_LOGGED_IN: "NOT_LOGGED_IN",
-        ALREADY_LOGGED_IN: "ALREADY_LOGGED_IN"
+    PRODUCT_NAME : "Notebook",
+    PRODUCT_VERSION : "1.0-SNAPSHOT",
+    response : {
+        SUCCESS : "SUCCESS",
+        ERROR : "ERROR",
+        INVALID_QUERY : "INVALID_QUERY",
+        NOT_LOGGED_IN : "NOT_LOGGED_IN",
+        ALREADY_LOGGED_IN : "ALREADY_LOGGED_IN"
     },
-    API_URI: "api/"
+    API_URI : "api/"
 };
 
 // General Initializations
@@ -53,19 +53,10 @@ function Utils() {
      */
     self.generateAlertMessage = function(type, title, message) {
         var alertClass;
-        switch (type) {
-            case "success" :
-                alertClass = "success";
-                break;
-            case "info" :
-                alertClass = "info";
-                break;
-            case "warning" :
-                alertClass = "warning";
-                break;
-            case "error" :
-                alertClass = "danger";
-                break;
+        if(type == "error") {
+            alertClass = "danger";
+        } else {
+            alertClass = type;
         }
         return $("<div id='login-" + type + "' class='alert alert-" + alertClass + "' role='alert'>" +
             "<i class='icon fw fw-" + type + "'></i>" +
@@ -207,10 +198,9 @@ function Utils() {
         var tableContainer = $("<div>");
         tableContainer.append(table);
 
-        if(!options.serverSide) {
-            options.responsive = true;
-        }
+        options.responsive = true;
 
+        // Creating the column object array
         var columnArray = [];
         for (var i = 0; i < options.columns.length; i++) {
             var columnData = {title: options.columns[i]};
@@ -225,7 +215,6 @@ function Utils() {
         options.columns = columnArray;
 
         table.DataTable(options);
-
         return tableContainer;
     };
 
