@@ -16,6 +16,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * For handling user management
@@ -33,7 +34,6 @@ public class AuthenticationEndpoint {
         LoginRequest loginRequest = new Gson().fromJson(credentialsString, LoginRequest.class);
         HttpSession session = request.getSession();
         String jsonString;
-        boolean loginSuccess;
 
         try {
             if (ServiceHolder.getAuthenticationService()
@@ -49,20 +49,14 @@ public class AuthenticationEndpoint {
                 session.setAttribute("username", tenantAwareUsername);
                 session.setAttribute("tenantDomain", tenantDomain);
                 session.setAttribute("tenantID", tenantID);
-                loginSuccess = true;
+                jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
             } else {
-                loginSuccess = false;
+                jsonString = new Gson().toJson(new ErrorResponse("Invalid Credentials"));
             }
         } catch(AuthenticationException e) {
-            loginSuccess = false;
+            jsonString = new Gson().toJson(new ErrorResponse("Unknown user"));
         }
 
-        if (loginSuccess) {
-            jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
-        } else {
-            jsonString = new Gson().toJson(new ErrorResponse("Invalid Credentials"));
-        }
-
-        return javax.ws.rs.core.Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
+        return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }

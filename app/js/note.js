@@ -1,12 +1,12 @@
 /**
- * Note prototype
+ * Note prototype constructor
  *
  * @constructor
  */
 function Note() {
     var self = this;
 
-    // Prototype fields
+    // Public fields
     self.paragraphs = [];
     self.uniqueParagraphIDCounter = 0;
 
@@ -17,6 +17,7 @@ function Note() {
         // Initializing note
         $("#note-name").html(new Utils().getQueryParameters()["note"]);
 
+        // Registering event listeners
         $("#run-all-paragraphs-button").click(function () {
             runAllParagraphs();
         });
@@ -54,22 +55,28 @@ function Note() {
      * Toggle the visibility of all views (source or output views) in the current note
      *
      * @private
-     * @param type Should be one of ["source", "output"]
+     * @param type {string} One of ["source", "output"]
      */
     function toggleVisibilityOfMultipleViews(type) {
-        var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views");
-        var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view");
+        var toggleAllSourceOrOutputViewsButton = $("#toggle-all-" + type + "-views-button");
+        var toggleSourceOrOutputViewButton = $(".toggle-" + type + "-view-button");
         var buttonTemplate;
         if (toggleAllSourceOrOutputViewsButton.html().indexOf("Show") != -1) {
-            buttonTemplate = "<i class='fw fw-hide'></i> Hide " + type;
+            buttonTemplate = "<i class='fw fw-hide'></i> Hide " + type.charAt(0).toUpperCase() + type.slice(1);
             toggleAllSourceOrOutputViewsButton.html(buttonTemplate);
             toggleSourceOrOutputViewButton.html(buttonTemplate);
             $("." + type).slideDown();
+            if(type == "source") {
+                $(".paragraph-type-select-container").slideDown();
+            }
         } else {
-            buttonTemplate = "<i class='fw fw-view'></i> Show " + type;
+            buttonTemplate = "<i class='fw fw-view'></i> Show " + type.charAt(0).toUpperCase() + type.slice(1);
             toggleAllSourceOrOutputViewsButton.html(buttonTemplate);
             toggleSourceOrOutputViewButton.html(buttonTemplate);
             $("." + type).slideUp();
+            if(type == "source") {
+                $(".paragraph-type-select-container").slideUp();
+            }
         }
     }
 
@@ -79,7 +86,7 @@ function Note() {
      * @private
      */
     function addParagraph() {
-        self.paragraphs.push(new Paragraph(self.uniqueParagraphIDCounter++));
+        self.paragraphs.push(new Paragraph());
     }
 
     /**
@@ -90,21 +97,58 @@ function Note() {
     function remove() {
         // TODO : send the request to delete the note to the notebook server
     }
+
+    /**
+     * Get the contents of the note as an array of objects.
+     * Each object contains the contents of the relevant paragraph and the paragraph type
+     *
+     * @return {Object[]} Array of objects containing the paragraph content and the paragraph type
+     */
+    function getContent() {
+        var noteContent = [];
+        // Looping through the paragraphs and getting the contents of them
+        $.each(self.paragraphs, function (index, paragraph) {
+            noteContent.push(paragraph.getContent());
+        });
+        return noteContent;
+    }
+
+    /**
+     * Set the contents of the note using the array of objects provided
+     * Each object contains the contents of a paragraph and the paragraph type
+     *
+     * @param noteContent {Object[]} Array of paragraph contents and the paragraph type
+     */
+    function setContent(noteContent) {
+        $.each(noteContent, function (index, paragraphContent) {
+            var newParagraph = new Paragraph();
+            self.paragraphs.push(newParagraph);
+            newParagraph.setContent(paragraphContent)
+        });
+    }
 }
 
 /**
- * Paragraph prototype
+ * Paragraph prototype constructor
  *
- * @param id {int} unique paragraph id assigned to the paragraph
  * @constructor
  */
-function Paragraph(id) {
+function Paragraph() {
     var self = this;
+    var id = self.uniqueParagraphIDCounter++;
 
     // Initializing paragraph
     var paragraphContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
-    self.paragraphElement = $("<div class='paragraph well fluid-container'>");
-    self.paragraphElement.css({display: "none"});
+    self.paragraphElement = $("<div class='paragraph well fluid-container collapse'>");
+
+    // Private variables
+    var utils = new Utils();
+    var paragraphUtils = new ParagraphUtils(self.paragraphElement);
+
+    // Public variables
+    self.paragraphClient = null;    // The client will be set when the paragraph type is selected
+    self.paragraphID = id;
+
     self.paragraphElement.load('paragraph-template.html', function () {
         paragraphContainer.append(self.paragraphElement);
         $("#paragraphs").append(paragraphContainer);
@@ -128,41 +172,38 @@ function Paragraph(id) {
         });
 
         self.paragraphElement.find(".paragraph-type-select").change(function () {
-            loadSourceViewByType();
+            loadSourceViewByType(self.paragraphElement.find(".paragraph-type-select").val());
         });
     });
 
-    var utils = new Utils();
-    var paragraphUtils = new ParagraphUtils(self.paragraphElement);
-
-    // Prototype variables
-    self.paragraphClient = null;    // The client will be set when the paragraph type is selected
-    self.paragraphID = id;
-
     /**
-     * Run the paragraph specified
-     *
-     * @private
+     * Run the paragraph
      */
     self.run = function () {  // TODO : This method needs to be changed after deciding on the architecture
         self.paragraphClient.run(function (output) {
             var outputView = self.paragraphElement.find(".output");
             outputView.slideUp(function() {
                 outputView.empty();
-                paragraphUtils.clearError();
-                outputView.append($("<p>Output</p>"));
+                paragraphUtils.clearNotification();
+                outputView.append($("<p class='add-padding-bottom-2x lead'>Output</p>"));
                 var newOutputViewContent = $("<div class='fluid-container'>");
                 newOutputViewContent.append(output);
                 outputView.append(newOutputViewContent);
 
                 outputView.slideDown();
-                self.paragraphElement.find(".toggle-output-view").prop('disabled', false);
+                self.paragraphElement.find(".toggle-output-view-button").prop('disabled', false);
+
+                // Updating the hide/show output button text
+                self.paragraphElement.find(".output").slideDown();
+                self.paragraphElement.find(".toggle-output-view-button").html(
+                    "<i class='fw fw-hide'></i> Hide Output"
+                );
             });
         });
     };
 
     /**
-     * Toggle the visibility of a view (source or output view) in the paragraph in which the toggle is located in
+     * Toggle the visibility of a view (source or output view) in the paragraph
      *
      * @private
      * @param type {string} The type of views to toggle. Should be one of ["output", "source"]
@@ -172,17 +213,23 @@ function Paragraph(id) {
         var toggleButton = self.paragraphElement.find(".toggle-" + type + "-view-button");
         var toggleButtonInnerHTML = toggleButton.html();
         if (toggleButton.html().indexOf("Show") != -1) {
-            toggleButtonInnerHTML = "<i class='fw fw-hide'></i> Hide " + type;
+            toggleButtonInnerHTML = "<i class='fw fw-hide'></i> Hide " + type.charAt(0).toUpperCase() + type.slice(1);
             view.slideDown();
+            if(type == "source") {
+                self.paragraphElement.find(".paragraph-type-select-container").slideDown();
+            }
         } else {
-            toggleButtonInnerHTML = "<i class='fw fw-view'></i> Show " + type;
+            toggleButtonInnerHTML = "<i class='fw fw-view'></i> Show " + type.charAt(0).toUpperCase() + type.slice(1);
             view.slideUp();
+            if(type == "source") {
+                self.paragraphElement.find(".paragraph-type-select-container").slideUp();
+            }
         }
         toggleButton.html(toggleButtonInnerHTML);
     }
 
     /**
-     * Delete the specified paragraph
+     * Delete the paragraph
      *
      * @private
      */
@@ -194,17 +241,41 @@ function Paragraph(id) {
     }
 
     /**
-     * Load the source view of the paragraph in which the select element is located in
+     * Get the contents of the paragraph and the paragraph type encoded into an object
      *
+     * @return {Object} The paragraph contents and the type encoded into an object
+     */
+    self.getContent = function() {
+        return self.paragraphClient.getContent();
+    };
+
+    /**
+     * Set the contents of the object into the paragraph paragraph
+     * The type of paragraph depends on the type specified in the object provided
+     *
+     * @param paragraphContent {Object} object to be used for setting the content of the paragraph
+     */
+    self.setContent = function(paragraphContent) {
+        if(paragraphContent.type != undefined) {
+            loadSourceViewByType(paragraphContent.type);
+            if(paragraphContent.content != undefined) {
+                self.paragraphClient.setContent(paragraphContent.content);
+            }
+        }
+    };
+
+    /**
+     * Load the source view of the paragraph
+     *
+     * @param paragraphType {string} The type of the paragraph to be loaded
      * @private
      */
-    function loadSourceViewByType() {
-        var selectElement = self.paragraphElement.find(".paragraph-type-select");
+    function loadSourceViewByType(paragraphType) {
         var paragraphContent = self.paragraphElement.find(".paragraph-content");
         paragraphContent.slideUp(function () {
             var sourceViewContent = $("<div>");
             var paragraphTemplateLink;
-            switch (selectElement.val()) {
+            switch (paragraphType) {
                 case "Data Source Definition" :
                     self.paragraphClient = new DataSourceDefinitionParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/data-source-definition.html";
@@ -250,18 +321,21 @@ function Paragraph(id) {
             utils.showLoadingOverlay(self.paragraphElement);
             sourceViewContent.load(paragraphTemplateLink, function () {
                 var sourceView = paragraphContent.find(".source");
+                var outputView = paragraphContent.find(".output");
+
                 sourceView.empty();
-                paragraphContent.find(".output").empty();
-                paragraphUtils.clearError();
-                sourceView.append($("<p>Source</p>"));
+                outputView.empty();
+                paragraphUtils.clearNotification(self.paragraphElement);
+                sourceView.append($("<p class='add-padding-bottom-2x lead'>Source</p>"));
                 sourceView.append(sourceViewContent);
                 self.paragraphClient.initialize();
+
+                self.paragraphElement.find(".run-paragraph-button").prop('disabled', true);
+                self.paragraphElement.find(".toggle-source-view-button").prop('disabled', false);
+                self.paragraphElement.find(".toggle-output-view-button").prop('disabled', true);
+
+                outputView.css({ display : "none" });
                 paragraphContent.slideDown();
-
-                // paragraph.find(".run").prop('disabled', true);
-                self.paragraphElement.find(".toggle-source-view").prop('disabled', false);
-                self.paragraphElement.find(".toggle-output-view").prop('disabled', true);
-
                 utils.hideLoadingOverlay(self.paragraphElement);
             });
         });
@@ -269,22 +343,22 @@ function Paragraph(id) {
 }
 
 /**
- * Utility prototype for paragraphs
+ * Paragraph utilities prototype constructor
  *
  * @constructor
+ * @param paragraph {jQuery} The paragraph for which the utilities will be used
  */
 function ParagraphUtils(paragraph) {
     var self = this;
     var utils = new Utils();
 
     /**
-     * Loads all available output tables/streams/models into the paragraph in which the select element is located in
+     * Loads all available output tables/streams/models into the paragraph in which this is located in
      *
-     * @param selectElement {jQuery} The select element which is located in the paragraph
-     * @param type {string} Should be one of the following ["table", "stream", "model"]
+     * @param type {string} One of ["table", "stream", "model"]
      */
-    self.loadAvailableParagraphOutputsToInputElement = function (selectElement, type) {
-        var inputSelectElement = selectElement;
+    self.loadAvailableParagraphOutputsToInputElement = function (type) {
+        var inputSelectElement = paragraph.find(".input-table");
         inputSelectElement.html($("<option disabled selected value> -- select an option -- </option>"));
 
         $(".output-" + type).each(function (index, selectElement) {
@@ -296,10 +370,11 @@ function ParagraphUtils(paragraph) {
 
 
     /**
-     * Load names of all the tables available in the server into the input table element in the paragraph specified
+     * Load names of all the tables available in the server into the input table element in the paragraph
      */
     self.loadTableNames = function () {
         var inputTableSelectElement = paragraph.find(".input-table");
+        utils.showLoadingOverlay(self.paragraphElement);
         $.ajax({
             type: "GET",
             url: constants.API_URI + "tables",
@@ -310,17 +385,44 @@ function ParagraphUtils(paragraph) {
                         inputTableSelectElement.append($("<option>" + table + "</option>"));
                     });
                 } else {
-                    self.handleError(response.message);
+                    self.handleNotification("error", "Error", response.message);
                 }
+                utils.hideLoadingOverlay(self.paragraphElement);
+            },
+            error: function() {
+                utils.hideLoadingOverlay(self.paragraphElement);
             }
         });
     };
 
-    self.handleError = function (message) {
-        paragraph.find(".error-container").html(utils.generateAlert("error", "Error", message))
+    /**
+     * Handles paragraph error messages in the paragraph
+     *
+     * @param type {string} The type of notification to be displayed. Should be one of ["success", "info", "warning", "error"]
+     * @param title {string} The title of the notification
+     * @param message {string} Message to be displayed in the notification area
+     */
+    self.handleNotification = function (type, title, message) {
+        var notification = utils.generateAlertMessage(type, title, message);
+        notification.addClass("collapse");
+        paragraph.find(".notification-container").html(notification);
+        notification.slideDown();
     };
 
-    self.clearError = function() {
-        paragraph.find(".error-container").empty();
+    /**
+     * Clear the notifications in the paragraph
+     */
+    self.clearNotification = function() {
+        var notification =  paragraph.find(".notification-container").children().first();
+        notification.slideUp(function() {
+            notification.remove();
+        });
     };
 }
+
+/**
+ * Callback function for paragraph client run
+ *
+ * @callback ParagraphClientRunCallback
+ * @param output {jQuery} The output of the paragraph client run task as a jQuery object
+ */

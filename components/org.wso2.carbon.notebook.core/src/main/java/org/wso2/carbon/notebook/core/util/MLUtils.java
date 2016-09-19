@@ -126,16 +126,11 @@ public class MLUtils {
         return lines;
     }
 
-    private static SamplePoints getSamplePoints(int sampleSize, boolean containsHeader, Map<String, Integer> headerMap,
-                                                List<List<String>> columnData, CSVFormat dataFormat, JavaRDD<String> lines) {
-        int featureSize;
-        int[] missing;
-        int[] stringCellCount;
-        int[] decimalCellCount;
+    private static JavaRDD<String[]> getTokensFromLines(CSVFormat dataFormat, JavaRDD<String> lines) {
         // take the first line
         String firstLine = lines.first();
         // count the number of features
-        featureSize = getFeatureSize(firstLine, dataFormat);
+        int featureSize = getFeatureSize(firstLine, dataFormat);
 
         List<Integer> featureIndices = new ArrayList<Integer>();
         for (int i = 0; i < featureSize; i++) {
@@ -143,20 +138,34 @@ public class MLUtils {
         }
 
         String columnSeparator = String.valueOf(dataFormat.getDelimiter());
-        HeaderFilter headerFilter = new HeaderFilter.Builder().header(lines.first()).build();
+        HeaderFilter headerFilter = new HeaderFilter.Builder().init(lines.first()).build();
+
         JavaRDD<String> data = lines.filter(headerFilter).cache();
         Pattern pattern = getPatternFromDelimiter(columnSeparator);
         LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
+
         JavaRDD<String[]> tokens = data.map(lineToTokens);
 
         // remove from cache
         data.unpersist();
-        // add to cache
+
+        return tokens;
+    }
+
+    private static SamplePoints getSamplePoints(int sampleSize, boolean containsHeader, Map<String, Integer> headerMap,
+                                                List<List<String>> columnData, CSVFormat dataFormat, JavaRDD<String> lines) {
+        // take the first line
+        String firstLine = lines.first();
+        // count the number of features
+        int featureSize = getFeatureSize(firstLine, dataFormat);
+
+        int[] missing = new int[featureSize];
+        int[] stringCellCount = new int[featureSize];
+        int[] decimalCellCount = new int[featureSize];
+
+        JavaRDD<String[]> tokens = getTokensFromLines(dataFormat, lines);
         tokens.cache();
 
-        missing = new int[featureSize];
-        stringCellCount = new int[featureSize];
-        decimalCellCount = new int[featureSize];
         if (sampleSize >= 0 && featureSize > 0) {
             sampleSize = sampleSize / featureSize;
         }
@@ -462,7 +471,7 @@ public class MLUtils {
     public static JavaRDD<String[]> filterRows(String delimiter, String headerRow, JavaRDD<String> lines,
                                                List<Integer> featureIndices) {
         String columnSeparator = String.valueOf(delimiter);
-        HeaderFilter headerFilter = new HeaderFilter.Builder().header(headerRow).build();
+        HeaderFilter headerFilter = new HeaderFilter.Builder().init(headerRow).build();
         JavaRDD<String> data = lines.filter(headerFilter).cache();
         Pattern pattern = getPatternFromDelimiter(columnSeparator);
         LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();

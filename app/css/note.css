@@ -1,3 +1,24 @@
 label.checkbox {
     padding-bottom: 0.5em;
 }
+
+.source > p, .output > p {
+    font-family: Roboto, sans-serif;
+}
+
+.source, .output {
+    padding: 20px;
+    margin: 20px 0;
+    background: #f9f9f9;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+.source {
+    border-left: 5px solid #009DA7;
+}
+
+.output {
+    border-left: 5px solid #5cb85c;
+}

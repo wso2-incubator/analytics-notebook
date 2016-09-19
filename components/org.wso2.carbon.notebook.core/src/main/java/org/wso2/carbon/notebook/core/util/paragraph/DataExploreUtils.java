@@ -10,13 +10,13 @@ import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
-import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
-import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
 import org.wso2.carbon.ml.core.spark.transformations.MissingValuesFilter;
 import org.wso2.carbon.ml.core.spark.transformations.TokensToVectors;
-import org.wso2.carbon.ml.core.utils.MLCoreServiceValueHolder;
+import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.MLDataHolder;
 import org.wso2.carbon.notebook.core.ServiceHolder;
+import org.wso2.carbon.notebook.core.ml.transformation.HeaderFilter;
+import org.wso2.carbon.notebook.core.ml.transformation.LineToTokens;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 import scala.Tuple2;
 
@@ -103,12 +103,12 @@ public class DataExploreUtils {
     public static List<ClusterPoint> getClusterPoints(String tableName, int tenantID,
                                                String featureListString, int noOfClusters)
             throws MLMalformedDatasetException, MLModelHandlerException, AnalyticsException {
-        JavaSparkContext sparkContext;
         List<String> features = Arrays.asList(featureListString.split("\\s*,\\s*"));
 
         List<ClusterPoint> clusterPoints = new ArrayList<ClusterPoint>();
         // java spark context
-        sparkContext = ServiceHolder.getSparkContextService().getJavaSparkContext();
+        JavaSparkContext sparkContext = ServiceHolder.getSparkContextService().getJavaSparkContext();
+
         JavaRDD<String> lines = MLUtils.getLinesFromDASTable(tableName, tenantID, sparkContext);
         // get column separator
         String columnSeparator = MLUtils.ColumnSeparatorFactory.getColumnSeparator("das");
@@ -120,22 +120,20 @@ public class DataExploreUtils {
         for (String feature : features) {
             featureIndices.add(MLUtils.getFeatureIndex(feature, headerRow, columnSeparator));
         }
-        JavaRDD<org.apache.spark.mllib.linalg.Vector> featureVectors = null;
+        double sampleFraction = MLConstants.SAMPLE_SIZE / (lines.count() - 1);
 
-        double sampleSize = (double) MLCoreServiceValueHolder.getInstance().getSummaryStatSettings()
-                .getSampleSize();
-        double sampleFraction = sampleSize / (lines.count() - 1);
-        HeaderFilter headerFilter = new HeaderFilter.Builder().header(headerRow).build();
+        HeaderFilter headerFilter = new HeaderFilter.Builder().init(headerRow).build();
         LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
         MissingValuesFilter missingValuesFilter = new MissingValuesFilter.Builder().build();
         TokensToVectors tokensToVectors = new TokensToVectors.Builder().indices(featureIndices).build();
 
-        // Use entire dataset if number of records is less than or equal to sample fraction
+        JavaRDD<org.apache.spark.mllib.linalg.Vector> featureVectors;
+        // Use entire data set if number of records is less than or equal to sample fraction
         if (sampleFraction >= 1.0) {
             featureVectors = lines.filter(headerFilter).map(lineToTokens).filter(missingValuesFilter)
                     .map(tokensToVectors);
         }
-        // Use ramdomly selected sample fraction of rows if number of records is > sample fraction
+        // Use randomly selected sample fraction of rows if number of records is > sample fraction
         else {
             featureVectors = lines.filter(headerFilter).sample(false, sampleFraction).map(lineToTokens)
                     .filter(missingValuesFilter).map(tokensToVectors);

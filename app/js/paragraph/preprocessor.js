@@ -1,7 +1,7 @@
 /**
  * Preprocessor paragraph client prototype
  *
- * @param paragraph The paragraph in which the client resides in
+ * @param paragraph {jQuery} The paragraph in which the client resides in
  * @constructor
  */
 function PreprocessorParagraphClient(paragraph) {
@@ -10,6 +10,9 @@ function PreprocessorParagraphClient(paragraph) {
     var paragraphUtils = new ParagraphUtils(paragraph);
     var table;
 
+    /**
+     * Initialize the preprocessor paragraph
+     */
     self.initialize = function () {
         // Adding event receivers
         paragraph.find(".preprocessor-input.input-table").change(function () {
@@ -20,6 +23,11 @@ function PreprocessorParagraphClient(paragraph) {
         paragraphUtils.loadTableNames();
     };
 
+    /**
+     * Run the preprocessor paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
     self.run = function (callback) {
         // TODO : run preprocessor paragraph
         var tableName = paragraph.find(".input-table").val();
@@ -45,6 +53,7 @@ function PreprocessorParagraphClient(paragraph) {
             };
             features.push(featureResponse);
         });
+        utils.showLoadingOverlay(paragraph);
         $.ajax({
             type: "POST",
             data: JSON.stringify({tableName: tableName, featureList: features}),
@@ -64,8 +73,15 @@ function PreprocessorParagraphClient(paragraph) {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    paragraphUtils.handleError(response.message);
+                    paragraphUtils.handleNotification("error", "Error", response.message);
                 }
+                utils.hideLoadingOverlay(paragraph);
+            },
+            error : function(response) {
+                paragraphUtils.handleNotification(
+                    "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                );
+                utils.hideLoadingOverlay(paragraph);
             }
         });
     };
@@ -75,10 +91,12 @@ function PreprocessorParagraphClient(paragraph) {
      *
      * @private
      */
-    var loadPreprocessorParameters = function () {
+     function loadPreprocessorParameters() {
         var selectElement = paragraph.find(".preprocessor-input.input-table");
-        var preprocessorTable = paragraph.find(".preprocessor-table > tbody");
-        preprocessorTable.html("");
+        var preprocessorTableContainer = paragraph.find(".preprocessor-table");
+        var preprocessorTable = preprocessorTableContainer.find(".preprocessor-table > tbody");
+        preprocessorTable.empty();
+        utils.showLoadingOverlay(paragraph);
         $.ajax({
             type: "GET",
             url: constants.API_URI + "tables/" + selectElement.val() + "/columns",
@@ -89,32 +107,71 @@ function PreprocessorParagraphClient(paragraph) {
                     $.each(response.columnNames, function (index, columnName) {
                         var row = [
                             "<span class='feature-name'>" + columnName + "</span>",
-                            "<input type='checkbox' class='feature-include' value='" + columnName + "'>",
+                            "<label class='checkbox'>" +
+                                "<input type='checkbox' class='feature-include' value='" + columnName + "'>" +
+                                "<span class='helper'></span>" +
+                            "</label>",
                             "<select class='form-control feature-type'>" +
-                            "<option value='NUMERICAL'>Numerical</option>" +
-                            "<option value='CATEGORICAL'>Categorical</option>" +
+                                "<option value='NUMERICAL'>Numerical</option>" +
+                                "<option value='CATEGORICAL'>Categorical</option>" +
                             "</select>",
                             "<select class='form-control impute-option'>" +
-                            "<option value='DISCARD'>Discard</option>" +
-                            "<option value='REPLACE_WITH_MEAN'>Replace with mean</option>" +
+                                "<option value='DISCARD'>Discard</option>" +
+                                "<option value='REPLACE_WITH_MEAN'>Replace with mean</option>" +
                             "</select>"
                         ];
                         tableData.push(row);
 
                         if (index == response.columnNames.length - 1) {
                             table = utils.generateListTable(headerArray, tableData);
-                            paragraph.find(".preprocessor-table").html(table);
+                            preprocessorTableContainer.slideUp(function() {
+                                preprocessorTableContainer.html(table);
+                                preprocessorTableContainer.slideDown();
+
+                                paragraph.find(".feature-include").click(function () {
+                                    var runButton = paragraph.find(".run-paragraph-button");
+                                    if(paragraph.find('.feature-include:checked').size() > 0) {
+                                        runButton.prop('disabled', false);
+                                    } else {
+                                        runButton.prop('disabled', true);
+                                    }
+                                    paragraphUtils.clearNotification();
+                                });
+                                paragraphUtils.clearNotification();
+                            });
                         }
                     });
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    paragraphUtils.handleError(response.message);
+                    paragraphUtils.clearNotification();
+                    clearPreprocessorParameters();
+                    paragraphUtils.handleNotification("error", "Error", response.message);
                 }
+                utils.hideLoadingOverlay(paragraph);
+            },
+            error : function(response) {
+                clearPreprocessorParameters();
+                paragraphUtils.handleNotification(
+                    "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                );
+                utils.hideLoadingOverlay(paragraph);
             }
         });
-        selectElement.closest(".source").find(".preprocessor-table").fadeIn();
-    };
+        selectElement.closest(".source").find(".preprocessor-table").slideDown();
+    }
+
+    /**
+     * Clear preprocessor parameters table
+     *
+     * @private
+     */
+    function clearPreprocessorParameters() {
+        var preprocessorTableContainer = paragraph.find(".preprocessor-table");
+        preprocessorTableContainer.slideUp(function() {
+            preprocessorTableContainer.empty();
+        });
+    }
 
     /**
      * Generate select query for a table
@@ -123,7 +180,7 @@ function PreprocessorParagraphClient(paragraph) {
      * @param selectedColumns {string[]} The columns to select
      * @return {string} Query
      */
-    var generateSelectColumnsQuery = function (tableName, selectedColumns) {
+    function generateSelectColumnsQuery(tableName, selectedColumns) {
         var columnList = '';
         for (var i = 0; i < selectedColumns.length; i++) {
             columnList += selectedColumns[i];
@@ -131,5 +188,5 @@ function PreprocessorParagraphClient(paragraph) {
         }
         columnList = columnList.substring(0, columnList.length - 2);
         return 'SELECT ' + columnList + ' FROM ' + tableName;
-    };
+    }
 }

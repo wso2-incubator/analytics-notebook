@@ -1,7 +1,7 @@
 /**
  * Batch analytics paragraph client prototype constructor
  *
- * @param paragraph The paragraph in which the client resides in
+ * @param paragraph {jQuery} The paragraph in which the client resides in
  * @constructor
  */
 function BatchAnalyticsParagraphClient(paragraph) {
@@ -9,6 +9,9 @@ function BatchAnalyticsParagraphClient(paragraph) {
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
+    /**
+     * Initialize the batch analytics paragraph
+     */
     self.initialize = function () {
         paragraphUtils.loadTableNames();
 
@@ -21,8 +24,17 @@ function BatchAnalyticsParagraphClient(paragraph) {
             paragraph.find(".add-table-button").prop('disabled', false);
             paragraph.find(".temporary-table").val("");
         });
+
+        paragraph.find(".query").keyup(function() {
+            adjustRunButton();
+        });
     };
 
+    /**
+     * Run the batch analytics paragraph
+     *
+     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     */
     self.run = function (callback) {
         // TODO : run batch analytics paragraph
         var query = paragraph.find(".query");
@@ -53,7 +65,9 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             },
             error : function(response) {
-                paragraphUtils.handleError(response.responseText);
+                paragraphUtils.handleNotification(
+                    "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                );
                 utils.hideLoadingOverlay(paragraph);
             }
         });
@@ -84,7 +98,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
      * Callback function for generate spark query
      *
      * @callback GenerateSparkQueryCallback
-     * @param Query {string}
+     * @param Query {string} The query which will be generated
      */
 
     /**
@@ -127,15 +141,30 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    paragraphUtils.handleError(response.message);
+                    paragraphUtils.handleNotification("error", "Error", response.message);
                 }
+                adjustRunButton();
                 utils.hideLoadingOverlay(paragraph);
             },
             error : function(response) {
-                paragraphUtils.handleError(response.responseText);
+                paragraphUtils.handleNotification(
+                    "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                );
                 utils.hideLoadingOverlay(paragraph);
             }
         });
+    }
 
+    /**
+     * Update the paragraph run button disabled status
+     *
+     * @private
+     */
+    function adjustRunButton() {
+        if($.trim(paragraph.find(".query").val()).length > 0) {
+            paragraph.find(".run-paragraph-button").prop('disabled', false);
+        } else {
+            paragraph.find(".run-paragraph-button").prop('disabled', true);
+        }
     }
 }

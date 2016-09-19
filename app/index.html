@@ -116,10 +116,14 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="#">Create Note</a></li>
+                    <li><a href="#">
+                       <i class="fw fw-add"></i> Create Note
+                    </a></li>
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Configuration
-                            <span class="caret"></span></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                            <i class="fw fw-build"></i> Configuration
+                            <span class="caret"></span>
+                        </a>
                         <ul class="dropdown-menu" role="menu">
                             <li><a href="#">Data Sources</a></li>
                             <li><a href="#">Event Receivers</a></li>
@@ -132,24 +136,17 @@
     </nav>
 </div>
 
-<div class="page-content-wrapper">
+<div class="page-content-wrapper loading-overlay" data-toggle="loading" data-loading-style="overlay">
     <!-- page content -->
     <div class="container-fluid">
         <div class="body-wrapper">
             <div class="page-header" id="Message">
                 <h1>Notes</h1>
-                <p class="lead">Select a note to start editing</p>
+                <p class="lead">Select a note and start editing</p>
             </div>
 
             <div class="well">
-                <ul id="note-tree" class="tree-view tree-view-lines">
-                    <li class="branch" aria-expanded="true">Main
-                        <ul>
-                            <li><a href="note.html?note=Note_1">Note_1</a></li>
-                            <li><a href="note.html?note=Note_2">Note_2</a></li>
-                        </ul>
-                    </li>
-                </ul>
+                <div id="notes-list"></div>
             </div>
         </div>
     </div>
@@ -170,7 +167,9 @@
 </footer>
 
 <script>
-    new Notebook().initialize();
+    $(document).ready(function () {
+        new Notebook().initialize();
+    });
 </script>
 </body>
 </html>
