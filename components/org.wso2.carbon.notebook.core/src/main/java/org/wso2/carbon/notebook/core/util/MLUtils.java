@@ -13,14 +13,11 @@ import org.wso2.carbon.analytics.datasource.commons.AnalyticsSchema;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
-import org.wso2.carbon.ml.commons.constants.MLConstants;
-import org.wso2.carbon.ml.commons.domain.Feature;
-import org.wso2.carbon.ml.commons.domain.MLDatasetVersion;
-import org.wso2.carbon.ml.commons.domain.SamplePoints;
-import org.wso2.carbon.ml.commons.domain.Workflow;
+import org.wso2.carbon.ml.commons.domain.*;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
+import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.ml.transformation.DiscardedRowsFilter;
 import org.wso2.carbon.notebook.core.ml.transformation.HeaderFilter;
@@ -628,5 +625,60 @@ public class MLUtils {
             }
         }
         return descriptiveStats;
+    }
+
+    public static String[] getColumnTypes(SamplePoints samplePoints) {
+        Map<String, Integer> headerMap = samplePoints.getHeader();
+        int[] stringCellCount = samplePoints.getStringCellCount();
+        int[] decimalCellCount = samplePoints.getDecimalCellCount();
+        String[] type = new String[headerMap.size()];
+        List<Integer> numericDataColumnPositions = new ArrayList<Integer>();
+
+        // If at least one cell contains strings, then the column is considered to has string data.
+        for (int col = 0; col < headerMap.size(); col++) {
+            if (stringCellCount[col] > 0) {
+                type[col] = FeatureType.CATEGORICAL;
+            } else {
+                numericDataColumnPositions.add(col);
+                type[col] = FeatureType.NUMERICAL;
+            }
+        }
+
+        List<List<String>> columnData = samplePoints.getSamplePoints();
+
+        // Marking categorical data encoded as numerical data as categorical features
+        for (int currentCol = 0; currentCol < headerMap.size(); currentCol++) {
+            if (numericDataColumnPositions.contains(currentCol)) {
+                // Create a unique set from the column.
+                List<String> data = columnData.get(currentCol);
+
+                // Check whether it is an empty column
+                // Rows with missing values are not filtered. Therefore it is possible to
+                // have all rows in sample with values missing in a column.
+                if (data.size() == 0) {
+                    continue;
+                }
+
+                Set<String> uniqueSet = new HashSet<String>(data);
+                int multipleOccurences = 0;
+
+                for (String uniqueValue : uniqueSet) {
+                    int frequency = Collections.frequency(data, uniqueValue);
+                    if (frequency > 1) {
+                        multipleOccurences++;
+                    }
+                }
+
+                // if a column has at least one decimal value, then it can't be categorical.
+                // if a feature has more than X% of repetitive distinct values, then that feature can be a categorical
+                // one. X = categoricalThreshold
+                if (decimalCellCount[currentCol] == 0
+                        && (multipleOccurences / uniqueSet.size()) * 100 >= MLConstants.CATEGORICAL_THRESHOLD) {
+                    type[currentCol] = FeatureType.CATEGORICAL;
+                }
+            }
+        }
+
+        return type;
     }
 }
