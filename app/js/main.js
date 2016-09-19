@@ -64,23 +64,6 @@ function Utils() {
     };
 
     /**
-     * Generates status element
-     *
-     * @param type {string} Should be one of ["success", "info", "warning", "error"]
-     * @param title {string} Title of the error message
-     * @param message {string} The Alert message
-     * @return {jQuery} The element containing the alert
-     */
-    self.generateStatusMessage = function(type, title, message) {
-        return $(
-            "<div class='message message-" + getClassByType(type) + "'>" +
-                "<h4><i class='icon fw fw-" + type + "'></i>" + title + "</h4>" +
-                "<p>" + message + "</p>" +
-            "</div>"
-        );
-    };
-
-    /**
      * Returns the class name for alert/status type
      * Support function for generateAlertMessage() and generateStatusMessage() functions
      *
@@ -174,7 +157,7 @@ function Utils() {
         tableOptions.ordering = false;
         tableOptions.serverSide = true;
         tableOptions.columns = headerArray;
-        tableOptions.ajax = function(data, callback, settings) {
+        tableOptions.ajax = function(data, callback) {
             queryParameters.draw = data.draw;
             queryParameters.paginationFrom = data.start;
             queryParameters.paginationCount = data.length;

@@ -44,10 +44,6 @@ public class DiscardedRowsFilter implements Function<String[], Boolean> {
             this.indices = indices;
             return this;
         }
-//        public Builder init(List<Integer> indices) {
-//            this.indices = indices;
-//            return this;
-//        }
 
         public DiscardedRowsFilter build() {
             return new DiscardedRowsFilter(this);

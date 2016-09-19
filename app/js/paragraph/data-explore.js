@@ -48,7 +48,9 @@ function DataExploreParagraphClient(paragraph) {
                     utils.hideLoadingOverlay(paragraph);
                 },
                 error : function(response) {
-                    paragraphUtils.handleNotification("error", "Error", response.responseText);
+                    paragraphUtils.handleNotification(
+                        "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                    );
                     utils.hideLoadingOverlay(paragraph);
                 }
             });
@@ -79,6 +81,7 @@ function DataExploreParagraphClient(paragraph) {
                     chart = new ClusterDiagram();
                     break;
             }
+            paragraphUtils.clearNotification();
             paragraph.find(".run-paragraph-button").prop("disabled", true);
         });
     };
@@ -290,25 +293,28 @@ function DataExploreParagraphClient(paragraph) {
 
             var runButton = paragraph.find(".run-paragraph-button");
             paragraph.find(".trellis-chart-numerical-features").click(function () {
-                if(paragraph.find('.trellis-chart-numerical-features:checked').size() > 0) {
-                    runButton.prop('disabled', false);
-                } else {
-                    runButton.prop('disabled', true);
-                }
-                paragraphUtils.clearNotification();
+                adjustRunButton();
             });
             paragraph.find(".trellis-chart-categorical-feature").change(function () {
-                if(paragraph.find(".trellis-chart-categorical-feature").get(0).selectedIndex != 0) {
-                    runButton.prop('disabled', false);
-                } else {
-                    runButton.prop('disabled', true);
-                }
-                paragraphUtils.clearNotification();
+                adjustRunButton();
             });
         } else {
             utils.handleNotification("info", "Trellis chart cannot be drawn",
                 "Minimum of one numerical features and one categorical feature required to draw a trellis chart"
             );
+        }
+
+        /**
+         * Adjust the run button in the paragraph if the requirements for trellis chart had been met
+         */
+        function adjustRunButton() {
+            if(paragraph.find(".trellis-chart-categorical-feature").get(0).selectedIndex != 0 &&
+                paragraph.find('.trellis-chart-numerical-features:checked').size() > 0) {
+                runButton.prop('disabled', false);
+            } else {
+                runButton.prop('disabled', true);
+            }
+            paragraphUtils.clearNotification();
         }
 
         /**
@@ -562,7 +568,9 @@ function DataExploreParagraphClient(paragraph) {
                         }, numericalFeatureIndependent, numericalFeatureDependent, markerSize, false);
                     },
                     error : function(response) {
-                        paragraphUtils.handleNotification("error", "Error", response.responseText);
+                        paragraphUtils.handleNotification(
+                            "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                        );
                         utils.hideLoadingOverlay(paragraph);
                     }
                 });

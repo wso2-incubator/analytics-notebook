@@ -65,7 +65,9 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             },
             error : function(response) {
-                paragraphUtils.handleNotification("error", "Error", response.responseText);
+                paragraphUtils.handleNotification(
+                    "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                );
                 utils.hideLoadingOverlay(paragraph);
             }
         });
@@ -145,7 +147,9 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             },
             error : function(response) {
-                paragraphUtils.handleNotification("error", "Error", response.responseText);
+                paragraphUtils.handleNotification(
+                    "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                );
                 utils.hideLoadingOverlay(paragraph);
             }
         });

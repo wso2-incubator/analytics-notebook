@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.paragraph.DataExploreResponse;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.core.MLDataHolder;
@@ -58,7 +59,12 @@ public class DataExploreEndpoint {
         String jsonString;
 
         try {
-            jsonString = new Gson().toJson(DataExploreUtils.getClusterPoints(tableName, tenantID, featureListString, noOfClusters));
+            Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
+            response.put(
+                    "clusterPoints",
+                    DataExploreUtils.getClusterPoints(tableName, tenantID, featureListString, noOfClusters)
+            );
+            jsonString = new Gson().toJson(response);
         } catch (MLMalformedDatasetException | MLModelHandlerException | AnalyticsException e) {
             jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
         }

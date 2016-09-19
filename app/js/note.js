@@ -86,7 +86,7 @@ function Note() {
      * @private
      */
     function addParagraph() {
-        self.paragraphs.push(new Paragraph(self.uniqueParagraphIDCounter++));
+        self.paragraphs.push(new Paragraph());
     }
 
     /**
@@ -131,11 +131,11 @@ function Note() {
 /**
  * Paragraph prototype constructor
  *
- * @param id {int} unique paragraph id assigned to the paragraph
  * @constructor
  */
-function Paragraph(id) {
+function Paragraph() {
     var self = this;
+    var id = self.uniqueParagraphIDCounter++;
 
     // Initializing paragraph
     var paragraphContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");

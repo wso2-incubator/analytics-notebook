@@ -45,12 +45,12 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             paragraph.find(".run-paragraph-button").prop('disabled', false);
         });
 
-        paragraph.find(".search-by-time-range").click(function (event) {
+        paragraph.find(".search-by-time-range").click(function () {
             queryContainer.slideUp();
             timeRangeContainer.slideDown();
         });
 
-        paragraph.find(".search-by-query").click(function (event) {
+        paragraph.find(".search-by-query").click(function () {
             timeRangeContainer.slideUp();
             queryContainer.slideDown();
         });
@@ -63,7 +63,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             timePicker: true,
             autoApply: true,
             timePicker24Hour: true
-        }, function (start, end, label) {
+        }, function (start, end) {
             timeFrom = new Date(start).getTime();
             timeTo = new Date(end).getTime();
         });
@@ -115,7 +115,9 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             },
             error : function(response) {
-                paragraphUtils.handleNotification("error", "Error", response.responseText);
+                paragraphUtils.handleNotification(
+                    "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                );
                 utils.hideLoadingOverlay(paragraph);
             }
         });
