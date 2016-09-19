@@ -1,6 +1,7 @@
 package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.commons.request.paragraph.InteractiveAnalyticsRequest;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
@@ -44,7 +45,7 @@ public class InteractiveAnalyticsEndpoint {
                 interactiveAnalyticsRequest.getPaginationFrom(),
                 interactiveAnalyticsRequest.getPaginationCount()
             );
-            jsonString = new Gson().toJson(new LazyLoadedTable(
+            jsonString = new GsonBuilder().serializeNulls().create().toJson(new LazyLoadedTable(
                 interactiveAnalyticsRequest.getDraw(),
                 ServiceHolder.getAnalyticsDataService().searchCount(
                         tenantID,
@@ -82,7 +83,7 @@ public class InteractiveAnalyticsEndpoint {
                 interactiveAnalyticsRequest.getPaginationFrom(),
                 interactiveAnalyticsRequest.getPaginationCount()
             );
-            jsonString = new Gson().toJson(new LazyLoadedTable(
+            jsonString = new GsonBuilder().serializeNulls().create().toJson(new LazyLoadedTable(
                 interactiveAnalyticsRequest.getDraw(),
                 ServiceHolder.getAnalyticsDataService().getRecordCount(
                     tenantID,
