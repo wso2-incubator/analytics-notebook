@@ -574,7 +574,6 @@ public class MLUtils {
         featureSize = features.size();
         stringCellCount = new int[featureSize];
 
-        //create a new feature list for the sample preprocessing
         //initiate the columnData and descriptiveStat lists
         for (int count= 0; count < featureSize; count++) {
             columnData.add(new ArrayList<String>());

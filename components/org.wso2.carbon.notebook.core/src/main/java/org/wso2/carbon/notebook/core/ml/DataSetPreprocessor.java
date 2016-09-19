@@ -1,5 +1,6 @@
 package org.wso2.carbon.notebook.core.ml;
 
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.spark.api.java.JavaRDD;
@@ -65,6 +66,8 @@ public class DataSetPreprocessor {
             RemoveDiscardedFeatures removeDiscardedFeatures = new RemoveDiscardedFeatures.Builder().init(this.features)
                     .build();
             RemoveResponseColumn responseColumnFilter = new RemoveResponseColumn();
+
+            Map<String, Integer> headerMap = MLUtils.generateHeaderMap(headerLine, CSVFormat.RFC4180);
             MeanImputation meanImputationFilter = new MeanImputation.Builder().init(this.meanOfEachColumn , this.features).build();
 
             JavaRDD<String[]> preprocessedLines = tokens.filter(discardedRowsFilter).map(removeDiscardedFeatures)
@@ -80,69 +83,6 @@ public class DataSetPreprocessor {
         return this.resultantArray;
     }
 
-
-    private void generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample) {
-        int featureSize;
-        List<List<String>> columnData = new ArrayList<List<String>>();
-        int[] stringCellCount;
-        double cellValue;
-        List<Feature> featureListForSample = new ArrayList<Feature>();
-
-        featureSize = this.features.size();
-        stringCellCount = new int[featureSize];
-
-        //create a new feature list for the sample preprocessing
-        //initiate the columnData and descriptiveStat lists
-        for (Feature feature : this.features) {
-            columnData.add(new ArrayList<String>());
-            this.descriptiveStats.add(new DescriptiveStatistics());
-            Feature newFeature = new Feature();
-            newFeature.setName(feature.getName());
-            newFeature.setIndex(feature.getIndex());
-            newFeature.setInclude(true);
-            newFeature.setImputeOption(MLConstants.DISCARD);
-            featureListForSample.add(newFeature);
-        }
-
-        // take a random sample
-        JavaRDD<String[]> sampleRDD = tokenizeDataToSample.sample(false , 0.1);
-        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().init(featureListForSample).build();
-        List<String[]> sampleLines = sampleRDD.filter(discardedRowsFilter).collect();
-
-        // remove from cache
-        tokenizeDataToSample.unpersist();
-
-        // iterate through sample lines
-        for (String[] columnValues : sampleLines) {
-            for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-                // Check whether the row is complete.
-                if (currentCol < columnValues.length) {
-                    // Append the cell to the respective column.
-                    columnData.get(currentCol).add(columnValues[currentCol]);
-
-                    if (!NumberUtils.isNumber(columnValues[currentCol])) {
-                        stringCellCount[currentCol]++;
-                    }
-                }
-            }
-        }
-
-        // Iterate through each column.
-        for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-            // If the column is numerical.
-            if (stringCellCount[currentCol] == 0) {
-                // Convert each cell value to double and append to the
-                // Descriptive-statistics object.
-                for (int row = 0; row < columnData.get(currentCol).size(); row++) {
-                    if (columnData.get(currentCol).get(row) != null
-                            && !MLConstants.MISSING_VALUES.contains(columnData.get(currentCol).get(row))) {
-                        cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
-                        this.descriptiveStats.get(currentCol).addValue(cellValue);
-                    }
-                }
-            }
-        }
-    }
     //map the mean of each column with the column name
     private void setMeanOfEachColumn(){
         for (int currentCol = 0 ; currentCol < this.features.size() ; currentCol++){
