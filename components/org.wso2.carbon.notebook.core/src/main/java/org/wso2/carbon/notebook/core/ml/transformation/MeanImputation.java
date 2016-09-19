@@ -15,20 +15,23 @@ public class MeanImputation implements Function<String[], String[]> {
 
     private static final long serialVersionUID = 6936249532612016896L;
     private final Map<Integer, Double> meanImputation;
+    private List<Integer> columnIndices;
+
 
     public MeanImputation(Builder builder) {
         this.meanImputation = builder.meanImputation;
+        this.columnIndices = builder.columnIndices;
     }
 
     @Override
     public String[] call(String[] tokens) throws MLModelBuilderException {
         try {
             String[] features = new String[tokens.length];
-            for (int i = 0; i < tokens.length; ++i) {
+            for (int i = 0; i < columnIndices.size(); ++i) {
                 if (MLConstants.MISSING_VALUES.contains(tokens[i])) {
                     // if mean imputation is set
-                    if (meanImputation.containsKey(i)) {
-                        features[i] = String.valueOf(meanImputation.get(i));
+                    if (meanImputation.containsKey(columnIndices.get(i))) {
+                        features[i] = String.valueOf(meanImputation.get(columnIndices.get(i)));
                     }
                 } else {
                     features[i] = tokens[i];
@@ -42,9 +45,11 @@ public class MeanImputation implements Function<String[], String[]> {
 
     public static class Builder {
         private Map<Integer, Double> meanImputation;
+        private List<Integer> columnIndices;;
 
         public Builder init(Map<String, Double> meanOfEachColumn, List<Feature> featureList) {
             meanImputation = new HashMap<Integer, Double>();
+            columnIndices = new ArrayList<Integer>();
 
             // get feature indices for mean imputation
             List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(featureList, new ArrayList<Integer>(),
@@ -53,6 +58,9 @@ public class MeanImputation implements Function<String[], String[]> {
                 if (meanImputeIndices.indexOf(feature.getIndex()) != -1) {
                     double mean = meanOfEachColumn.get(feature.getName());
                     meanImputation.put(feature.getIndex(), mean);
+                }
+                if (feature.isInclude()){
+                    columnIndices.add(feature.getIndex());
                 }
             }
             return this;

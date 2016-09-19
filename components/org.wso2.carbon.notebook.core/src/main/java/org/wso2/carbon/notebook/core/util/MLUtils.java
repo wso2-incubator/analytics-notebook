@@ -561,7 +561,7 @@ public class MLUtils {
         }
     }
 
-    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features , double fraction) {
+    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features) {
         int featureSize;
         int[] stringCellCount;
         double cellValue;
@@ -571,7 +571,6 @@ public class MLUtils {
         featureSize = features.size();
         stringCellCount = new int[featureSize];
 
-        //create a new feature list for the sample preprocessing
         //initiate the columnData and descriptiveStat lists
         for (int count= 0; count < featureSize; count++) {
             columnData.add(new ArrayList<String>());
