@@ -1,18 +1,15 @@
 package org.wso2.carbon.notebook.core.ml.transformation;
 
-
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.notebook.commons.constants.MLConstants;
+import org.wso2.carbon.notebook.core.util.MLUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.spark.api.java.function.Function;
-import org.wso2.carbon.notebook.core.ml.SummaryStatGenerator;
-import org.wso2.carbon.notebook.core.util.MLUtils;
 
 public class MeanImputation implements Function<String[], String[]> {
 
@@ -46,19 +43,15 @@ public class MeanImputation implements Function<String[], String[]> {
     public static class Builder {
         private Map<Integer, Double> meanImputation;
 
-        public Builder init(int tenantID , String tableName, List<Feature> featureList) {
+        public Builder init(Map<String, Double> meanOfEachColumn, List<Feature> featureList) {
             meanImputation = new HashMap<Integer, Double>();
 
-            //generate the summary statistics
-            SummaryStatGenerator summaryStatGenerator = new SummaryStatGenerator(tenantID, tableName);
-            List<DescriptiveStatistics> descriptiveStatisticses = summaryStatGenerator.getDescriptiveStats();
-            List<Integer> ll = summaryStatGenerator.getNumericDataColumnPositions();
             // get feature indices for mean imputation
             List<Integer> meanImputeIndices = MLUtils.getImputeFeatureIndices(featureList, new ArrayList<Integer>(),
                     MLConstants.MEAN_IMPUTATION);
             for (Feature feature : featureList) {
                 if (meanImputeIndices.indexOf(feature.getIndex()) != -1) {
-                    double mean = descriptiveStatisticses.get(feature.getIndex()).getMean();
+                    double mean = meanOfEachColumn.get(feature.getName());
                     meanImputation.put(feature.getIndex(), mean);
                 }
             }
