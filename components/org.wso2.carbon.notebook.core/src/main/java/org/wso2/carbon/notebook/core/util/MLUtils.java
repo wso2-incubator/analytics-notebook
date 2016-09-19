@@ -564,7 +564,7 @@ public class MLUtils {
         }
     }
 
-    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features , double fraction) {
+    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features) {
         int featureSize;
         int[] stringCellCount;
         double cellValue;

@@ -28,17 +28,15 @@ public class DataSetPreprocessor {
     private String columnSeparator;
     private String headerLine;
     private List<String[]> resultantArray;
-    private double fraction;
 
-    public DataSetPreprocessor(int tenantID, String tableName , String columnSeparaator, List<Feature> featureList , String headerLine){
+    public DataSetPreprocessor(int tenantID, String tableName , List<Feature> featureList , String headerLine){
         this.features = featureList;
         this.tableName = tableName;
         this.tenantID = tenantID;
-        this.columnSeparator = columnSeparaator;
+        this.columnSeparator = String.valueOf(CSVFormat.RFC4180.getDelimiter());
         this.headerLine = headerLine;
         this.meanOfEachColumn = new HashMap<String, Double>();
         this.resultantArray = null;
-        this.fraction = 0.1;
     }
 
     public List<String[]> preProcess() {
@@ -58,7 +56,7 @@ public class DataSetPreprocessor {
             JavaRDD<String[]> tokens = data.map(lineToTokens);
 
             //generate Descriptive Statistics for each column
-            this.descriptiveStats = MLUtils.generateDescriptiveStat(tokens, this.features , this.fraction);
+            this.descriptiveStats = MLUtils.generateDescriptiveStat(tokens, this.features);
 
             this.setMeanOfEachColumn();
 
@@ -67,7 +65,6 @@ public class DataSetPreprocessor {
                     .build();
             RemoveResponseColumn responseColumnFilter = new RemoveResponseColumn();
 
-            Map<String, Integer> headerMap = MLUtils.generateHeaderMap(headerLine, CSVFormat.RFC4180);
             MeanImputation meanImputationFilter = new MeanImputation.Builder().init(this.meanOfEachColumn , this.features).build();
 
             JavaRDD<String[]> preprocessedLines = tokens.filter(discardedRowsFilter).map(removeDiscardedFeatures)
