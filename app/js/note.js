@@ -276,10 +276,6 @@ function Paragraph() {
             var sourceViewContent = $("<div>");
             var paragraphTemplateLink;
             switch (paragraphType) {
-                case "Data Source Definition" :
-                    self.paragraphClient = new DataSourceDefinitionParagraphClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/data-source-definition.html";
-                    break;
                 case "Preprocessor" :
                     self.paragraphClient = new PreprocessorParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/preprocessor.html";
@@ -295,26 +291,6 @@ function Paragraph() {
                 case "Interactive Analytics" :
                     self.paragraphClient = new InteractiveAnalyticsParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/interactive-analytics.html";
-                    break;
-                case "Event Receiver Definition" :
-                    self.paragraphClient = new EventReceiverDefinitionParagraphClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/event-receiver-definition.html";
-                    break;
-                case "Real Time Analytics" :
-                    self.paragraphClient = new RealTimeAnalyticsParagraphClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/real-time-analytics.html";
-                    break;
-                case "Model Definition" :
-                    self.paragraphClient = new ModelDefinitionParagraphClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/model-definition.html";
-                    break;
-                case "Prediction" :
-                    self.paragraphClient = new PredictionParagraphClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/prediction.html";
-                    break;
-                case "Event Simulation" :
-                    self.paragraphClient = new EventSimulationParagraphClientClient(self.paragraphElement);
-                    paragraphTemplateLink = "source-view-templates/event-simulation.html";
                     break;
             }
 

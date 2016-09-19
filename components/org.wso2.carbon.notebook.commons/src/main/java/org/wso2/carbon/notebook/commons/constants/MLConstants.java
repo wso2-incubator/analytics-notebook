@@ -7,6 +7,7 @@ public class MLConstants {
     public static final String DISCARD = "DISCARD";
     public static final String MEAN_IMPUTATION = "REPLACE_WITH_MEAN";
     public static final int SAMPLE_SIZE = 10000;
+    public static final double CATEGORICAL_THRESHOLD = 0.01;
 
     private MLConstants() {
 
