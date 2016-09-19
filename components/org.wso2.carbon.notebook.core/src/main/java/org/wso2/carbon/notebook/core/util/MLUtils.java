@@ -20,8 +20,11 @@ import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.ml.core.spark.transformations.*;
+import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.notebook.core.ServiceHolder;
+import org.wso2.carbon.notebook.core.ml.transformation.DiscardedRowsFilter;
+import org.wso2.carbon.notebook.core.ml.transformation.HeaderFilter;
+import org.wso2.carbon.notebook.core.ml.transformation.LineToTokens;
 
 
 import java.text.DateFormat;
