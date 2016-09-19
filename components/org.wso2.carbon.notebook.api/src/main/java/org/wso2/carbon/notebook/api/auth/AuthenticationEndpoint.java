@@ -24,13 +24,13 @@ import javax.ws.rs.core.Response;
 @Path("/auth")
 public class AuthenticationEndpoint {
     /**
-     * Sign in the user and save the username and tenant id
+     * Sign in the user and save the username and tenant id as session variables
      *
      * @return respnse
      */
     @POST
     @Path("/sign-in")
-    public javax.ws.rs.core.Response signIn(@Context HttpServletRequest request, String credentialsString) {
+    public Response signIn(@Context HttpServletRequest request, String credentialsString) {
         LoginRequest loginRequest = new Gson().fromJson(credentialsString, LoginRequest.class);
         HttpSession session = request.getSession();
         String jsonString;
@@ -58,5 +58,18 @@ public class AuthenticationEndpoint {
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
+    }
+
+    /**
+     * Sign out the user currently logged in
+     *
+     * @return respnse
+     */
+    @POST
+    @Path("/sign-out")
+    public Response signIn(@Context HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        session.invalidate();
+        return Response.ok(new Gson().toJson(new GeneralResponse(Status.SUCCESS)), MediaType.APPLICATION_JSON).build();
     }
 }

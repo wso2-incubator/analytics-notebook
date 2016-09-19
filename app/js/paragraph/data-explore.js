@@ -145,7 +145,7 @@ function DataExploreParagraphClient(paragraph) {
                 paragraphUtils.clearNotification();
             });
         } else {
-            utils.handleNotification("info", "Scatter plot cannot be drawn",
+            paragraphUtils.handleNotification("info", "Scatter plot cannot be drawn",
                 "Minimum of two numerical features and one categorical feature required to draw a scatter plot"
             );
         }
@@ -299,7 +299,7 @@ function DataExploreParagraphClient(paragraph) {
                 adjustRunButton();
             });
         } else {
-            utils.handleNotification("info", "Trellis chart cannot be drawn",
+            paragraphUtils.handleNotification("info", "Trellis chart cannot be drawn",
                 "Minimum of one numerical features and one categorical feature required to draw a trellis chart"
             );
         }
@@ -548,30 +548,34 @@ function DataExploreParagraphClient(paragraph) {
                         "no-of-clusters=" + noOfClusters + "&" +
                         "table-name=" + tableName,
                     success : function(response) {
-                        var dataArray = response;
-                        // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
-                        var clusterData = [];
-                        for (var i = 0; i < dataArray.length; i++) {
-                            var dataRow = [];
-                            dataRow[0] = parseFloat(dataArray[i]['features']['0']);
-                            dataRow[1] = parseFloat(dataArray[i]['features']['1']);
-                            dataRow[2] = dataArray[i]['cluster'];
-                            clusterData.push(dataRow);
+                        if(response.status == constants.response.SUCCESS) {
+                            var dataArray = response.clusterPoints;
+                            // transforming response data to array of arrays: [[-5.1, 11.5, 'setosa'],[1.9, 3.0, 'versicolor'],...]
+                            var clusterData = [];
+                            for (var i = 0; i < dataArray.length; i++) {
+                                var dataRow = [];
+                                dataRow[0] = parseFloat(dataArray[i]['features']['0']);
+                                dataRow[1] = parseFloat(dataArray[i]['features']['1']);
+                                dataRow[2] = dataArray[i]['cluster'];
+                                clusterData.push(dataRow);
+                            }
+                            redrawClusterData = clusterData;
+                            drawScatterPlot(clusterData, function (chart) {
+                                var chartContainer = $("<div>");
+                                chartContainer.append(chart);
+                                chartContainer.append(generateMarkerSizeCalibrator());
+                                callback(chartContainer);
+                                utils.hideLoadingOverlay(paragraph);
+                            }, numericalFeatureIndependent, numericalFeatureDependent, markerSize, false);
+                        } else {
+                            paragraphUtils.handleNotification("error", "Error", response.message);
                         }
-                        redrawClusterData = clusterData;
-                        drawScatterPlot(clusterData, function(chart) {
-                            var chartContainer = $("<div>");
-                            chartContainer.append(chart);
-                            chartContainer.append(generateMarkerSizeCalibrator());
-                            callback(chartContainer);
-                            utils.hideLoadingOverlay(paragraph);
-                        }, numericalFeatureIndependent, numericalFeatureDependent, markerSize, false);
                     },
                     error : function(response) {
                         paragraphUtils.handleNotification(
                             "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
                         );
-                        utils.hideLoadingOverlay(paragraph);
+                        paragraphUtils.hideLoadingOverlay(paragraph);
                     }
                 });
             }
