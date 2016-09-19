@@ -301,7 +301,7 @@ function Paragraph() {
 
                 sourceView.empty();
                 outputView.empty();
-                paragraphUtils.clearNotification(self.paragraphElement);
+                paragraphUtils.clearNotification();
                 sourceView.append($("<p class='add-padding-bottom-2x lead'>Source</p>"));
                 sourceView.append(sourceViewContent);
                 self.paragraphClient.initialize();
@@ -386,13 +386,30 @@ function ParagraphUtils(paragraph) {
     };
 
     /**
-     * Clear the notifications in the paragraph
+     * Callback function for chart run
+     *
+     * @callback ClearNotificationsCallback
      */
-    self.clearNotification = function() {
+
+    /**
+     * Clear the notifications in the paragraph
+     *
+     * @param [callback] {ClearNotificationsCallback} callback to be called after removing notification
+     */
+    self.clearNotification = function(callback) {
         var notification =  paragraph.find(".notification-container").children().first();
-        notification.slideUp(function() {
-            notification.remove();
-        });
+        if (notification.get(0) !=  undefined) {
+            notification.slideUp(function() {
+                notification.remove();
+                if (callback != undefined) {
+                    callback();
+                }
+            });
+        } else {
+            if (callback != undefined) {
+                callback();
+            }
+        }
     };
 }
 
