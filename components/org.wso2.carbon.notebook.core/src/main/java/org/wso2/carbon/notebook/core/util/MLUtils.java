@@ -2,6 +2,7 @@ package org.wso2.carbon.notebook.core.util;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
@@ -19,10 +20,7 @@ import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.commons.domain.Workflow;
 import org.wso2.carbon.ml.commons.domain.config.MLProperty;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
-import org.wso2.carbon.ml.core.spark.transformations.DiscardedRowsFilter;
-import org.wso2.carbon.ml.core.spark.transformations.HeaderFilter;
-import org.wso2.carbon.ml.core.spark.transformations.LineToTokens;
-import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
+import org.wso2.carbon.ml.core.spark.transformations.*;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 
 
@@ -124,7 +122,7 @@ public class MLUtils {
         JavaRDD<Row> rows = dataFrame.drop("_timestamp").javaRDD();
 
         lines = rows.map(new RowsToLines.Builder().separator(CSVFormat.RFC4180.getDelimiter() + "").build());
-        List<String> testResult =lines.collect();
+        List<String> testResult = lines.collect();
         return lines;
     }
 
@@ -334,7 +332,8 @@ public class MLUtils {
 
     /**
      * @param workflow Workflow
-     * @return A list of indices of features to be included in the model*/
+     * @return A list of indices of features to be included in the model
+     */
     public static SortedMap<Integer, String> getIncludedFeatures(Workflow workflow, int responseIndex) {
         SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
         List<org.wso2.carbon.ml.commons.domain.Feature> features = workflow.getFeatures();
@@ -347,7 +346,7 @@ public class MLUtils {
     }
 
     /**
-     * @param features      list of features of the dataset
+     * @param features list of features of the dataset
      * @return A list of indices of features to be included after processed
      */
     public static List<Integer> getIncludedFeatureIndices(List<Feature> features) {
@@ -551,5 +550,65 @@ public class MLUtils {
             CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataType);
             return csvFormat.getDelimiter() + "";
         }
+    }
+
+    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features , double fraction) {
+        int featureSize;
+        int[] stringCellCount;
+        double cellValue;
+        List<List<String>> columnData = new ArrayList<List<String>>();
+        List<DescriptiveStatistics> descriptiveStats = new ArrayList<DescriptiveStatistics>();
+
+        featureSize = features.size();
+        stringCellCount = new int[featureSize];
+
+        //create a new feature list for the sample preprocessing
+        //initiate the columnData and descriptiveStat lists
+        for (Feature feature : features) {
+            columnData.add(new ArrayList<String>());
+            descriptiveStats.add(new DescriptiveStatistics());
+
+        }
+
+        // take a random sample
+        JavaRDD<String[]> sampleRDD = tokenizeDataToSample.sample(false, fraction);
+        org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter missingValuesFilter
+                = new org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter.Builder().build();
+        List<String[]> sampleLines = sampleRDD.filter(missingValuesFilter).collect();
+
+        // remove from cache
+        tokenizeDataToSample.unpersist();
+
+        // iterate through sample lines
+        for (String[] columnValues : sampleLines) {
+            for (int currentCol = 0; currentCol < featureSize; currentCol++) {
+                // Check whether the row is complete.
+                if (currentCol < columnValues.length) {
+                    // Append the cell to the respective column.
+                    columnData.get(currentCol).add(columnValues[currentCol]);
+
+                    if (!NumberUtils.isNumber(columnValues[currentCol])) {
+                        stringCellCount[currentCol]++;
+                    }
+                }
+            }
+        }
+
+        // Iterate through each column.
+        for (int currentCol = 0; currentCol < featureSize; currentCol++) {
+            // If the column is numerical.
+            if (stringCellCount[currentCol] == 0) {
+                // Convert each cell value to double and append to the
+                // Descriptive-statistics object.
+                for (int row = 0; row < columnData.get(currentCol).size(); row++) {
+                    if (columnData.get(currentCol).get(row) != null
+                            && !org.wso2.carbon.notebook.commons.constants.MLConstants.MISSING_VALUES.contains(columnData.get(currentCol).get(row))) {
+                        cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
+                        descriptiveStats.get(currentCol).addValue(cellValue);
+                    }
+                }
+            }
+        }
+        return descriptiveStats;
     }
 }

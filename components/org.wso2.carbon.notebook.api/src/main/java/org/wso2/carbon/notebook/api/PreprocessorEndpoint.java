@@ -50,27 +50,33 @@ public class PreprocessorEndpoint {
         String headerLine;
         List<String> headerArray = new ArrayList<>() ;
         String columnSeparator = ",";
-        DataSetPreprocessor preprocessor = new DataSetPreprocessor();
         String jsonString;
         List<String[]> resultantArray = null;
 
         Map<String,Object> response = ResponseFactory.getCustomSuccessResponse();
+
         try {
-            JavaRDD<String> lines = MLUtils.getLinesFromDASTable(tableName, tenantID, ServiceHolder.getSparkContextService().getJavaSparkContext());
             headerLine = MLUtils.extractHeaderLine(tableName, tenantID);
             for (Feature feature : featureList) {
                 int index= MLUtils.getFeatureIndex(feature.getName(), headerLine, columnSeparator);
                 feature.setIndex(index);
                 orderedFeatureList.set(index, feature);
+            }
+            //create the header list in the order
+            for (Feature feature : orderedFeatureList) {
                 if (feature.isInclude()){
                     headerArray.add(feature.getName());
                 }
             }
-            resultantArray = preprocessor.preProcess(tenantID, tableName, lines, headerLine, columnSeparator, orderedFeatureList);
+            DataSetPreprocessor preprocessor = new DataSetPreprocessor(tenantID,tableName,columnSeparator,orderedFeatureList,headerLine);
+            resultantArray = preprocessor.preProcess();
+
 
         } catch (AnalyticsException e) {
             e.printStackTrace();
         }
+
+
 
         response.put("headerArray" , headerArray.toArray());
         response.put("resultList" , resultantArray);
