@@ -179,27 +179,28 @@ function Paragraph() {
     /**
      * Run the paragraph
      */
-    self.run = function () {  // TODO : This method needs to be changed after deciding on the architecture
-        self.paragraphClient.run(function (output) {
-            var outputView = self.paragraphElement.find(".output");
-            outputView.slideUp(function() {
-                outputView.empty();
-                paragraphUtils.clearNotification();
-                outputView.append($("<p class='add-padding-bottom-2x lead'>Output</p>"));
-                var newOutputViewContent = $("<div class='fluid-container'>");
-                newOutputViewContent.append(output);
-                outputView.append(newOutputViewContent);
+    self.run = function () {
+        if (self.paragraphClient.run != undefined) {
+            self.paragraphClient.run(function (output) {
+                var outputView = self.paragraphElement.find(".output");
+                outputView.slideUp(function() {
+                    outputView.empty();
+                    paragraphUtils.clearNotification();
+                    outputView.append($("<p class='add-padding-bottom-2x lead'>Output</p>"));
+                    var newOutputViewContent = $("<div class='fluid-container'>");
+                    newOutputViewContent.append(output);
+                    outputView.append(newOutputViewContent);
 
-                outputView.slideDown();
-                self.paragraphElement.find(".toggle-output-view-button").prop('disabled', false);
+                    outputView.slideDown();
+                    self.paragraphElement.find(".toggle-output-view-button").prop('disabled', false);
 
-                // Updating the hide/show output button text
-                self.paragraphElement.find(".output").slideDown();
-                self.paragraphElement.find(".toggle-output-view-button").html(
-                    "<i class='fw fw-hide'></i> Hide Output"
-                );
+                    // Updating the hide/show output button text
+                    self.paragraphElement.find(".toggle-output-view-button").html(
+                        "<i class='fw fw-hide'></i> Hide Output"
+                    );
+                });
             });
-        });
+        }
     };
 
     /**
@@ -242,24 +243,36 @@ function Paragraph() {
 
     /**
      * Get the contents of the paragraph and the paragraph type encoded into an object
+     * Getting source or output may not be supported by some paragraphs and the object will not include them if not supported
      *
      * @return {Object} The paragraph contents and the type encoded into an object
      */
     self.getContent = function() {
-        return self.paragraphClient.getContent();
+        var paragraphContent = {};
+        if (self.paragraphClient.getSourceContent != undefined) {
+            self.paragraphClient.initialize();
+            paragraphContent.source = self.paragraphClient.getSourceContent();
+            if (self.paragraphClient.getOutputContent != undefined) {
+                paragraphContent.output = self.paragraphClient.getOutputContent();
+            }
+        }
     };
 
     /**
      * Set the contents of the object into the paragraph paragraph
      * The type of paragraph depends on the type specified in the object provided
+     * Setting source or output may not be supported by some paragraphs and the object will not include them if not supported
      *
      * @param paragraphContent {Object} object to be used for setting the content of the paragraph
      */
     self.setContent = function(paragraphContent) {
-        if(paragraphContent.type != undefined) {
+        if (paragraphContent.type != undefined) {
             loadSourceViewByType(paragraphContent.type);
-            if(paragraphContent.content != undefined) {
-                self.paragraphClient.setContent(paragraphContent.content);
+            if (paragraphContent.source != undefined) {
+                self.paragraphClient.initialize(paragraphContent.source);
+                if (paragraphContent.output != undefined) {
+                    self.paragraphClient.run(paragraphContent.output);
+                }
             }
         }
     };
@@ -291,6 +304,10 @@ function Paragraph() {
                 case "Interactive Analytics" :
                     self.paragraphClient = new InteractiveAnalyticsParagraphClient(self.paragraphElement);
                     paragraphTemplateLink = "source-view-templates/interactive-analytics.html";
+                    break;
+                case "Markdown" :
+                    self.paragraphClient = new Markdown(self.paragraphElement);
+                    paragraphTemplateLink = "source-view-templates/markdown.html";
                     break;
             }
 
@@ -344,11 +361,18 @@ function ParagraphUtils(paragraph) {
         });
     };
 
+    /**
+     * Callback function for load tables method
+     *
+     * @callback LoadTablesCallback
+     */
 
     /**
      * Load names of all the tables available in the server into the input table element in the paragraph
+     *
+     * @param [callback] {LoadTablesCallback} Callback to be called after loading tables
      */
-    self.loadTableNames = function () {
+    self.loadTableNames = function (callback) {
         var inputTableSelectElement = paragraph.find(".input-table");
         utils.showLoadingOverlay(self.paragraphElement);
         $.ajax({
@@ -362,6 +386,9 @@ function ParagraphUtils(paragraph) {
                     });
                 } else {
                     self.handleNotification("error", "Error", response.message);
+                }
+                if (callback != undefined) {
+                    callback();
                 }
                 utils.hideLoadingOverlay(self.paragraphElement);
             },

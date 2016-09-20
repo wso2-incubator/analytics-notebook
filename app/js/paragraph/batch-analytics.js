@@ -11,8 +11,11 @@ function BatchAnalyticsParagraphClient(paragraph) {
 
     /**
      * Initialize the batch analytics paragraph
+     * If content is passed into this the source content will be set from it
+     *
+     * @param [content] {Object} Source content of the paragraph encoded into an object
      */
-    self.initialize = function () {
+    self.initialize = function (content) {
         paragraphUtils.loadTableNames();
 
         // Adding event listeners for the batch analytics paragraph
@@ -71,6 +74,15 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             }
         });
+    };
+
+    /**
+     * Get the source content of the paragraph encoded into an object
+     *
+     * @return {Object} source content of the paragraph encoded into an object
+     */
+    self.getSourceContent = function() {
+
     };
 
     /**

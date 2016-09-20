@@ -9,6 +9,7 @@ public class Status {
     public static final String INVALID_QUERY = "INVALID_QUERY";
     public static final String NOT_LOGGED_IN = "NOT_LOGGED_IN";
     public static final String ALREADY_LOGGED_IN = "ALREADY_LOGGED_IN";
+    public static final String NOT_IMPLEMENTED = "NOT_IMPLEMENTED";
 
     public static final String KEY = "status";
 }

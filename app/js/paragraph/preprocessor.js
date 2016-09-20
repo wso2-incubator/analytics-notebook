@@ -12,8 +12,11 @@ function PreprocessorParagraphClient(paragraph) {
 
     /**
      * Initialize the preprocessor paragraph
+     * If content is passed into this the source content will be set from it
+     *
+     * @param [content] {Object} Source content of the paragraph encoded into an object
      */
-    self.initialize = function () {
+    self.initialize = function (content) {
         // Adding event receivers
         paragraph.find(".preprocessor-input.input-table").change(function () {
             loadPreprocessorParameters();
@@ -84,6 +87,15 @@ function PreprocessorParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             }
         });
+    };
+
+    /**
+     * Get the source content of the paragraph encoded into an object
+     *
+     * @return {Object} source content of the paragraph encoded into an object
+     */
+    self.getSourceContent = function() {
+
     };
 
     /**

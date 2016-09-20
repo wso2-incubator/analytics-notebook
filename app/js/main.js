@@ -147,9 +147,10 @@ function Utils() {
      * @param headerArray {string[]} The column names array of the tables
      * @param [tableOptions] {Object} The table options object for the data tables plugin
      * @param [cellClassNames] {Object} Cell class names with the column name as key and the class as value
+     * @param [maxResultCount] int Upper limit for the result count
      * @return {jQuery} The table element
      */
-    self.generateDataTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray, tableOptions, cellClassNames) {
+    self.generateDataTableWithLazyLoading = function(httpMethod, url, queryParameters, headerArray, maxResultCount, tableOptions, cellClassNames) {
         if(tableOptions == undefined) {
             tableOptions = {};
         }
@@ -183,6 +184,14 @@ function Utils() {
                             data: [],
                             error: returnedData.message
                         };
+                    }
+                    if (maxResultCount != undefined) {
+                        if (options.recordsTotal < 1) {
+                            options.recordsTotal = maxResultCount;
+                        }
+                        if (options.recordsFiltered < 1) {
+                            options.recordsFiltered = maxResultCount;
+                        }
                     }
                     callback(options);
                     self.hideLoadingOverlay(table);
