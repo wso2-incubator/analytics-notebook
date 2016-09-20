@@ -58,6 +58,6 @@
     </dependencies>
 
     <build>
-        <finalName>notebook-core-${version}</finalName>
+        <finalName>notebook-core-${project.version}</finalName>
     </build>
 </project>

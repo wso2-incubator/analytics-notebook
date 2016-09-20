@@ -55,7 +55,7 @@ public class NotebookEndpoint {
      */
     @PUT
     @Path("/notes/{note-name}/content")
-    public Response saveNoteContent(@Context HttpServletRequest request) {
+    public Response saveNoteContent(@Context HttpServletRequest request, String content) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
@@ -80,7 +80,7 @@ public class NotebookEndpoint {
 
         // TODO : implement the retrieving of the note content
 
-        jsonString = new Gson().toJson(new GeneralResponse(Status.NOT_IMPLEMENTED));
+        jsonString = new Gson().toJson(new GeneralResponse("NOT_IMPLEMENTED"));
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }

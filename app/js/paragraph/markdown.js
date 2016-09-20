@@ -34,11 +34,10 @@ function Markdown(paragraph) {
         function onMarkdownSourceKeyup() {
             var markdownText = markdownSource.val();
 
-            outputView.empty();
             paragraphUtils.clearNotification();
             var newOutputViewContent = $("<div class='fluid-container'>");
-            newOutputViewContent.append(marked(markdownText));
-            outputView.append(newOutputViewContent);
+            newOutputViewContent.html(marked(markdownText));
+            outputView.html(newOutputViewContent);
 
             if(markdownText != undefined && markdownText != "") {
                 outputView.slideDown();
@@ -61,10 +60,11 @@ function Markdown(paragraph) {
      * @return {Object} source content of the paragraph encoded into an object
      */
     self.getSourceContent = function() {
-        var content = {};
+        var content;
         var markdownSourceText = paragraph.find(".markdown-source").val();
         if (markdownSourceText != undefined) {
-            content.text = markdownSourceText;
+            content = { text : markdownSourceText };
         }
+        return content;
     };
 }

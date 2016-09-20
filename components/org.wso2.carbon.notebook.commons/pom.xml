@@ -28,6 +28,6 @@
     </dependencies>
 
     <build>
-        <finalName>notebook-commons-${version}</finalName>
+        <finalName>notebook-commons-${project.version}</finalName>
     </build>
 </project>

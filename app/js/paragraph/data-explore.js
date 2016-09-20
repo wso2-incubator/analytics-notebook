@@ -148,10 +148,10 @@ function DataExploreParagraphClient(paragraph) {
      * @return {Object} source content of the paragraph encoded into an object
      */
     self.getSourceContent = function() {
-        var content = {};
+        var content;
         var inputTable = paragraph.find(".input-table").val();
         if (inputTable != undefined) {
-            content.inputTable = inputTable;
+            content = { inputTable : inputTable };
             content.sampleInfo = {
                 sample : sample,
                 categoricalFeatureNames : categoricalFeatureNames,
@@ -213,6 +213,7 @@ function DataExploreParagraphClient(paragraph) {
                 content.chartOptions = chartOptions;
             }
         }
+        return content;
     };
 
     /**

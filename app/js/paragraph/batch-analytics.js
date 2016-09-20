@@ -18,6 +18,10 @@ function BatchAnalyticsParagraphClient(paragraph) {
     self.initialize = function (content) {
         paragraphUtils.loadTableNames();
 
+        if (content != undefined && content.query != undefined) {
+            paragraph.find(".query").val(content.query);
+        }
+
         // Adding event listeners for the batch analytics paragraph
         paragraph.find(".add-table-button").click(function (event) {
             addTable($(event.target));
@@ -82,7 +86,16 @@ function BatchAnalyticsParagraphClient(paragraph) {
      * @return {Object} source content of the paragraph encoded into an object
      */
     self.getSourceContent = function() {
-
+        var content;
+        var inputTable = paragraph.find(".input-table").val();
+        if (inputTable != undefined) {
+            content = { inputTable: inputTable };
+            var query = paragraph.find(".query").val();
+            if (query != undefined) {
+                content.query = query;
+            }
+        }
+        return content;
     };
 
     /**
