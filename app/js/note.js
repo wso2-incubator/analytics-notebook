@@ -479,7 +479,7 @@ function ParagraphUtils(paragraph) {
     /**
      * Sets the output content into the paragraph
      *
-     * @param output {jQuery}
+     * @param output {jQuery} output content to be set into the paragraph
      */
     self.setOutput = function (output) {
         var outputView = paragraph.find(".output");
@@ -490,10 +490,10 @@ function ParagraphUtils(paragraph) {
             outputView.html(newOutputViewContent);
 
             outputView.slideDown();
-            self.paragraphElement.find(".toggle-output-view-button").prop('disabled', false);
+            paragraph.find(".toggle-output-view-button").prop('disabled', false);
 
             // Updating the hide/show output button text
-            self.paragraphElement.find(".toggle-output-view-button").html(
+            paragraph.find(".toggle-output-view-button").html(
                 "<i class='fw fw-hide'></i> Hide Output"
             );
         });

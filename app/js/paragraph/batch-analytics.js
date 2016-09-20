@@ -39,10 +39,8 @@ function BatchAnalyticsParagraphClient(paragraph) {
 
     /**
      * Run the batch analytics paragraph
-     *
-     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
      */
-    self.run = function (callback) {
+    self.run = function () {
         // TODO : run batch analytics paragraph
         var query = paragraph.find(".query");
         var output = [];
@@ -68,7 +66,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
                         window.location.href = "sign-in.html";
                     }
                 });
-                callback(output);
+                paragraphUtils.setOutput(output);
                 utils.hideLoadingOverlay(paragraph);
             },
             error : function(response) {

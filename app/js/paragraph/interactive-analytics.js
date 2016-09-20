@@ -146,10 +146,8 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
 
     /**
      * Run the interactive analytics paragraph
-     *
-     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
      */
-    self.run = function (callback) {
+    self.run = function () {
         var tableName = paragraph.find(".input-table").val();
         utils.showLoadingOverlay(paragraph);
         $.ajax({
@@ -176,7 +174,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                         queryParameters.query = paragraph.find(".query").val();
                     }
 
-                    callback(utils.generateDataTableWithLazyLoading(
+                    paragraphUtils.setOutput(utils.generateDataTableWithLazyLoading(
                         "POST",
                         constants.API_URI + "interactive-analytics/search/" + searchMethod,
                         queryParameters,

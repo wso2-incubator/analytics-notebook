@@ -135,11 +135,9 @@ function DataExploreParagraphClient(paragraph) {
 
     /**
      * Run the data explore paragraph
-     *
-     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
      */
-    self.run = function(callback) {
-        chart.draw(callback);
+    self.run = function() {
+        chart.draw();
     };
 
     /**
@@ -221,13 +219,6 @@ function DataExploreParagraphClient(paragraph) {
      */
 
     /**
-     * Callback function for chart run
-     *
-     * @callback ChartRunCallback
-     * @param output {jQuery} The chart
-     */
-
-    /**
      * Scatter plot prototype constructor
      *
      * @constructor
@@ -294,10 +285,8 @@ function DataExploreParagraphClient(paragraph) {
 
         /**
          * Draw the scatter plot
-         *
-         * @param callback {ChartRunCallback} The callback that will be called after drawing the chart
          */
-        scatterPlotSelf.draw = function(callback) {
+        scatterPlotSelf.draw = function() {
             utils.showLoadingOverlay(paragraph);
             var numFeatureIndependent = paragraph.find(".scatter-plot-x").val().replace(/^\s+|\s+$/g, '');
             var numFeatureDependent = paragraph.find(".scatter-plot-y").val().replace(/^\s+|\s+$/g, '');
@@ -324,13 +313,7 @@ function DataExploreParagraphClient(paragraph) {
                 scatterData.push(dataRow);
             }
 
-            drawSimpleChart(scatterData, function(chart) {
-                var chartContainer = $("<div>");
-                chartContainer.append(chart);
-                chartContainer.append(generateMarkerSizeCalibrator());
-                callback(chartContainer);
-                utils.hideLoadingOverlay(paragraph);
-            }, numFeatureIndependent, numFeatureDependent, true);
+            drawSimpleChart(scatterData, numFeatureIndependent, numFeatureDependent, true);
         };
 
         /**
@@ -435,10 +418,8 @@ function DataExploreParagraphClient(paragraph) {
 
         /**
          * Draw the parallel sets
-         *
-         * @param callback {ChartRunCallback} The callback that will be called after drawing the chart
          */
-        parallelSetsSelf.draw = function(callback) {
+        parallelSetsSelf.draw = function() {
             utils.showLoadingOverlay(paragraph);
             // get categorical feature list from checkbox selection
             var parallelSetsFeatureNames = [];
@@ -454,7 +435,7 @@ function DataExploreParagraphClient(paragraph) {
                 .attr("height", chart.height())
                 .style("font-size", "12px");
             vis.datum(points).call(chart);
-            callback(chartElement);
+            paragraphUtils.setOutput(chartElement);
 
             utils.hideLoadingOverlay(paragraph);
         };
@@ -540,10 +521,8 @@ function DataExploreParagraphClient(paragraph) {
 
         /**
          * Draw the trellis chart
-         *
-         * @param callback {ChartRunCallback} The callback that will be called after drawing the chart
          */
-        trellisChartSelf.draw = function(callback) {
+        trellisChartSelf.draw = function() {
             utils.showLoadingOverlay(paragraph);
             var featureNames = [];
             // get selected categorical feature
@@ -693,7 +672,7 @@ function DataExploreParagraphClient(paragraph) {
             var chartContainer = $("<div>");
             chartContainer.append(chartElement);
             chartContainer.append(generateMarkerSizeCalibrator());
-            callback(chartContainer);
+            paragraphUtils.setOutput(chartContainer);
             utils.hideLoadingOverlay(paragraph);
         };
     }
@@ -773,32 +752,21 @@ function DataExploreParagraphClient(paragraph) {
 
         /**
          * Draw the cluster diagram
-         *
-         * @param callback {ChartRunCallback} The callback that will be called after drawing the chart
          */
-        clusterDiagramSelf.draw = function(callback) {
+        clusterDiagramSelf.draw = function() {
             if (redrawClusterData == undefined) {
-                drawClusterDiagram(callback);
+                drawClusterDiagram();
             } else {
-                redrawClusterDiagram(callback);
+                redrawClusterDiagram();
             }
         };
-
-        /**
-         * Callback function for the draw cluster diagram and redraw cluster diagram methods
-         *
-         * @callback DrawClusterDiagramCallback
-         * @param chart {jQuery} The chart element drawn
-         */
 
         /**
          * Draws the cluster diagram by loading the data from the server
          * The stored sample data cannot be used for drawing cluster diagram
          * A KMeans model needs to be trained in the server
-         *
-         * @param callback {DrawClusterDiagramCallback} callback to be called after drawing the chart
          */
-        function drawClusterDiagram(callback) {
+        function drawClusterDiagram() {
             // get categorical feature list from checkbox selection
             var numericalFeatureIndependent = paragraph.find(".cluster-diagram-independent-feature").val().replace(/^\s+|\s+$/g, '');
             var numericalFeatureDependent = paragraph.find(".cluster-diagram-dependent-feature").val().replace(/^\s+|\s+$/g, '');
@@ -826,13 +794,7 @@ function DataExploreParagraphClient(paragraph) {
                             clusterData.push(dataRow);
                         }
                         redrawClusterData = clusterData;
-                        drawSimpleChart(clusterData, function (chart) {
-                            var chartContainer = $("<div>");
-                            chartContainer.append(chart);
-                            chartContainer.append(generateMarkerSizeCalibrator());
-                            callback(chartContainer);
-                            utils.hideLoadingOverlay(paragraph);
-                        }, numericalFeatureIndependent, numericalFeatureDependent, false);
+                        drawSimpleChart(clusterData, numericalFeatureIndependent, numericalFeatureDependent, false);
                     } else {
                         paragraphUtils.handleNotification("error", "Error", response.message);
                     }
@@ -850,21 +812,13 @@ function DataExploreParagraphClient(paragraph) {
          * Redraws the cluster diagram using the cluster diagram loaded from the server before
          * The cluster data retrieved from the data in the first time is used
          * This is because training a model for cluster diagram each time it is redrawn is costly
-         *
-         * @param callback {DrawClusterDiagramCallback} callback to be called after drawing the chart
          */
-        function redrawClusterDiagram(callback) {
+        function redrawClusterDiagram() {
             // get categorical feature list from checkbox selection
             var numericalFeatureIndependent = paragraph.find(".cluster-diagram-independent-feature").val().replace(/^\s+|\s+$/g, '');
             var numericalFeatureDependent = paragraph.find(".cluster-diagram-dependent-feature").val().replace(/^\s+|\s+$/g, '');
 
-            drawSimpleChart(redrawClusterData, function (chart) {
-                var chartContainer = $("<div>");
-                chartContainer.append(chart);
-                chartContainer.append(generateMarkerSizeCalibrator());
-                callback(chartContainer);
-                utils.hideLoadingOverlay(paragraph);
-            }, numericalFeatureIndependent, numericalFeatureDependent, false);
+            drawSimpleChart(redrawClusterData, numericalFeatureIndependent, numericalFeatureDependent, false);
         }
     }
 
@@ -873,12 +827,11 @@ function DataExploreParagraphClient(paragraph) {
      * This is used by Scatter plot and Cluster diagram
      *
      * @param data
-     * @param callback
      * @param xLabel
      * @param yLabel
      * @param legendEnabled
      */
-    function drawSimpleChart(data, callback, xLabel, yLabel, legendEnabled) {
+    function drawSimpleChart(data, xLabel, yLabel, legendEnabled) {
         var chartElement = $("<div class='chart'>");
         var scatter = new ScatterPlot(data);
 
@@ -890,7 +843,11 @@ function DataExploreParagraphClient(paragraph) {
         scatter.setYAxisText(yLabel);
         scatter.plot(d3.select(chartElement.get(0)));
 
-        callback(chartElement);
+        var chartContainer = $("<div>");
+        chartContainer.append(chartElement);
+        chartContainer.append(generateMarkerSizeCalibrator());
+        paragraphUtils.setOutput(chartContainer);
+        utils.hideLoadingOverlay(paragraph);
     }
 
     /**
