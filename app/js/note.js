@@ -31,9 +31,8 @@ function Note() {
             url: constants.API_URI + "notes/" + noteSelf.name,
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
-                    var noteObject = JSON.parse(response.note); // Server sends the value of key note as a string encoded into JSON
-                    console.log(response.note);
-                    setContent(noteObject);
+                    var noteObject = JSON.parse(response.note); // Server sends the value of key "note" as a string encoded into JSON
+                    loadNextParagraphForLoadAllTask(noteObject);
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
@@ -144,17 +143,21 @@ function Note() {
         });
     }
 
+
     /**
-     * Set the contents of the note using the array of objects provided
-     * Each object contains the contents of a paragraph and the paragraph type
+     * load the first paragraph in the array of paragraphs left to load in load all paragraphs task
+     * The array will be passed to the Paragraph constructor after removing itself from the array so that the one after it will be loaded next
      *
-     * @param noteContent {Object[]} Array of paragraph contents and the paragraph type
+     * @param remainingParagraphs {Object[]} The array of paragraphs left to run
      */
-    function setContent(noteContent) {
-        $.each(noteContent, function (index, paragraphContent) {
-            console.log(paragraphContent);
-            noteSelf.paragraphs.push(new Paragraph(paragraphContent));
-        });
+    function loadNextParagraphForLoadAllTask(remainingParagraphs) {
+        if (remainingParagraphs != undefined && remainingParagraphs.length > 0) {
+            // Starting a new async task for running the next paragraph
+            setTimeout(function() {
+                noteSelf.paragraphs.push(new Paragraph(remainingParagraphs[0], remainingParagraphs.slice(1, remainingParagraphs.length)));
+                adjustNoteControls();
+            }, 0);
+        }
     }
 
     /**
@@ -218,8 +221,9 @@ function Note() {
      *
      * @constructor
      * @param [paragraphContent] {Object} The contents of the paragraph
+     * @param [remainingParagraphs] {Object} The remoaining paragraphs to be loaded
      */
-    function Paragraph(paragraphContent) {
+    function Paragraph(paragraphContent, remainingParagraphs) {
         var paragraphSelf = this;
 
         // Initializing paragraph
@@ -235,6 +239,9 @@ function Note() {
         paragraphSelf.id = noteSelf.uniqueParagraphIDCounter++;
 
         paragraphSelf.paragraphElement.load('paragraph-template.html', function () {
+            // Start loading the next paragraph
+            loadNextParagraphForLoadAllTask(remainingParagraphs);
+
             var paragraphTypeSelectElement = paragraphSelf.paragraphElement.find(".paragraph-type-select");
             paragraphTypeSelectElement.html("<option disabled selected value> -- select an option --</option>");
             for (var paragraphType in constants.paragraphs) {
@@ -571,6 +578,7 @@ function ParagraphUtils(paragraph) {
 
     /**
      * Run the first paragraph in the array of paragraphs left to run in run all paragraphs task
+     * The array will be passed to the first paragraph's run method removing itself from the array so that the one after it will be run next
      *
      * @param remainingParagraphs {Object[]} The array of paragraphs left to run
      */
