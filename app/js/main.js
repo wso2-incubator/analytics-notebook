@@ -18,8 +18,22 @@ var constants = {
 
 // General Initializations
 $(document).ready(function() {
+    var utils = new Utils();
+    $.ajax({
+        type: "GET",
+        url: constants.API_URI + "user/logged-in",
+        success: function (response) {
+            if (response.status == constants.response.SUCCESS) {
+                $(".username").html(response.username);
+            } else if (response.status != constants.response.NOT_LOGGED_IN) {
+                utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(-1));
+            }
+        },
+        error: function (response) {
+            utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
+        }
+    });
     document.title = constants.PRODUCT_NAME;
-    $(".username").html("John Doe");
 });
 
 
@@ -86,6 +100,7 @@ function Utils() {
 
     /**
      * Generated an error message for the http status code
+     * -1 can be used for generating messages for unknown errors
      *
      * @param statusCode {int} http status code
      * @return {string} error message for the status code

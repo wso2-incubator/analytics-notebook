@@ -34,7 +34,7 @@ function Notebook() {
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     var notes = response.notes;
-                    var columns = ["Note", "Actions"];
+                    var columns = ["Note Name", "Actions"];
 
                     // Creating the 2D data array for the notes list table
                     var data = [];
@@ -43,18 +43,18 @@ function Notebook() {
                         row.push("<span class='note-name'>" + note + "</span>");
                         row.push(
                             "<a href='note.html?note=" + note + "' class='btn padding-reduce-on-grid-view'>" +
-                            "<span class='fw-stack'>" +
-                            "<i class='fw fw-ring fw-stack-2x'></i>" +
-                            "<i class='fw fw-edit fw-stack-1x'></i>" +
-                            "</span>" +
-                            "<span class='hidden-xs'>Edit</span>" +
+                                "<span class='fw-stack'>" +
+                                    "<i class='fw fw-ring fw-stack-2x'></i>" +
+                                    "<i class='fw fw-view fw-stack-1x'></i>" +
+                                "</span>" +
+                                "<span class='hidden-xs'>View</span>" +
                             "</a>" +
-                            "<a class='delete-note' class='btn padding-reduce-on-grid-view'>" +
-                            "<span class='fw-stack'>" +
-                            "<i class='fw fw-ring fw-stack-2x'></i>" +
-                            "<i class='fw fw-delete fw-stack-1x'></i>" +
-                            "</span>" +
-                            "<span class='hidden-xs'>Delete</span>" +
+                            "<a class='delete-note btn padding-reduce-on-grid-view'>" +
+                                "<span class='fw-stack'>" +
+                                    "<i class='fw fw-ring fw-stack-2x'></i>" +
+                                    "<i class='fw fw-delete fw-stack-1x'></i>" +
+                                "</span>" +
+                                "<span class='hidden-xs'>Delete</span>" +
                             "</a>"
                         );
                         data.push(row);
@@ -79,6 +79,7 @@ function Notebook() {
                 utils.hideLoadingOverlay(notesList);
             },
             error : function() {
+                utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
                 utils.hideLoadingOverlay(notesList);
             }
         });

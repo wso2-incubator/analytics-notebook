@@ -26,6 +26,7 @@ function Note() {
      * Initialize the note
      */
     noteSelf.initialize = function () {
+        utils.showLoadingOverlay($("#paragraphs"));
         $.ajax({
             type: "GET",
             url: constants.API_URI + "notes/" + noteSelf.name,
@@ -38,9 +39,11 @@ function Note() {
                 } else {
                     utils.handlePageNotification("error", "Error", response.message);
                 }
+                utils.hideLoadingOverlay($("#paragraphs"));
             },
             error : function(response) {
                 utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
+                utils.hideLoadingOverlay($("#paragraphs"));
             }
         });
 
@@ -136,13 +139,24 @@ function Note() {
             noteContent.push(paragraph.getContent());
         });
 
-
+        utils.showLoadingOverlay($("#paragraphs"));
         $.ajax({
             type: "PUT",
             data: JSON.stringify(noteContent),
             url: constants.API_URI + "notes/" + noteSelf.name,
             success: function (response) {
-
+                if (response.status == constants.response.SUCCESS) {
+                    utils.handlePageNotification("info", "Info", "Note successfully saved");
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    utils.handlePageNotification("error", "Error", response.message);
+                }
+                utils.hideLoadingOverlay($("#paragraphs"));
+            },
+            error: function (response) {
+                utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
+                utils.hideLoadingOverlay($("#paragraphs"));
             }
         });
     }

@@ -41,6 +41,7 @@
                 org.wso2.carbon.notebook.api.EventReceiverInformationRetrievalEndpoint
                 org.wso2.carbon.notebook.api.paragraph.InteractiveAnalyticsEndpoint
                 org.wso2.carbon.notebook.api.PreprocessorEndpoint
+                org.wso2.carbon.notebook.api.UserEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
