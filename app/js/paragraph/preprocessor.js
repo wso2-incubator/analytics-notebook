@@ -10,6 +10,8 @@ function PreprocessorParagraphClient(paragraph) {
     var paragraphUtils = new ParagraphUtils(paragraph);
     var table;
 
+    self.type = constants.paragraphs.PREPROCESSOR.key;
+
     /**
      * Initialize the preprocessor paragraph
      * If content is passed into this the source content will be set from it
@@ -17,21 +19,31 @@ function PreprocessorParagraphClient(paragraph) {
      * @param [content] {Object} Source content of the paragraph encoded into an object
      */
     self.initialize = function (content) {
-        // Adding event receivers
-        paragraph.find(".preprocessor-input.input-table").change(function () {
-            loadPreprocessorParameters();
+        // Initializing paragraph
+        paragraphUtils.loadTableNames(function() {
+            // Load source content
+            if (content != undefined) {
+                // Loading the source content from the content object provided
+                if (content.inputTable != undefined) {
+                    paragraph.find(".input-table").val(content.inputTable);
+                    onInputTableChange();
+                    // TODO : implement setting the source content - Check if undefined and set
+                }
+            }
         });
 
-        // Initializing paragraph
-        paragraphUtils.loadTableNames();
+        // Adding event receivers
+        paragraph.find(".preprocessor-input.input-table").change(function () {
+            onInputTableChange();
+        });
     };
 
     /**
      * Run the preprocessor paragraph
      *
-     * @param callback {ParagraphClientRunCallback} The callback that will be called after running the paragraph
+     * @param [paragraphsLeftToRun] {Object[]} The array of paragraphs left to be run in run all paragraphs task
      */
-    self.run = function (callback) {
+    self.run = function (paragraphsLeftToRun) {
         // TODO : run preprocessor paragraph
         var tableName = paragraph.find(".input-table").val();
         var preprocessedTableName = paragraph.find(".output-table").val();
@@ -73,7 +85,8 @@ function PreprocessorParagraphClient(paragraph) {
                         }
                     });
                     output = utils.generateDataTable(headerArray, data);
-                    callback(output);
+                    paragraphUtils.setOutput(output);
+                    paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
@@ -96,7 +109,13 @@ function PreprocessorParagraphClient(paragraph) {
      * @return {Object} source content of the paragraph encoded into an object
      */
     self.getSourceContent = function() {
-
+        var content;
+        var inputTable = paragraph.find(".input-table").val();
+        if (inputTable != undefined) {
+            content = { inputTable: inputTable };
+            // TODO : implement getting the source content
+        }
+        return content;
     };
 
     /**
@@ -104,7 +123,11 @@ function PreprocessorParagraphClient(paragraph) {
      *
      * @private
      */
-    function loadPreprocessorParameters() {
+    function onInputTableChange() {
+        // Showing the output table element
+        paragraph.find(".output-table-container").slideDown();
+
+        // Loading preprocessor parameters table
         var selectElement = paragraph.find(".preprocessor-input.input-table");
         var preprocessorTableContainer = paragraph.find(".preprocessor-table");
         var preprocessorTable = preprocessorTableContainer.find(".preprocessor-table > tbody");
