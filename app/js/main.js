@@ -9,7 +9,11 @@ var constants = {
         NOT_LOGGED_IN : "NOT_LOGGED_IN",
         ALREADY_LOGGED_IN : "ALREADY_LOGGED_IN"
     },
-    API_URI : "api/"
+    API_URI : "api/",
+    feature : {
+        NUMERICAL : "NUMERICAL",
+        CATEGORICAL : "CATEGORICAL"
+    }
 };
 
 // General Initializations
