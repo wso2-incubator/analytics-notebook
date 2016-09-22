@@ -22,6 +22,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
             // Load source content
             if (content != undefined && content.query != undefined) {
                 paragraph.find(".query").val(content.query);
+                adjustRunButton();
             }
         });
 

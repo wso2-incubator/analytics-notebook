@@ -20,15 +20,11 @@ function Markdown(paragraph) {
         // Load source content
         if (content != undefined) {
             paragraph.find(".markdown-source").val(content.text);
+            adjustRunButton();
         }
 
-        var markdownSource = paragraph.find(".markdown-source");
-        markdownSource.keyup(function() {
-            if (markdownSource.val().length > 0) {
-                paragraph.find(".run-paragraph-button").prop('disabled', false);
-            } else {
-                paragraph.find(".run-paragraph-button").prop('disabled', true);
-            }
+        paragraph.find(".markdown-source").keyup(function() {
+            adjustRunButton();
         });
     };
 
@@ -56,4 +52,18 @@ function Markdown(paragraph) {
         }
         return content;
     };
+
+    /**
+     * Update the paragraph run button disabled status
+     *
+     * @private
+     */
+    function adjustRunButton() {
+        var runButton = paragraph.find(".run-paragraph-button");
+        if (paragraph.find(".markdown-source").val().length > 0) {
+            runButton.prop('disabled', false);
+        } else {
+            runButton.prop('disabled', true);
+        }
+    }
 }

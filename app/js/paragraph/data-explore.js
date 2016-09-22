@@ -118,6 +118,7 @@ function DataExploreParagraphClient(paragraph) {
          */
         function onChartTypeChange(chartOptions) {
             paragraphUtils.clearNotification(function() {
+                paragraph.find(".run-paragraph-button").prop("disabled", true);
                 var chartType = paragraph.find(".chart-type").val();
                 switch(chartType) {
                     case "Scatter Plot" :
@@ -133,7 +134,6 @@ function DataExploreParagraphClient(paragraph) {
                         chart = new ClusterDiagram(chartOptions);
                         break;
                 }
-                paragraph.find(".run-paragraph-button").prop("disabled", true);
             });
         }
     };
