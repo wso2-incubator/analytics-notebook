@@ -10,7 +10,7 @@ function PreprocessorParagraphClient(paragraph) {
     var paragraphUtils = new ParagraphUtils(paragraph);
     var table;
 
-    self.type = constants.paragraphs.PREPROCESSOR.key;
+    self.type = constants.paragraphs.preprocessor.key;
 
     /**
      * Initialize the preprocessor paragraph

@@ -21,7 +21,7 @@ function DataExploreParagraphClient(paragraph) {
     var categoricalFeatureNames = [];
     var numericalFeatureNames = [];
 
-    self.type = constants.paragraphs.DATA_EXPLORE.key;
+    self.type = constants.paragraphs.dataExplore.key;
 
     /**
      * Initialize the data explore paragraph

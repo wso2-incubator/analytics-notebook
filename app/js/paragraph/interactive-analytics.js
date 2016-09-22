@@ -16,7 +16,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
     var timeRangeContainer;
     var queryContainer;
 
-    self.type = constants.paragraphs.INTERACTIVE_ANALYTICS.key;
+    self.type = constants.paragraphs.interactiveAnalytics.key;
 
     /**
      * Initialize the interactive analytics paragraph

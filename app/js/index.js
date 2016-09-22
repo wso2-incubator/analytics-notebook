@@ -61,5 +61,10 @@ function Notebook() {
                 utils.hideLoadingOverlay(notesList);
             }
         });
+
+        // Adding event listeners
+        $("#sign-out").click(function() {
+            utils.signOut("./");
+        });
     };
 }

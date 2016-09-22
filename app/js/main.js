@@ -259,5 +259,77 @@ function Utils() {
      */
     self.hideLoadingOverlay = function(element) {
         $(element).closest(".loading-overlay").loading("hide");
-    }
+    };
+
+
+    /**
+     * Handles paragraph error messages in the paragraph
+     * The notification is shown in the element with the id "notification-container"
+     *
+     * @param type {string} The type of notification to be displayed. Should be one of ["success", "info", "warning", "error"]
+     * @param title {string} The title of the notification
+     * @param message {string} Message to be displayed in the notification area
+     */
+    self.handlePageNotification = function(type, title, message) {
+        var notification = self.generateAlertMessage(type, title, message);
+        notification.addClass("collapse");
+        $("#notification-container").html(notification);
+        notification.slideDown();
+
+        setTimeout(function() {
+            notification.remove();
+        }, 10);
+    };
+
+    /**
+     * Callback function for chart run
+     *
+     * @callback ClearNotificationsCallback
+     */
+
+    /**
+     * Clear the notifications in the paragraph
+     *
+     * @param [callback] {ClearNotificationsCallback} callback to be called after removing notification
+     */
+    self.clearPageNotification = function(callback) {
+        var notification =  $("#note-notification-container").children().first();
+        if (notification.get(0) !=  undefined) {
+            notification.slideUp(function() {
+                notification.remove();
+                if (callback != undefined) {
+                    callback();
+                }
+            });
+        } else {
+            if (callback != undefined) {
+                callback();
+            }
+        }
+    };
+
+    /**
+     * Sign out the currently logged in user and redirect to sign in page
+     *
+     * @param relativeLinkToIndexPage {string} Relative page from the current page to the index page
+     */
+    self.signOut = function(relativeLinkToIndexPage) {
+        $.ajax({
+            type : "POST",
+            url : constants.API_URI + "auth/sign-out",
+            success : function (response) {
+                if (response.status == constants.response.SUCCESS ||
+                        response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = relativeLinkToIndexPage + "sign-in.html"
+                } else {
+                    self.handlePageNotification("error", "Error", response.message);
+                }
+            },
+            error : function(response) {
+                self.handlePageNotification("error", "Error",
+                    self.generateErrorMessageFromStatusCode(response.readyState)
+                );
+            }
+        });
+    };
 }
