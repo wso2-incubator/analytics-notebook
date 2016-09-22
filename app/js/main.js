@@ -277,8 +277,10 @@ function Utils() {
         notification.slideDown();
 
         setTimeout(function() {
-            notification.remove();
-        }, 10);
+            notification.slideUp(function() {
+                notification.remove();
+            });
+        }, 5000);
     };
 
     /**
@@ -293,8 +295,9 @@ function Utils() {
      * @param [callback] {ClearNotificationsCallback} callback to be called after removing notification
      */
     self.clearPageNotification = function(callback) {
-        var notification =  $("#note-notification-container").children().first();
-        if (notification.get(0) !=  undefined) {
+        var notificationsList = $("#notification-container").children();
+        var notification = notificationsList.first();
+        if (notificationsList.length > 0) {
             notification.slideUp(function() {
                 notification.remove();
                 if (callback != undefined) {
@@ -333,34 +336,42 @@ function Utils() {
         });
     };
 
-    self.generateModalPopup = function() {
-        var modal = "<div class='modal fade' id='modalDelete' tabindex='-1' role='dialog' aria-labelledby='modalDemo'>" +
-            "<div class='modal-dialog' role='document'>" +
-                "<div class='modal-content clearfix'>" +
-                "<div class='modal-header'>" +
-                "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><i class='fw fw-cancel'></i></button>" +
-                "<h3 class='modal-title' id='deleteModalLabel'>What do you want to Delete ?</h3>" +
-            "</div>" +
-            "<div class='pull-left'>" +
-                "<div class='modal-body add-margin-top-2x add-margin-bottom-2x'>" +
-                "<label class='radio'>" +
-                "<input type='radio' name='delete-option'>" +
-                "<span class='helper'>Remove Gadget</span>" +
-            "</label>" +
-            "<label class='radio'>" +
-                "<input type='radio' name='delete-option'>" +
-                "<span class='helper'>Delete Grid Container</span>" +
-            "</label>" +
-            "</div>" +
-            "</div>" +
-            "<div class='pull-right'>" +
-                "<div class='modal-footer'>" +
-                "<button type='button' class='btn btn-primary'>Delete</button>" +
-                "<button type='button' class='btn btn-default' data-dismiss='modal'>Cancel</button>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-                "</div>" +
-            "</div>";
+    /**
+     * Generate a modal window and show the modal window
+     *
+     * @param title {string} The header of the modal
+     * @param content {jQuery} The content of the modal
+     * @param footer {jQuery} The content of the modal
+     * @return {jQuery} The modal shown in the screen
+     */
+    self.showModalPopup = function(title, content, footer) {
+        // Creating modal window elements
+        var modalWindow = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='modalDemo'>");
+        var modalDialog = $("<div class='modal-dialog' role='document'>");
+        var modalContent = $("<div class='modal-content clearfix'>");
+        var modalHeader = $("<div class='modal-header'>");
+        var modalTitle = $("<h3 class='modal-title'>");
+        var modalFooter = $("<div class='modal-footer'>");
+
+        // Appending the modal window elements to make the modal window structure
+        modalTitle.html(title);
+        modalHeader.html($(
+            "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>" +
+                "<i class='fw fw-cancel'></i>" +
+            "</button>"
+        ));
+        modalHeader.append(modalTitle);
+        modalFooter.html(footer);
+        modalContent.html(modalHeader);
+        modalContent.append(content);
+        modalContent.append(modalFooter);
+        modalDialog.html(modalContent);
+        modalWindow.html(modalDialog);
+
+        // Showing the modal window
+        $("#modal-window-container").html(modalWindow);
+        modalWindow.modal();
+
+        return modalWindow;
     };
 }

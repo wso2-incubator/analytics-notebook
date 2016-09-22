@@ -62,32 +62,58 @@ function Notebook() {
             }
         });
 
-        // Adding event listeners
+        // Registering event listeners
         $("#sign-out").click(function() {
             utils.signOut("./");
         });
 
         $("#create-note").click(function() {
-            createNote();
+            utils.clearPageNotification();
+
+            // Creating the modal content elements
+            var modalBody = $("<div class='pull-left'>");
+            var noteNameInput = $(
+                "<div class='form-group col-sm-12 output-table-container'>" +
+                    "<input type='text' class='form-control' />" +
+                "</div>"
+            );
+            var modalFooter = $("<div class='pull-right'>");
+            var createButton = $("<button type='button' class='btn btn-primary'>Create</button>");
+
+            // Appending to create the modal content structure
+            modalBody.append(noteNameInput);
+            modalFooter.append(createButton);
+
+            var modal = utils.showModalPopup("Enter a name for your new note", modalBody, modalFooter);
+
+            // Registering event listeners for the modal window
+            createButton.click(function() {
+                createNote(noteNameInput.children().first().val());
+                modal.modal("hide");
+            });
         });
     };
 
     function createNote(name) {
-        $.ajax({
-            type: "GET",
-            url: constants.API_URI + "notes/" + name,
-            success: function (response) {
-                if (response.status == constants.response.SUCCESS) {
-                    window.location.href = "note.html?note=" + name;
-                } else if (response.status == constants.response.NOT_LOGGED_IN) {
-                    window.location.href = "sign-in.html";
-                } else {
-                    utils.handlePageNotification("error", "Error", response.message);
+        if (name.indexOf(' ') > 0) {
+            utils.handlePageNotification("error", "Error", "Note name cannot contain white spaces");
+        } else {
+            $.ajax({
+                type: "PUT",
+                url: constants.API_URI + "notes/" + name,
+                success: function (response) {
+                    if (response.status == constants.response.SUCCESS) {
+                        window.location.href = "note.html?note=" + name;
+                    } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                        window.location.href = "sign-in.html";
+                    } else {
+                        utils.handlePageNotification("error", "Error", response.message);
+                    }
+                },
+                error : function(response) {
+                    utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
                 }
-            },
-            error : function(response) {
-                utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
-            }
-        });
+            });
+        }
     }
 }
