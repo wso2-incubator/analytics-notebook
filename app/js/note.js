@@ -431,11 +431,12 @@ function Note() {
                     if (content != undefined && content.source != undefined) {
                         sourceContent = content.source;
                     }
-                    paragraphSelf.paragraphClient.initialize(sourceContent);
 
                     paragraphSelf.paragraphElement.find(".run-paragraph-button").prop('disabled', true);
                     paragraphSelf.paragraphElement.find(".toggle-source-view-button").prop('disabled', false);
                     paragraphSelf.paragraphElement.find(".toggle-output-view-button").prop('disabled', true);
+
+                    paragraphSelf.paragraphClient.initialize(sourceContent);
 
                     outputView.css({ display : "none" });
                     paragraphContent.slideDown();
