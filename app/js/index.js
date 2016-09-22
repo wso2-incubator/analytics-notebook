@@ -66,5 +66,28 @@ function Notebook() {
         $("#sign-out").click(function() {
             utils.signOut("./");
         });
+
+        $("#create-note").click(function() {
+            createNote();
+        });
     };
+
+    function createNote(name) {
+        $.ajax({
+            type: "GET",
+            url: constants.API_URI + "notes/" + name,
+            success: function (response) {
+                if (response.status == constants.response.SUCCESS) {
+                    window.location.href = "note.html?note=" + name;
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    utils.handlePageNotification("error", "Error", response.message);
+                }
+            },
+            error : function(response) {
+                utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
+            }
+        });
+    }
 }

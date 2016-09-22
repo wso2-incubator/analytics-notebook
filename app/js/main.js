@@ -332,4 +332,35 @@ function Utils() {
             }
         });
     };
+
+    self.generateModalPopup = function() {
+        var modal = "<div class='modal fade' id='modalDelete' tabindex='-1' role='dialog' aria-labelledby='modalDemo'>" +
+            "<div class='modal-dialog' role='document'>" +
+                "<div class='modal-content clearfix'>" +
+                "<div class='modal-header'>" +
+                "<button type='button' class='close' data-dismiss='modal' aria-label='Close'><i class='fw fw-cancel'></i></button>" +
+                "<h3 class='modal-title' id='deleteModalLabel'>What do you want to Delete ?</h3>" +
+            "</div>" +
+            "<div class='pull-left'>" +
+                "<div class='modal-body add-margin-top-2x add-margin-bottom-2x'>" +
+                "<label class='radio'>" +
+                "<input type='radio' name='delete-option'>" +
+                "<span class='helper'>Remove Gadget</span>" +
+            "</label>" +
+            "<label class='radio'>" +
+                "<input type='radio' name='delete-option'>" +
+                "<span class='helper'>Delete Grid Container</span>" +
+            "</label>" +
+            "</div>" +
+            "</div>" +
+            "<div class='pull-right'>" +
+                "<div class='modal-footer'>" +
+                "<button type='button' class='btn btn-primary'>Delete</button>" +
+                "<button type='button' class='btn btn-default' data-dismiss='modal'>Cancel</button>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+                "</div>" +
+            "</div>";
+    };
 }

@@ -51,7 +51,7 @@ public class NoteEndpoint {
      */
     @POST
     @Path("/{note-name}")
-    public Response addNoteContent(@Context HttpServletRequest request, @PathParam("note-name") String noteName, String content) {
+    public Response addNoteContent(@Context HttpServletRequest request, @PathParam("note-name") String noteName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
