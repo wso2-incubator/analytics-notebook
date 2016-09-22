@@ -173,9 +173,6 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                     columns.push("_version");
 
                     var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
-                    if(searchMethod == undefined) {
-                        searchMethod = "query";
-                    }
 
                     var queryParameters = {
                         tableName: tableName
@@ -183,8 +180,11 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                     if (searchMethod == "time-range") {
                         queryParameters.timeFrom = timeFrom;
                         queryParameters.timeTo = timeTo;
-                    } else {
+                    } else if (searchMethod == "query") {
                         queryParameters.query = paragraph.find(".query").val();
+                    } else {
+                        searchMethod = "query";
+                        queryParameters.query = "";
                     }
 
                     paragraphUtils.setOutput(utils.generateDataTableWithLazyLoading(
