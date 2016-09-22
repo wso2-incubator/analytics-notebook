@@ -1,14 +1,13 @@
 package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.dto.Column;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-
+import org.wso2.carbon.notebook.core.util.paragraph.DataSetInformationUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
@@ -18,7 +17,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -65,9 +63,8 @@ public class DataSetInformationRetrievalEndpoint {
 
         try {
             List<String> columnNames = new ArrayList<>();
-            Collection<ColumnDefinition> columns = ServiceHolder.getAnalyticsDataService()
-                    .getTableSchema(tenantID, tableName).getColumns().values();
-            for (ColumnDefinition column : columns) {
+            List<Column> schema = DataSetInformationUtils.getTableSchema(tableName , tenantID);
+            for (Column column : schema) {
                 columnNames.add(column.getName());
             }
 
@@ -96,13 +93,7 @@ public class DataSetInformationRetrievalEndpoint {
         String jsonString;
 
         try {
-            List<Column> schema = new ArrayList<>();
-            Collection<ColumnDefinition> columns = ServiceHolder.getAnalyticsDataService()
-                    .getTableSchema(tenantID, tableName).getColumns().values();
-            for (ColumnDefinition column : columns) {
-                schema.add(new Column(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
-            }
-
+            List<Column> schema = DataSetInformationUtils.getTableSchema(tableName , tenantID);
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
             response.put("schema", schema);
             jsonString = new Gson().toJson(response);
