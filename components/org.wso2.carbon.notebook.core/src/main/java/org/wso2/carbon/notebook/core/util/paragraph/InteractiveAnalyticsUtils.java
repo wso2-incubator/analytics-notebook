@@ -3,18 +3,14 @@ package org.wso2.carbon.notebook.core.util.paragraph;
 import org.apache.commons.csv.CSVFormat;
 import org.wso2.carbon.analytics.dataservice.commons.AnalyticsDataResponse;
 import org.wso2.carbon.analytics.dataservice.commons.SearchResultEntry;
-import org.wso2.carbon.analytics.dataservice.commons.exception.AnalyticsIndexException;
 import org.wso2.carbon.analytics.dataservice.core.AnalyticsDataServiceUtils;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.util.MLUtils;
-import org.wso2.carbon.notebook.core.util.NotebookUtils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class InteractiveAnalyticsUtils {
     public static List<Map<String, Object>> executeSearchQuery(int tenantID, String tableName, String query,
@@ -49,7 +45,7 @@ public class InteractiveAnalyticsUtils {
         }
 
         List<Record> records = AnalyticsDataServiceUtils.listRecords(ServiceHolder.getAnalyticsDataService(), resp);
-        return getResultsWithNullValuesAdded(tenantID, tableName, NotebookUtils.getTableDataFromRecords(records));
+        return getResultsWithNullValuesAdded(tenantID, tableName, getTableDataFromRecords(records));
     }
 
     public static List<Map<String, Object>> searchByDateRange(int tenantID, String tableName, long timeFrom,
@@ -96,7 +92,7 @@ public class InteractiveAnalyticsUtils {
             records = AnalyticsDataServiceUtils.listRecords(ServiceHolder.getAnalyticsDataService(), resp);
         }
 
-        return getResultsWithNullValuesAdded(tenantID, tableName, NotebookUtils.getTableDataFromRecords(records));
+        return getResultsWithNullValuesAdded(tenantID, tableName, getTableDataFromRecords(records));
     }
 
     private static List<Map<String, Object>> getResultsWithNullValuesAdded(int tenantID, String tableName,
@@ -115,5 +111,21 @@ public class InteractiveAnalyticsUtils {
         }
 
         return results;
+    }
+
+    /**
+     * Generates a list of maps with each map corresponding to a row and the column names as key and data in the cell as value in each map
+     *
+     * @param records Record objcets of the table from which the data needs to be extracted
+     * @return List of rows of data of the table. Each row is represented by a map which maps each column header to an Object
+     */
+    private static List<Map<String, Object>> getTableDataFromRecords(List<Record> records) {
+        List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
+        for (Record record : records) {
+            Map<String, Object> row = record.getValues();
+            row.put("_timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date(record.getTimestamp())));
+            data.add(row);
+        }
+        return data;
     }
 }

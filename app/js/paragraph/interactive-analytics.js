@@ -16,6 +16,8 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
     var timeRangeContainer;
     var queryContainer;
 
+    self.type = constants.paragraphs.INTERACTIVE_ANALYTICS.key;
+
     /**
      * Initialize the interactive analytics paragraph
      * If content is passed into this the source content will be set from it
@@ -28,31 +30,32 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
         queryContainer = paragraph.find(".query-container");
 
         paragraphUtils.loadTableNames(function() {
+            // Load source content
             if (content != undefined) {
                 // Loading the source content from the content object provided
                 if (content.inputTable != undefined) {
-                    paragraph.find(".input-table").val(content.tableName);
+                    paragraph.find(".input-table").val(content.inputTable);
                     onInputTableChange();
                     if (content.searchMethod != undefined) {
+                        paragraph.find("input[value=" + content.searchMethod + "]").prop("checked", true);
                         switch (content.searchMethod) {
                             case "query" :
                                 onSearchByQueryRadioButtonClick();
-                                if (paragraph.timeFrom != undefined && paragraph.timeTo != undefined) {
-                                    timeFrom = content.timeFrom;
-                                    timeTo = content.timeTo;
+                                if (content.query != undefined) {
+                                    paragraph.find(".query").val(content.query);
                                 }
                                 break;
                             case "time-range" :
                                 onSearchByTimeRangeRadioButtonClick();
-                                if (paragraph.query != undefined) {
-                                    paragraph.find(".query").val(content.query);
+                                if (content.timeFrom != undefined && content.timeTo != undefined) {
+                                    timeFrom = content.timeFrom;
+                                    timeTo = content.timeTo;
                                 }
                                 break;
                             default :
                                 onSearchByQueryRadioButtonClick();
                                 content.searchMethod = "query";
                         }
-                        paragraph.find("input[value=" + content.searchMethod + "]").prop("checked", true);
                     }
                 }
             }
@@ -62,7 +65,8 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             var dateRangePickerOptions = {
                 timePicker: true,
                 autoApply: true,
-                timePicker24Hour: true
+                timePicker24Hour: true,
+                drops : "up"
             };
             if (timeFrom != undefined) {
                 dateRangePickerOptions.startDate = new Date(timeFrom);
@@ -74,23 +78,30 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                 timeFrom = new Date(start).getTime();
                 timeTo = new Date(end).getTime();
             });
+        });
 
-            // Adding event listeners
-            paragraph.find(".input-table").change(function () {
-                onInputTableChange();
-            });
+        // Adding event listeners
+        paragraph.find(".input-table").change(function () {
+            onInputTableChange();
+        });
 
-            paragraph.find(".maximum-result-count").keyup(function() {
-                adjustRunButton();
-            });
+        paragraph.find(".maximum-result-count").keyup(function() {
+            adjustRunButton();
+        });
 
-            paragraph.find(".search-by-time-range").click(function () {
-                onSearchByTimeRangeRadioButtonClick();
-            });
+        paragraph.find(".search-by-time-range").click(function () {
+            onSearchByTimeRangeRadioButtonClick();
+        });
 
-            paragraph.find(".search-by-query").click(function () {
-                onSearchByQueryRadioButtonClick();
-            });
+        paragraph.find(".search-by-query").click(function () {
+            onSearchByQueryRadioButtonClick();
+        });
+
+        var maxResultCount = paragraph.find(".maximum-result-count");
+        maxResultCount.focusout(function () {
+            if (maxResultCount.val() == "") {
+                maxResultCount.val(1000);
+            }
         });
 
         /**
@@ -146,8 +157,10 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
 
     /**
      * Run the interactive analytics paragraph
+     *
+     * @param [paragraphsLeftToRun] {Object[]} The array of paragraphs left to be run in run all paragraphs task
      */
-    self.run = function () {
+    self.run = function (paragraphsLeftToRun) {
         var tableName = paragraph.find(".input-table").val();
         utils.showLoadingOverlay(paragraph);
         $.ajax({
@@ -195,6 +208,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                 utils.hideLoadingOverlay(paragraph);
             }
         });
+        paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
     };
 
     /**
@@ -210,6 +224,10 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
             if (searchMethod != undefined) {
                 content.searchMethod = searchMethod;
+                var maxResultCount = paragraph.find("maximum-result-count").val();
+                if (maxResultCount != undefined) {
+                    content.maxResultCount = maxResultCount;
+                }
                 switch (searchMethod) {
                     case "query" :
                         var query = paragraph.find(".query").val();

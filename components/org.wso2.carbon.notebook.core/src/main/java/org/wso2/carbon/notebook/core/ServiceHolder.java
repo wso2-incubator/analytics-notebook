@@ -6,6 +6,9 @@ import org.wso2.carbon.analytics.spark.core.interfaces.SparkContextService;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.event.receiver.core.EventReceiverService;
 import org.wso2.carbon.identity.authentication.AuthenticationService;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 /**
  * For holding services for the notebook
@@ -16,6 +19,7 @@ public class ServiceHolder {
     private static EventReceiverService eventReceiverService;
     private static AnalyticsProcessorService analyticsProcessorService;
     private static SparkContextService sparkContextService;
+    private static RegistryService registryService;
 
     private ServiceHolder() {
 
@@ -59,5 +63,13 @@ public class ServiceHolder {
                     .getOSGiService(SparkContextService.class, null);
         }
         return sparkContextService;
+    }
+
+    public static RegistryService getRegistryService() {
+        if (registryService == null) {
+            registryService = (RegistryService) PrivilegedCarbonContext.getThreadLocalCarbonContext()
+                    .getOSGiService(RegistryService.class, null);
+        }
+        return registryService;
     }
 }

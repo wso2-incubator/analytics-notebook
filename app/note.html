@@ -150,21 +150,6 @@
                     <li class="active"><i class="fw fw-document"></i> <span class="hidden-xs">Note</span></li>
                 </ol>
             </div>
-            <div id="navbar" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            <i class="fw fw-build"></i> Configuration
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="#">Data Sources</a></li>
-                            <li><a href="#">Event Receivers</a></li>
-                            <li><a href="#">Event Publishers</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div><!--/.nav-collapse -->
         </div>
     </nav>
 </div>
@@ -182,13 +167,13 @@
                     <div class="col-sm-12">
                         <div class="input-group input-wrap">
                             <div class="input-group-btn">
-                                <button id="run-all-paragraphs-button" class="btn btn-primary">
+                                <button id="run-all-paragraphs-button" class="btn btn-primary" disabled>
                                     <i class="fw fw-right"></i> Run All
                                 </button>
-                                <button id="toggle-all-source-views-button" class="btn btn-primary">
+                                <button id="toggle-all-source-views-button" class="btn btn-primary" disabled>
                                     <i class="fw fw-hide"></i> Hide Source
                                 </button>
-                                <button id="toggle-all-output-views-button" class="btn btn-primary">
+                                <button id="toggle-all-output-views-button" class="btn btn-primary" disabled>
                                     <i class="fw fw-hide"></i> Hide Output
                                 </button>
                             </div>
@@ -202,15 +187,13 @@
                                     <i class="fw fw-save"></i> Save Note
                                 </button>
                             </div>
-                            <div class="input-group-btn">
-                                <button id="delete-note-button" class="btn btn-primary">
-                                    <i class="fw fw-delete"></i> Delete Note
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Note notifications area -->
+            <div id="note-notification-container"></div>
 
             <!-- Note Body -->
             <div id="paragraphs"></div>

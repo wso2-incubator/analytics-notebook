@@ -9,6 +9,8 @@ function BatchAnalyticsParagraphClient(paragraph) {
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
+    self.type = constants.paragraphs.BATCH_ANALYTICS.key;
+
     /**
      * Initialize the batch analytics paragraph
      * If content is passed into this the source content will be set from it
@@ -16,11 +18,12 @@ function BatchAnalyticsParagraphClient(paragraph) {
      * @param [content] {Object} Source content of the paragraph encoded into an object
      */
     self.initialize = function (content) {
-        paragraphUtils.loadTableNames();
-
-        if (content != undefined && content.query != undefined) {
-            paragraph.find(".query").val(content.query);
-        }
+        paragraphUtils.loadTableNames(function () {
+            // Load source content
+            if (content != undefined && content.query != undefined) {
+                paragraph.find(".query").val(content.query);
+            }
+        });
 
         // Adding event listeners for the batch analytics paragraph
         paragraph.find(".add-table-button").click(function (event) {
@@ -39,8 +42,10 @@ function BatchAnalyticsParagraphClient(paragraph) {
 
     /**
      * Run the batch analytics paragraph
+     *
+     * @param [paragraphsLeftToRun] {Object[]} The array of paragraphs left to be run in run all paragraphs task
      */
-    self.run = function () {
+    self.run = function (paragraphsLeftToRun) {
         // TODO : run batch analytics paragraph
         var query = paragraph.find(".query");
         var output = [];
@@ -68,12 +73,14 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 });
                 paragraphUtils.setOutput(output);
                 utils.hideLoadingOverlay(paragraph);
+                paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
             },
             error : function(response) {
                 paragraphUtils.handleNotification(
                     "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
                 );
                 utils.hideLoadingOverlay(paragraph);
+                paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
             }
         });
     };
@@ -85,13 +92,9 @@ function BatchAnalyticsParagraphClient(paragraph) {
      */
     self.getSourceContent = function() {
         var content;
-        var inputTable = paragraph.find(".input-table").val();
-        if (inputTable != undefined) {
-            content = { inputTable: inputTable };
-            var query = paragraph.find(".query").val();
-            if (query != undefined) {
-                content.query = query;
-            }
+        var query = paragraph.find(".query").val();
+        if (query != undefined) {
+            content = { query : query };
         }
         return content;
     };

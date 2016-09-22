@@ -20,17 +20,15 @@ function Notebook() {
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     var notes = response.notes;
-                    var columns = ["Note", "Running Status", "Deployed Status", "Actions"];
+                    var columns = ["Note", "Actions"];
 
                     // Creating the 2D data array for the notes list table
                     var data = [];
-                    for(var i = 0; i < notes.length; i++) {
+                    $.each(notes, function(index, note) {
                         var row = [];
-                        row.push(notes[i].name);
-                        row.push(notes[i].runningStatus);
-                        row.push(notes[i].deployedStatus);
+                        row.push(note);
                         row.push(
-                            "<a href='note.html?note=" + notes[i].name + "' class='btn padding-reduce-on-grid-view'>" +
+                            "<a href='note.html?note=" + note + "' class='btn padding-reduce-on-grid-view'>" +
                                 "<span class='fw-stack'>" +
                                     "<i class='fw fw-ring fw-stack-2x'></i>" +
                                     "<i class='fw fw-edit fw-stack-1x'></i>" +
@@ -46,7 +44,7 @@ function Notebook() {
                             "</a>"
                         );
                         data.push(row);
-                    }
+                    });
 
                     notesList.html(utils.generateListTable(columns, data,
                         { ordering : false, searching : false },

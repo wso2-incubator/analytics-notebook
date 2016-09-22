@@ -8,6 +8,8 @@ function Markdown(paragraph) {
     var self = this;
     var paragraphUtils = new ParagraphUtils(paragraph);
 
+    self.type = constants.paragraphs.MARKDOWN.key;
+
     /**
      * Initialize the markdown paragraph
      * If content is passed into this the source content will be set from it
@@ -15,43 +17,30 @@ function Markdown(paragraph) {
      * @param [content] {Object} Source content of the paragraph encoded into an object
      */
     self.initialize = function(content) {
-        var outputView = paragraph.find(".output");
-        var markdownSource = paragraph.find(".markdown-source");
-        var toggleOutputViewButton = paragraph.find(".toggle-output-view-button");
-
+        // Load source content
         if (content != undefined) {
-            markdownSource.val(content.text);
-            onMarkdownSourceKeyup();
+            paragraph.find(".markdown-source").val(content.text);
         }
 
+        var markdownSource = paragraph.find(".markdown-source");
         markdownSource.keyup(function() {
-            onMarkdownSourceKeyup();
-        });
-
-        /**
-         * Run on markdown source keyup tasks
-         */
-        function onMarkdownSourceKeyup() {
-            var markdownText = markdownSource.val();
-
-            paragraphUtils.clearNotification();
-            var newOutputViewContent = $("<div class='fluid-container'>");
-            newOutputViewContent.html(marked(markdownText));
-            outputView.html(newOutputViewContent);
-
-            if(markdownText != undefined && markdownText != "") {
-                outputView.slideDown();
-                toggleOutputViewButton.prop('disabled', false);
-
-                // Updating the hide/show output button text
-                toggleOutputViewButton.html(
-                    "<i class='fw fw-hide'></i> Hide Output"
-                );
+            if (markdownSource.val().length > 0) {
+                paragraph.find(".run-paragraph-button").prop('disabled', false);
             } else {
-                outputView.slideUp();
-                toggleOutputViewButton.prop('disabled', true);
+                paragraph.find(".run-paragraph-button").prop('disabled', true);
             }
-        }
+        });
+    };
+
+    /**
+     * Run the markdown paragraph
+     *
+     * @param [paragraphsLeftToRun] {Object[]} The array of paragraphs left to be run in run all paragraphs task
+     */
+    self.run = function(paragraphsLeftToRun) {
+        paragraphUtils.clearNotification();
+        paragraphUtils.setOutput(marked(paragraph.find(".markdown-source").val()));
+        paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
     };
 
     /**

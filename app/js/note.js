@@ -1,3 +1,11 @@
+constants.paragraphs = {
+    BATCH_ANALYTICS : { key : "BATCH_ANALYTICS", displayName : "Batch Analytics" },
+    INTERACTIVE_ANALYTICS : { key : "INTERACTIVE_ANALYTICS", displayName : "Interactive Analytics" },
+    DATA_EXPLORE : { key : "DATA_EXPLORE", displayName : "Data Explore" },
+    MARKDOWN : { key : "MARKDOWN", displayName : "Markdown" },
+    PREPROCESSOR : { key : "PREPROCESSOR", displayName : "Preprocessor" }
+};
+
 /**
  * Note prototype constructor
  *
@@ -5,6 +13,9 @@
  */
 function Note() {
     var noteSelf = this;
+
+    // Private variables
+    var utils = new Utils();
 
     // Public fields
     noteSelf.name = new Utils().getQueryParameters()["note"];
@@ -17,9 +28,20 @@ function Note() {
     noteSelf.initialize = function () {
         $.ajax({
             type: "GET",
-            url: constants.API_URI + "notes/" + noteSelf.name + "/content",
+            url: constants.API_URI + "notes/" + noteSelf.name,
             success: function (response) {
-                console.log(response.status);
+                if (response.status == constants.response.SUCCESS) {
+                    var noteObject = JSON.parse(response.note); // Server sends the value of key note as a string encoded into JSON
+                    console.log(response.note);
+                    setContent(noteObject);
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    handleNotification("error", "Error", response.message);
+                }
+            },
+            error : function(response) {
+                handleNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
             }
         });
 
@@ -44,11 +66,7 @@ function Note() {
         });
 
         $("#save-note-button").click(function () {
-            save();
-        });
-
-        $("#delete-note-button").click(function () {
-            remove();
+            saveNote();
         });
     };
 
@@ -58,10 +76,7 @@ function Note() {
      * @private
      */
     function runAllParagraphs() {
-        // Looping through the paragraphs and running them
-        $.each(noteSelf.paragraphs, function (index, paragraph) {
-            paragraph.run();
-        });
+        noteSelf.paragraphs[0].run(noteSelf.paragraphs.slice(1, noteSelf.paragraphs.length));
     }
 
     /**
@@ -100,6 +115,10 @@ function Note() {
      */
     function addParagraph() {
         noteSelf.paragraphs.push(new Paragraph());
+        $("#toggle-all-source-views-button").html(
+            "<i class='fw fw-hide'></i> Hide Source"
+        );
+        adjustNoteControls();
     }
 
     /**
@@ -107,32 +126,22 @@ function Note() {
      *
      * @private
      */
-    function save() {
+    function saveNote() {
         var noteContent = [];
         // Looping through the paragraphs and getting the contents of them
         $.each(noteSelf.paragraphs, function (index, paragraph) {
             noteContent.push(paragraph.getContent());
         });
-        console.log(JSON.stringify(noteContent));
 
 
         $.ajax({
             type: "PUT",
             data: JSON.stringify(noteContent),
-            url: constants.API_URI + "notes/" + noteSelf.name + "/content",
+            url: constants.API_URI + "notes/" + noteSelf.name,
             success: function (response) {
-                console.log(response.status);
+
             }
         });
-    }
-
-    /**
-     * Delete the current note
-     *
-     * @private
-     */
-    function remove() {
-        // TODO : send the request to delete the note to the notebook server
     }
 
     /**
@@ -143,20 +152,75 @@ function Note() {
      */
     function setContent(noteContent) {
         $.each(noteContent, function (index, paragraphContent) {
-            var newParagraph = new Paragraph();
-            noteSelf.paragraphs.push(newParagraph);
-            newParagraph.setContent(paragraphContent)
+            console.log(paragraphContent);
+            noteSelf.paragraphs.push(new Paragraph(paragraphContent));
         });
+    }
+
+    /**
+     * Enable or disable the run all paragraphs, toggle all source views, toggle all output views buttons
+     * Depending on whether there are any paragraphs
+     */
+    function adjustNoteControls() {
+        if (noteSelf.paragraphs.length > 0) {
+            $("#run-all-paragraphs-button, #toggle-all-source-views-button, #toggle-all-output-views-button").prop("disabled", false);
+        } else {
+            $("#run-all-paragraphs-button, #toggle-all-source-views-button, #toggle-all-output-views-button").prop("disabled", true);
+        }
+    }
+
+    /**
+     * Handles paragraph error messages in the paragraph
+     *
+     * @param type {string} The type of notification to be displayed. Should be one of ["success", "info", "warning", "error"]
+     * @param title {string} The title of the notification
+     * @param message {string} Message to be displayed in the notification area
+     */
+    function handleNotification(type, title, message) {
+        var notification = utils.generateAlertMessage(type, title, message);
+        notification.addClass("collapse");
+        $("#note-notification-container").html(notification);
+        notification.slideDown();
+    }
+
+    /**
+     * Callback function for chart run
+     *
+     * @callback ClearNotificationsCallback
+     */
+
+    /**
+     * Clear the notifications in the paragraph
+     *
+     * @param [callback] {ClearNotificationsCallback} callback to be called after removing notification
+     */
+    function clearNotification(callback) {
+        var notification =  $("#note-notification-container").children().first();
+        if (notification.get(0) !=  undefined) {
+            notification.slideUp(function() {
+                notification.remove();
+                if (callback != undefined) {
+                    callback();
+                }
+            });
+        } else {
+            if (callback != undefined) {
+                callback();
+            }
+        }
     }
 
     /**
      * Paragraph prototype constructor
      *
+     * Set the contents of paragraphContent object into the paragraph
+     * The type of paragraph depends on the type specified in the object provided
+     *
      * @constructor
+     * @param [paragraphContent] {Object} The contents of the paragraph
      */
-    function Paragraph() {
+    function Paragraph(paragraphContent) {
         var paragraphSelf = this;
-
 
         // Initializing paragraph
         var paragraphContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
@@ -171,6 +235,25 @@ function Note() {
         paragraphSelf.id = noteSelf.uniqueParagraphIDCounter++;
 
         paragraphSelf.paragraphElement.load('paragraph-template.html', function () {
+            var paragraphTypeSelectElement = paragraphSelf.paragraphElement.find(".paragraph-type-select");
+            paragraphTypeSelectElement.html("<option disabled selected value> -- select an option --</option>");
+            for (var paragraphType in constants.paragraphs) {
+                if (constants.paragraphs.hasOwnProperty(paragraphType)) {
+                    var paragraph = constants.paragraphs[paragraphType];
+                    paragraphTypeSelectElement.append(
+                        "<option value='" + paragraph.key + "'>" + paragraph.displayName + "</option>"
+                    );
+                }
+            }
+
+            // creates a paragraph client of the type specified and loads the content into the paragraph
+            if (paragraphContent != undefined && paragraphContent.type != undefined) {
+                if (paragraphContent.content.source != undefined) {
+                    paragraphSelf.paragraphElement.find(".paragraph-type-select").val(paragraphContent.type);
+                    loadSourceViewByType(paragraphContent.type, paragraphContent.content);
+                }
+            }
+
             paragraphContainer.append(paragraphSelf.paragraphElement);
             $("#paragraphs").append(paragraphContainer);
             paragraphSelf.paragraphElement.slideDown();
@@ -189,7 +272,7 @@ function Note() {
             });
 
             paragraphSelf.paragraphElement.find(".delete-paragraph-button").click(function () {
-                remove();
+                removeParagraph();
             });
 
             paragraphSelf.paragraphElement.find(".paragraph-type-select").change(function () {
@@ -200,25 +283,11 @@ function Note() {
         /**
          * Run the paragraph
          */
-        paragraphSelf.run = function () {
+        paragraphSelf.run = function (paragraphs) {
             if (paragraphSelf.paragraphClient.run != undefined) {
-                paragraphSelf.paragraphClient.run(function (output) {
-                    var outputView = paragraphSelf.paragraphElement.find(".output");
-                    outputView.slideUp(function() {
-                        paragraphUtils.clearNotification();
-                        var newOutputViewContent = $("<div class='fluid-container'>");
-                        newOutputViewContent.html(output);
-                        outputView.html(newOutputViewContent);
-
-                        outputView.slideDown();
-                        paragraphSelf.paragraphElement.find(".toggle-output-view-button").prop('disabled', false);
-
-                        // Updating the hide/show output button text
-                        paragraphSelf.paragraphElement.find(".toggle-output-view-button").html(
-                            "<i class='fw fw-hide'></i> Hide Output"
-                        );
-                    });
-                });
+                paragraphSelf.paragraphClient.run(paragraphs);
+            } else {
+                paragraphUtils.handleNotification("error", "Error", "Cannot run paragraph");
             }
         };
 
@@ -229,39 +298,30 @@ function Note() {
          * @return {Object} The paragraph contents and the type encoded into an object
          */
         paragraphSelf.getContent = function() {
-            var paragraphContent = {};
+            var paragraph = {};
             if (paragraphSelf.paragraphClient.getSourceContent != undefined) {
                 var source = paragraphSelf.paragraphClient.getSourceContent();
                 if (source != undefined) {
-                    paragraphContent.source = source;
-                }
-                if (paragraphSelf.paragraphClient.getOutputContent != undefined) {
-                    var output = paragraphSelf.paragraphClient.getOutputContent();
-                    if (output != undefined) {
-                        paragraphContent.output = output;
-                    }
-                }
-            }
-            return paragraphContent;
-        };
+                    paragraph.content = {};
+                    paragraph.content.source = source;
+                    paragraph.type = paragraphSelf.paragraphClient.type;
 
-        /**
-         * Set the contents of the object into the paragraph paragraph
-         * The type of paragraph depends on the type specified in the object provided
-         * Setting source or output may not be supported by some paragraphs and the object will not include them if not supported
-         *
-         * @param paragraphContent {Object} object to be used for setting the content of the paragraph
-         */
-        paragraphSelf.setContent = function(paragraphContent) {
-            if (paragraphContent.type != undefined) {
-                loadSourceViewByType(paragraphContent.type);
-                if (paragraphContent.source != undefined) {
-                    paragraphSelf.paragraphClient.initialize(paragraphContent.source);
-                    if (paragraphContent.output != undefined) {
-                        paragraphSelf.paragraphClient.run(paragraphContent.output);
+                    // If source is not obtained output will not be added
+                    if (paragraphSelf.paragraphClient.getOutputContent != undefined) {
+                        var output = paragraphSelf.paragraphClient.getOutputContent();
+                        if (output != undefined) {
+                            paragraph.content.output = output;
+                        }
                     }
+                } else {
+                    paragraphUtils.handleNotification("error", "Error", "Paragraph cannot be saved");
+                    handleNotification("error", "Error", "Some paragraphs could not be saved");
                 }
+            } else {
+                paragraphUtils.handleNotification("error", "Error", "Paragraph cannot be saved");
+                handleNotification("error", "Error", "Some paragraphs could not be saved");
             }
+            return paragraph;
         };
 
         /**
@@ -295,7 +355,7 @@ function Note() {
          *
          * @private
          */
-        function remove() {
+        function removeParagraph() {
             // TODO : send the relevant query to the notebook server to delete
             paragraphSelf.paragraphElement.slideUp(function () {
                 var removeIndex;
@@ -311,44 +371,46 @@ function Note() {
                     paragraphUtils.handleNotification("error", "Error", "Error in deleting paragraph")
                 }
             });
+            adjustNoteControls();
         }
 
         /**
-         * Load the source view of the paragraph
+         * Load the source view by the paragraph type specified
          *
          * @param paragraphType {string} The type of the paragraph to be loaded
+         * @param [content] {Object}  content of the paragraph
          * @private
          */
-        function loadSourceViewByType(paragraphType) {
+        function loadSourceViewByType(paragraphType, content) {
             var paragraphContent = paragraphSelf.paragraphElement.find(".paragraph-content");
             paragraphContent.slideUp(function () {
                 var sourceViewContent = $("<div>");
                 var paragraphTemplateLink;
                 switch (paragraphType) {
-                    case "Preprocessor" :
+                    case constants.paragraphs.PREPROCESSOR.key :
                         paragraphSelf.paragraphClient = new PreprocessorParagraphClient(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = "source-view-templates/preprocessor.html";
+                        paragraphTemplateLink = "preprocessor.html";
                         break;
-                    case "Data Explore" :
+                    case constants.paragraphs.DATA_EXPLORE.key :
                         paragraphSelf.paragraphClient = new DataExploreParagraphClient(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = "source-view-templates/data-explore.html";
+                        paragraphTemplateLink = "data-explore.html";
                         break;
-                    case "Batch Analytics" :
+                    case constants.paragraphs.BATCH_ANALYTICS.key :
                         paragraphSelf.paragraphClient = new BatchAnalyticsParagraphClient(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = "source-view-templates/batch-analytics.html";
+                        paragraphTemplateLink = "batch-analytics.html";
                         break;
-                    case "Interactive Analytics" :
+                    case constants.paragraphs.INTERACTIVE_ANALYTICS.key :
                         paragraphSelf.paragraphClient = new InteractiveAnalyticsParagraphClient(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = "source-view-templates/interactive-analytics.html";
+                        paragraphTemplateLink = "interactive-analytics.html";
                         break;
-                    case "Markdown" :
+                    case constants.paragraphs.MARKDOWN.key :
                         paragraphSelf.paragraphClient = new Markdown(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = "source-view-templates/markdown.html";
+                        paragraphTemplateLink = "markdown.html";
                         break;
                 }
 
                 utils.showLoadingOverlay(paragraphSelf.paragraphElement);
-                sourceViewContent.load(paragraphTemplateLink, function () {
+                sourceViewContent.load("source-view-templates/" + paragraphTemplateLink, function () {
                     var sourceView = paragraphContent.find(".source");
                     var outputView = paragraphContent.find(".output");
 
@@ -357,7 +419,12 @@ function Note() {
                     paragraphUtils.clearNotification();
                     sourceView.append($("<p class='add-padding-bottom-2x lead'>Source</p>"));
                     sourceView.append(sourceViewContent);
-                    paragraphSelf.paragraphClient.initialize();
+
+                    var sourceContent;
+                    if (content != undefined && content.source != undefined) {
+                        sourceContent = content.source;
+                    }
+                    paragraphSelf.paragraphClient.initialize(sourceContent);
 
                     paragraphSelf.paragraphElement.find(".run-paragraph-button").prop('disabled', true);
                     paragraphSelf.paragraphElement.find(".toggle-source-view-button").prop('disabled', false);
@@ -496,8 +563,25 @@ function ParagraphUtils(paragraph) {
             paragraph.find(".toggle-output-view-button").html(
                 "<i class='fw fw-hide'></i> Hide Output"
             );
+            $("#toggle-all-output-views-button").html(
+                "<i class='fw fw-hide'></i> Hide Output"
+            );
         });
-    }
+    };
+
+    /**
+     * Run the first paragraph in the array of paragraphs left to run in run all paragraphs task
+     *
+     * @param remainingParagraphs {Object[]} The array of paragraphs left to run
+     */
+    self.runNextParagraphForRunAllTask = function(remainingParagraphs) {
+        if (remainingParagraphs != undefined && remainingParagraphs.length > 0) {
+            // Starting a new async task for running the next paragraph
+            setTimeout(function() {
+                remainingParagraphs[0].run(remainingParagraphs.slice(1, remainingParagraphs.length));
+            }, 0);
+        }
+    };
 }
 
 /**

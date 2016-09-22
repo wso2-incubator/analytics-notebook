@@ -21,6 +21,8 @@ function DataExploreParagraphClient(paragraph) {
     var categoricalFeatureNames = [];
     var numericalFeatureNames = [];
 
+    self.type = constants.paragraphs.DATA_EXPLORE.key;
+
     /**
      * Initialize the data explore paragraph
      * If content is passed into this the source content will be set from it
@@ -29,25 +31,27 @@ function DataExploreParagraphClient(paragraph) {
      */
     self.initialize = function (content) {
         paragraphUtils.loadTableNames(function() {
+            // Load source content
             if (content != undefined) {
                 // Loading the source content from the content object provided
                 if (content.inputTable != undefined && content.sampleInfo != undefined) {
-                    paragraph.find(".input-table").val(content.tableName);
+                    paragraph.find(".input-table").val(content.inputTable);
                     onInputTableChange(content.sampleInfo);
                     if (content.chartType != undefined && content.chartOptions != undefined) {
+                        paragraph.find(".chart-type").val(content.chartType);
                         onChartTypeChange(content.chartOptions);
                     }
                 }
             }
+        });
 
-            //Adding event listeners
-            paragraph.find(".input-table").change(function () {
-                onInputTableChange();
-            });
+        //Adding event listeners
+        paragraph.find(".input-table").change(function () {
+            onInputTableChange();
+        });
 
-            paragraph.find(".chart-type").change(function() {
-                onChartTypeChange();
-            });
+        paragraph.find(".chart-type").change(function() {
+            onChartTypeChange();
         });
 
         /**
@@ -58,10 +62,10 @@ function DataExploreParagraphClient(paragraph) {
         function onInputTableChange(sampleInfo) {
             var tableName = paragraph.find(".input-table").val();
             paragraphUtils.clearNotification();
-            utils.showLoadingOverlay(paragraph);
 
             if (sampleInfo == undefined) {
                 // Loading sample information from server
+                utils.showLoadingOverlay(paragraph);
                 $.ajax({
                     type: "GET",
                     url: constants.API_URI + "data-explore/sample?table-name=" + tableName,
@@ -83,6 +87,7 @@ function DataExploreParagraphClient(paragraph) {
                     }
                 });
             } else {
+                // Loading sample information from object
                 prepareSample(sampleInfo);
             }
 
@@ -135,9 +140,12 @@ function DataExploreParagraphClient(paragraph) {
 
     /**
      * Run the data explore paragraph
+     *
+     * @param [paragraphsLeftToRun] {Object[]} The array of paragraphs left to be run in run all paragraphs task
      */
-    self.run = function() {
+    self.run = function(paragraphsLeftToRun) {
         chart.draw();
+        paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
     };
 
     /**
