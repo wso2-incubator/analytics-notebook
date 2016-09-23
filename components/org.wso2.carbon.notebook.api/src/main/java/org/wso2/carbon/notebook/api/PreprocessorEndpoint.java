@@ -78,17 +78,13 @@ public class PreprocessorEndpoint {
             }
             DataSetPreprocessor preprocessor = new DataSetPreprocessor(tenantID, tableName, orderedFeatureList, headerLine);
             preprocessedLines = preprocessor.preProcess();
-            resultantArray = preprocessedLines.collect();
-            GeneralUtils.saveTable(tenantID,tableName,preprocessedTableName,featureList, preprocessedLines);
+            GeneralUtils.saveTable(tenantID,tableName,preprocessedTableName,orderedFeatureList, preprocessedLines);
             response = new GeneralResponse(Status.SUCCESS);
 
         } catch (AnalyticsException e) {
             e.printStackTrace();
-            response = new 
+            response = new ErrorResponse(e.getMessage());
         }
-
-        response.put("headerArray", headerArray.toArray());
-        response.put("resultList", resultantArray);
 
         jsonString = new Gson().toJson(response);
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();

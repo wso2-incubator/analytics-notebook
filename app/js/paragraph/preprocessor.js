@@ -1,5 +1,5 @@
 /**
- * Preprocessor paragraph client prototype
+ * PrepSuccessfulragraph client prototype
  *
  * @param paragraph {jQuery} The paragraph in which the client resides in
  * @constructor
@@ -76,15 +76,8 @@ function PreprocessorParagraphClient(paragraph) {
             url: constants.API_URI + "preprocessor/preprocess",
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
-                    $.each(response, function (index, result) {
-                        if (index == "headerArray") {
-                            headerArray = result;
-                        }
-                        else if (index == "resultList") {
-                            data = result;
-                        }
-                    });
-                    output = utils.generateDataTable(headerArray, data);
+                    output = $("<p><strong> Successful: </strong>" + tableName + " was successfully preprocessed and saved to table "
+                        +preprocessedTableName +"</p>");
                     paragraphUtils.setOutput(output);
                     paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
