@@ -21,14 +21,34 @@ function PreprocessorParagraphClient(paragraph) {
      */
     self.initialize = function (content) {
         // Initializing paragraph
-        paragraphUtils.loadTableNames(function() {
+        paragraphUtils.loadTableNames(function () {
             // Load source content
             if (content != undefined) {
                 // Loading the source content from the content object provided
                 if (content.inputTable != undefined) {
                     paragraph.find(".input-table").val(content.inputTable);
-                    onInputTableChange();
-                    // TODO : implement setting the source content - Check if undefined and set
+                    displayOutputTableContainer();
+                    loadPreprocessorTable(function () {
+                        if (content.features != undefined) {
+                            table.find("tbody > tr").each(function (index) {
+                                var feature = $(this);
+                                if (content.features[index].include == true) {
+                                    feature.find(".feature-include").prop('checked',true);
+                                } else {
+                                    feature.find(".feature-include").prop('checked',false);
+                                }
+                                feature.find(".feature-type").val(content.features[index].type);
+                                feature.find(".impute-option").val(content.features[index].imputeOption);
+
+                            });
+                        }
+                        adjustRunButton();
+                    });
+                    if (content.outputTable != undefined) {
+                        paragraph.find(".output-table").val(content.outputTable);
+                        adjustRunButton();
+                    }
+
                 }
             }
         });
@@ -36,7 +56,31 @@ function PreprocessorParagraphClient(paragraph) {
         // Adding event receivers
         paragraph.find(".preprocessor-input.input-table").change(function () {
             self.unsavedContentAvailable = true;
-            onInputTableChange();
+            displayOutputTableContainer();
+            loadPreprocessorTable();
+        });
+
+        //generate alert message
+        paragraph.find(".output-table").focusout(function () {
+            var newTableName = $(paragraph.find(".output-table")).val().toUpperCase();
+            paragraph.find(".input-table > option").each(function (index, option) {
+                var existingTable = $(option).html();
+                if (newTableName == existingTable) {
+                    var alertContainer = paragraph.find(".preprocessor-alert");
+                    var alertMessage = "Table " + existingTable + " already exists. Preprocessing will append the table";
+                    var alert = utils.generateAlertMessage("info", "Alert", alertMessage);
+                    alertContainer.html(alert);
+                    alertContainer.addClass("collapse");
+                    alertContainer.slideDown();
+                }
+            });
+        });
+
+        paragraph.find(".output-table").focusin(function () {
+            var alert = paragraph.find(".preprocessor-alert").children().first();
+            alert.slideUp(function () {
+                alert.remove();
+            });
         });
     };
 
@@ -51,8 +95,6 @@ function PreprocessorParagraphClient(paragraph) {
         var preprocessedTableName = paragraph.find(".output-table").val();
         var features = [];
         var output;
-        var data;
-        var headerArray = [];
         table.find("tbody > tr").each(function () {
             var feature = $(this);
             var feature_name = feature.find(".feature-include").val();
@@ -74,12 +116,16 @@ function PreprocessorParagraphClient(paragraph) {
         utils.showLoadingOverlay(paragraph);
         $.ajax({
             type: "POST",
-            data: JSON.stringify({tableName: tableName, preprocessedTableName : preprocessedTableName , featureList: features}),
+            data: JSON.stringify({
+                tableName: tableName,
+                preprocessedTableName: preprocessedTableName,
+                featureList: features
+            }),
             url: constants.API_URI + "preprocessor/preprocess",
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     output = $("<p><strong> Successful: </strong>" + tableName + " was successfully preprocessed and saved to table "
-                        +preprocessedTableName +"</p>");
+                        + preprocessedTableName + "</p>");
                     paragraphUtils.setOutput(output);
                     paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
@@ -103,22 +149,55 @@ function PreprocessorParagraphClient(paragraph) {
      *
      * @return {Object} source content of the paragraph encoded into an object
      */
-    self.getSourceContent = function() {
+    self.getSourceContent = function () {
         var content;
         var inputTable = paragraph.find(".input-table").val();
         if (inputTable != undefined) {
             content = { inputTable: inputTable };
-            // TODO : implement getting the source content
+
+            var outputTable = paragraph.find(".output-table").val();
+            if (outputTable != undefined){
+                content.outputTable = outputTable;
+            }
+
+            var features = [];
+            table.find("tbody > tr").each(function () {
+                var feature = $(this);
+                var feature_name = feature.find(".feature-include").val();
+                var feature_include = false;
+                if (feature.find(".feature-include").is(':checked')) {
+                    feature_include = true;
+                }
+                var feature_type = feature.find(".feature-type").val();
+                var impute_option = feature.find(".impute-option").val();
+                var featureObject = {
+                    name: feature_name,
+                    type: feature_type,
+                    imputeOption: impute_option,
+                    include: feature_include
+                };
+                features.push(featureObject);
+            });
+
+            content.features = features;
         }
+        console.log(content);
         return content;
     };
+
+    /**
+     * Callback function for loading preprocessor parameters
+     *
+     * @callback LoadPreprocessorTableCallback
+     */
 
     /**
      * Load preprocessor parameters table
      *
      * @private
+     * @param callback {LoadPreprocessorTableCallback} callback to be called after loading the parameters
      */
-    function onInputTableChange() {
+    function loadPreprocessorTable(callback) {
         // Showing the output table element
         paragraph.find(".output-table-container").slideDown();
 
@@ -166,48 +245,29 @@ function PreprocessorParagraphClient(paragraph) {
                                 "</select>");
                         }
                         tableData.push(row);
-
-
                     });
 
                     table = utils.generateListTable(headerArray, tableData);
                     preprocessorTableContainer.slideUp(function () {
                         preprocessorTableContainer.html(table);
+                        if (callback != undefined) {
+                            callback();
+                        }
                         preprocessorTableContainer.slideDown();
 
                         paragraph.find(".feature-include").click(function () {
+                            self.unsavedContentAvailable = true;
                             adjustRunButton();
                         });
                         paragraphUtils.clearNotification();
 
                         paragraph.find(".output-table").keyup(function () {
+                            self.unsavedContentAvailable = true;
                             adjustRunButton();
                         });
 
-                        function adjustRunButton() {
-                            var runButton = paragraph.find(".run-paragraph-button");
-                            if (paragraph.find('.feature-include:checked').size() > 0 && $(paragraph.find('.output-table')).val().length > 0) {
-                                runButton.prop('disabled', false);
-                            } else {
-                                runButton.prop('disabled', true);
-                            }
-                            paragraphUtils.clearNotification();
-                        }
 
-                        paragraph.find(".output-table").focusout(function () {
-                            var newTableName = $(paragraph.find(".output-table")).val();
-                            paragraph.find(".input-table > option").each(function () {
-                                var existingTable = $(this).html();
-                                if (newTableName == existingTable) {
-                                    paragraph.find(".preprocessor-alert").html(
-                                        utils.generateAlertMessage("info", "Alert", "The existing table will be append with new data")
-                                    );
-                                }
-                            });
-
-                        });
                     });
-
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
@@ -238,6 +298,32 @@ function PreprocessorParagraphClient(paragraph) {
         preprocessorTableContainer.slideUp(function () {
             preprocessorTableContainer.empty();
         });
+    }
+
+    /**
+     * Generate the output table container when the input table is change
+     *
+     * @private
+     */
+    function displayOutputTableContainer() {
+        var outputTableContainer = paragraph.find(".output-table-container");
+        outputTableContainer.slideDown();
+
+    }
+    /**
+     * Activate the run button when features are selected and
+     * a output table name is set
+     *
+     * @private
+     */
+    function adjustRunButton() {
+        var runButton = paragraph.find(".run-paragraph-button");
+        if (paragraph.find('.feature-include:checked').size() > 0 && $(paragraph.find('.output-table')).val().length > 0) {
+            runButton.prop('disabled', false);
+        } else {
+            runButton.prop('disabled', true);
+        }
+        paragraphUtils.clearNotification();
     }
 
 }
