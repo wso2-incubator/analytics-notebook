@@ -129,7 +129,7 @@ function Utils() {
             tableOptions = {};
         }
         tableOptions.columns = headerArray;
-        tableOptions.data = dataRowArray;
+        tableOptions.data = addNullToMissingCells(headerArray, dataRowArray);
         return generateTable(
             $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>"),
             tableOptions, cellClassNames
@@ -150,7 +150,7 @@ function Utils() {
             tableOptions = {};
         }
         tableOptions.columns = headerArray;
-        tableOptions.data = dataRowArray;
+        tableOptions.data = addNullToMissingCells(headerArray, dataRowArray);
         return generateTable(
             $("<table class='table table-striped table-hover display' cellspacing='0'>"),
             tableOptions, cellClassNames
@@ -193,7 +193,7 @@ function Utils() {
                             draw: returnedData.draw,
                             recordsTotal: returnedData.recordsCount,
                             recordsFiltered: returnedData.recordsCount,
-                            data: returnedData.data
+                            data: addNullToMissingCells(headerArray, returnedData.data)
                         };
                     } else {
                         options = {
@@ -226,6 +226,22 @@ function Utils() {
     };
 
     /**
+     *
+     * @param headerArray {string[]} The array of column names
+     * @param data {Object[]} The array of objects with a row represented by an object with column as key and cell value as value
+     */
+    function addNullToMissingCells(headerArray, data) {
+        for(var i = 0; i < data.length; i++) {
+            for(var j = 0; j < headerArray.length; j++) {
+                if (data[i][headerArray[j]] == undefined) {
+                    data[i][headerArray[j]] = null;
+                }
+            }
+        }
+        return data;
+    }
+
+    /**
      * Generate a table with the options provided
      *
      * @private
@@ -234,7 +250,7 @@ function Utils() {
      * @param [cellClassNames] {Object} Cell class names with the column name as key and the class as value
      * @returns {jQuery} The div element containing the table
      */
-    var generateTable = function (table, options, cellClassNames) {
+    function generateTable(table, options, cellClassNames) {
         var tableContainer = $("<div>");
         tableContainer.append(table);
 
