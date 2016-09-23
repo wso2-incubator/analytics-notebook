@@ -62,7 +62,6 @@ function Note() {
                 var movedParagraph = noteSelf.paragraphs[oldPosition];
                 noteSelf.paragraphs.splice(oldPosition, 1);
                 noteSelf.paragraphs.splice(newPosition, 0, movedParagraph);
-                console.log(noteSelf.paragraphs);
             }
         });
 
@@ -96,7 +95,7 @@ function Note() {
                 if (paragraph.paragraphClient != undefined &&
                         paragraph.paragraphClient.unsavedContentAvailable) {
                     event.returnValue = true;
-                    return false;   // To break the loop
+                    return true;
                 }
             });
         });
@@ -173,6 +172,10 @@ function Note() {
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     utils.handlePageNotification("info", "Info", "Note successfully saved");
+
+                    $.each(noteSelf.paragraphs, function (index, paragraph) {
+                        paragraph.paragraphClient.unsavedContentAvailable = false;
+                    });
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
