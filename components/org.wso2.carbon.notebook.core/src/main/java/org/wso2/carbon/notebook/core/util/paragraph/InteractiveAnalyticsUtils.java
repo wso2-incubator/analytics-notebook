@@ -45,7 +45,7 @@ public class InteractiveAnalyticsUtils {
         }
 
         List<Record> records = AnalyticsDataServiceUtils.listRecords(ServiceHolder.getAnalyticsDataService(), resp);
-        return getResultsWithNullValuesAdded(tenantID, tableName, getTableDataFromRecords(records));
+        return getTableDataFromRecords(records);
     }
 
     public static List<Map<String, Object>> searchByDateRange(int tenantID, String tableName, long timeFrom,
@@ -92,25 +92,7 @@ public class InteractiveAnalyticsUtils {
             records = AnalyticsDataServiceUtils.listRecords(ServiceHolder.getAnalyticsDataService(), resp);
         }
 
-        return getResultsWithNullValuesAdded(tenantID, tableName, getTableDataFromRecords(records));
-    }
-
-    private static List<Map<String, Object>> getResultsWithNullValuesAdded(int tenantID, String tableName,
-                                                                    List<Map<String, Object>> results)
-            throws AnalyticsException {
-        String headerLine = MLUtils.extractHeaderLine(tableName, tenantID);
-        Map<String, Integer> headerMap = MLUtils.generateHeaderMap(headerLine, CSVFormat.RFC4180);
-        Object[] headerArray = headerMap.keySet().toArray();
-        for (Map<String, Object> row : results) {
-            for (Object column : headerArray) {
-                String columnName = (String) column;
-                if (!row.containsKey(columnName)) {
-                    row.put(columnName, null);
-                }
-            }
-        }
-
-        return results;
+        return getTableDataFromRecords(records);
     }
 
     /**

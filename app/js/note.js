@@ -1,9 +1,9 @@
 constants.paragraphs = {
-    BATCH_ANALYTICS : { key : "BATCH_ANALYTICS", displayName : "Batch Analytics" },
-    INTERACTIVE_ANALYTICS : { key : "INTERACTIVE_ANALYTICS", displayName : "Interactive Analytics" },
-    DATA_EXPLORE : { key : "DATA_EXPLORE", displayName : "Data Explore" },
-    MARKDOWN : { key : "MARKDOWN", displayName : "Markdown" },
-    PREPROCESSOR : { key : "PREPROCESSOR", displayName : "Preprocessor" }
+    batchAnalytics : { key : "BATCH_ANALYTICS", displayName : "Batch Analytics" },
+    interactiveAnalytics : { key : "INTERACTIVE_ANALYTICS", displayName : "Interactive Analytics" },
+    dataExplore : { key : "DATA_EXPLORE", displayName : "Data Explore" },
+    markdown : { key : "MARKDOWN", displayName : "Markdown" },
+    preprocessor : { key : "PREPROCESSOR", displayName : "Preprocessor" }
 };
 
 /**
@@ -26,6 +26,7 @@ function Note() {
      * Initialize the note
      */
     noteSelf.initialize = function () {
+        utils.showLoadingOverlay($("#paragraphs"));
         $.ajax({
             type: "GET",
             url: constants.API_URI + "notes/" + noteSelf.name,
@@ -36,11 +37,13 @@ function Note() {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
-                    handleNotification("error", "Error", response.message);
+                    utils.handlePageNotification("error", "Error", response.message);
                 }
+                utils.hideLoadingOverlay($("#paragraphs"));
             },
             error : function(response) {
-                handleNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
+                utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
+                utils.hideLoadingOverlay($("#paragraphs"));
             }
         });
 
@@ -66,6 +69,20 @@ function Note() {
 
         $("#save-note-button").click(function () {
             saveNote();
+        });
+
+        $("#sign-out").click(function() {
+            utils.signOut("./");
+        });
+
+        $(window).on('beforeunload', function() {
+            $.each(noteSelf.paragraphs, function(index, paragraph) {
+                if (paragraph.paragraphClient != undefined &&
+                        paragraph.paragraphClient.unsavedContentAvailable) {
+                    event.returnValue = true;
+                    return false;   // To break the loop
+                }
+            });
         });
     };
 
@@ -132,13 +149,24 @@ function Note() {
             noteContent.push(paragraph.getContent());
         });
 
-
+        utils.showLoadingOverlay($("#paragraphs"));
         $.ajax({
             type: "PUT",
             data: JSON.stringify(noteContent),
             url: constants.API_URI + "notes/" + noteSelf.name,
             success: function (response) {
-
+                if (response.status == constants.response.SUCCESS) {
+                    utils.handlePageNotification("info", "Info", "Note successfully saved");
+                } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = "sign-in.html";
+                } else {
+                    utils.handlePageNotification("error", "Error", response.message);
+                }
+                utils.hideLoadingOverlay($("#paragraphs"));
+            },
+            error: function (response) {
+                utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
+                utils.hideLoadingOverlay($("#paragraphs"));
             }
         });
     }
@@ -169,47 +197,6 @@ function Note() {
             $("#run-all-paragraphs-button, #toggle-all-source-views-button, #toggle-all-output-views-button").prop("disabled", false);
         } else {
             $("#run-all-paragraphs-button, #toggle-all-source-views-button, #toggle-all-output-views-button").prop("disabled", true);
-        }
-    }
-
-    /**
-     * Handles paragraph error messages in the paragraph
-     *
-     * @param type {string} The type of notification to be displayed. Should be one of ["success", "info", "warning", "error"]
-     * @param title {string} The title of the notification
-     * @param message {string} Message to be displayed in the notification area
-     */
-    function handleNotification(type, title, message) {
-        var notification = utils.generateAlertMessage(type, title, message);
-        notification.addClass("collapse");
-        $("#note-notification-container").html(notification);
-        notification.slideDown();
-    }
-
-    /**
-     * Callback function for chart run
-     *
-     * @callback ClearNotificationsCallback
-     */
-
-    /**
-     * Clear the notifications in the paragraph
-     *
-     * @param [callback] {ClearNotificationsCallback} callback to be called after removing notification
-     */
-    function clearNotification(callback) {
-        var notification =  $("#note-notification-container").children().first();
-        if (notification.get(0) !=  undefined) {
-            notification.slideUp(function() {
-                notification.remove();
-                if (callback != undefined) {
-                    callback();
-                }
-            });
-        } else {
-            if (callback != undefined) {
-                callback();
-            }
         }
     }
 
@@ -322,11 +309,11 @@ function Note() {
                     }
                 } else {
                     paragraphUtils.handleNotification("error", "Error", "Paragraph cannot be saved");
-                    handleNotification("error", "Error", "Some paragraphs could not be saved");
+                    utils.handlePageNotification("error", "Error", "Some paragraphs could not be saved");
                 }
             } else {
                 paragraphUtils.handleNotification("error", "Error", "Paragraph cannot be saved");
-                handleNotification("error", "Error", "Some paragraphs could not be saved");
+                utils.handlePageNotification("error", "Error", "Some paragraphs could not be saved");
             }
             return paragraph;
         };
@@ -394,23 +381,23 @@ function Note() {
                 var sourceViewContent = $("<div>");
                 var paragraphTemplateLink;
                 switch (paragraphType) {
-                    case constants.paragraphs.PREPROCESSOR.key :
+                    case constants.paragraphs.preprocessor.key :
                         paragraphSelf.paragraphClient = new PreprocessorParagraphClient(paragraphSelf.paragraphElement);
                         paragraphTemplateLink = "preprocessor.html";
                         break;
-                    case constants.paragraphs.DATA_EXPLORE.key :
+                    case constants.paragraphs.dataExplore.key :
                         paragraphSelf.paragraphClient = new DataExploreParagraphClient(paragraphSelf.paragraphElement);
                         paragraphTemplateLink = "data-explore.html";
                         break;
-                    case constants.paragraphs.BATCH_ANALYTICS.key :
+                    case constants.paragraphs.batchAnalytics.key :
                         paragraphSelf.paragraphClient = new BatchAnalyticsParagraphClient(paragraphSelf.paragraphElement);
                         paragraphTemplateLink = "batch-analytics.html";
                         break;
-                    case constants.paragraphs.INTERACTIVE_ANALYTICS.key :
+                    case constants.paragraphs.interactiveAnalytics.key :
                         paragraphSelf.paragraphClient = new InteractiveAnalyticsParagraphClient(paragraphSelf.paragraphElement);
                         paragraphTemplateLink = "interactive-analytics.html";
                         break;
-                    case constants.paragraphs.MARKDOWN.key :
+                    case constants.paragraphs.markdown.key :
                         paragraphSelf.paragraphClient = new Markdown(paragraphSelf.paragraphElement);
                         paragraphTemplateLink = "markdown.html";
                         break;
@@ -431,11 +418,12 @@ function Note() {
                     if (content != undefined && content.source != undefined) {
                         sourceContent = content.source;
                     }
-                    paragraphSelf.paragraphClient.initialize(sourceContent);
 
                     paragraphSelf.paragraphElement.find(".run-paragraph-button").prop('disabled', true);
                     paragraphSelf.paragraphElement.find(".toggle-source-view-button").prop('disabled', false);
                     paragraphSelf.paragraphElement.find(".toggle-output-view-button").prop('disabled', true);
+
+                    paragraphSelf.paragraphClient.initialize(sourceContent);
 
                     outputView.css({ display : "none" });
                     paragraphContent.slideDown();
@@ -519,7 +507,7 @@ function ParagraphUtils(paragraph) {
     self.handleNotification = function (type, title, message) {
         var notification = utils.generateAlertMessage(type, title, message);
         notification.addClass("collapse");
-        paragraph.find(".notification-container").html(notification);
+        paragraph.find(".paragraph-notification-container").html(notification);
         notification.slideDown();
     };
 

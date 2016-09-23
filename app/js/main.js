@@ -18,8 +18,22 @@ var constants = {
 
 // General Initializations
 $(document).ready(function() {
+    var utils = new Utils();
+    $.ajax({
+        type: "GET",
+        url: constants.API_URI + "user/logged-in",
+        success: function (response) {
+            if (response.status == constants.response.SUCCESS) {
+                $(".username").html(response.username);
+            } else if (response.status != constants.response.NOT_LOGGED_IN) {
+                utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(-1));
+            }
+        },
+        error: function (response) {
+            utils.handlePageNotification("error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState));
+        }
+    });
     document.title = constants.PRODUCT_NAME;
-    $(".username").html("John Doe");
 });
 
 
@@ -86,6 +100,7 @@ function Utils() {
 
     /**
      * Generated an error message for the http status code
+     * -1 can be used for generating messages for unknown errors
      *
      * @param statusCode {int} http status code
      * @return {string} error message for the status code
@@ -114,7 +129,7 @@ function Utils() {
             tableOptions = {};
         }
         tableOptions.columns = headerArray;
-        tableOptions.data = dataRowArray;
+        tableOptions.data = addNullToMissingCells(headerArray, dataRowArray);
         return generateTable(
             $("<table class='table table-striped table-hover table-bordered display data-table' cellspacing='0'>"),
             tableOptions, cellClassNames
@@ -135,7 +150,7 @@ function Utils() {
             tableOptions = {};
         }
         tableOptions.columns = headerArray;
-        tableOptions.data = dataRowArray;
+        tableOptions.data = addNullToMissingCells(headerArray, dataRowArray);
         return generateTable(
             $("<table class='table table-striped table-hover display' cellspacing='0'>"),
             tableOptions, cellClassNames
@@ -178,7 +193,7 @@ function Utils() {
                             draw: returnedData.draw,
                             recordsTotal: returnedData.recordsCount,
                             recordsFiltered: returnedData.recordsCount,
-                            data: returnedData.data
+                            data: addNullToMissingCells(headerArray, returnedData.data)
                         };
                     } else {
                         options = {
@@ -211,6 +226,22 @@ function Utils() {
     };
 
     /**
+     *
+     * @param headerArray {string[]} The array of column names
+     * @param data {Object[]} The array of objects with a row represented by an object with column as key and cell value as value
+     */
+    function addNullToMissingCells(headerArray, data) {
+        for(var i = 0; i < data.length; i++) {
+            for(var j = 0; j < headerArray.length; j++) {
+                if (data[i][headerArray[j]] == undefined) {
+                    data[i][headerArray[j]] = null;
+                }
+            }
+        }
+        return data;
+    }
+
+    /**
      * Generate a table with the options provided
      *
      * @private
@@ -219,7 +250,7 @@ function Utils() {
      * @param [cellClassNames] {Object} Cell class names with the column name as key and the class as value
      * @returns {jQuery} The div element containing the table
      */
-    var generateTable = function (table, options, cellClassNames) {
+    function generateTable(table, options, cellClassNames) {
         var tableContainer = $("<div>");
         tableContainer.append(table);
 
@@ -259,5 +290,119 @@ function Utils() {
      */
     self.hideLoadingOverlay = function(element) {
         $(element).closest(".loading-overlay").loading("hide");
-    }
+    };
+
+
+    /**
+     * Handles paragraph error messages in the paragraph
+     * The notification is shown in the element with the id "notification-container"
+     *
+     * @param type {string} The type of notification to be displayed. Should be one of ["success", "info", "warning", "error"]
+     * @param title {string} The title of the notification
+     * @param message {string} Message to be displayed in the notification area
+     */
+    self.handlePageNotification = function(type, title, message) {
+        var notification = self.generateAlertMessage(type, title, message);
+        notification.addClass("collapse");
+        $("#notification-container").html(notification);
+        notification.slideDown();
+
+        setTimeout(function() {
+            notification.slideUp(function() {
+                notification.remove();
+            });
+        }, 5000);
+    };
+
+    /**
+     * Callback function for chart run
+     *
+     * @callback ClearNotificationsCallback
+     */
+
+    /**
+     * Clear the notifications in the paragraph
+     *
+     * @param [callback] {ClearNotificationsCallback} callback to be called after removing notification
+     */
+    self.clearPageNotification = function(callback) {
+        var notificationsList = $("#notification-container").children();
+        var notification = notificationsList.first();
+        if (notificationsList.length > 0) {
+            notification.slideUp(function() {
+                notification.remove();
+                if (callback != undefined) {
+                    callback();
+                }
+            });
+        } else {
+            if (callback != undefined) {
+                callback();
+            }
+        }
+    };
+
+    /**
+     * Sign out the currently logged in user and redirect to sign in page
+     *
+     * @param relativeLinkToIndexPage {string} Relative page from the current page to the index page
+     */
+    self.signOut = function(relativeLinkToIndexPage) {
+        $.ajax({
+            type : "POST",
+            url : constants.API_URI + "auth/sign-out",
+            success : function (response) {
+                if (response.status == constants.response.SUCCESS ||
+                        response.status == constants.response.NOT_LOGGED_IN) {
+                    window.location.href = relativeLinkToIndexPage + "sign-in.html"
+                } else {
+                    self.handlePageNotification("error", "Error", response.message);
+                }
+            },
+            error : function(response) {
+                self.handlePageNotification("error", "Error",
+                    self.generateErrorMessageFromStatusCode(response.readyState)
+                );
+            }
+        });
+    };
+
+    /**
+     * Generate a modal window and show the modal window
+     *
+     * @param title {string} The header of the modal
+     * @param content {jQuery} The content of the modal
+     * @param footer {jQuery} The content of the modal
+     * @return {jQuery} The modal shown in the screen
+     */
+    self.showModalPopup = function(title, content, footer) {
+        // Creating modal window elements
+        var modalWindow = $("<div class='modal fade' tabindex='-1' role='dialog' aria-labelledby='modalDemo'>");
+        var modalDialog = $("<div class='modal-dialog' role='document'>");
+        var modalContent = $("<div class='modal-content clearfix'>");
+        var modalHeader = $("<div class='modal-header'>");
+        var modalTitle = $("<h3 class='modal-title'>");
+        var modalFooter = $("<div class='modal-footer'>");
+
+        // Appending the modal window elements to make the modal window structure
+        modalTitle.html(title);
+        modalHeader.html($(
+            "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>" +
+                "<i class='fw fw-cancel'></i>" +
+            "</button>"
+        ));
+        modalHeader.append(modalTitle);
+        modalFooter.html(footer);
+        modalContent.html(modalHeader);
+        modalContent.append(content);
+        modalContent.append(modalFooter);
+        modalDialog.html(modalContent);
+        modalWindow.html(modalDialog);
+
+        // Showing the modal window
+        $("#modal-window-container").html(modalWindow);
+        modalWindow.modal();
+
+        return modalWindow;
+    };
 }

@@ -19,7 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
- * For handling user management
+ * For handling authentication management
  */
 @Path("/auth")
 public class AuthenticationEndpoint {

@@ -31,7 +31,7 @@ public class InteractiveAnalyticsEndpoint {
      */
     @POST
     @Path("/search/query")
-    public javax.ws.rs.core.Response executeSearchQuery(@Context HttpServletRequest request, String queryString) {
+    public Response executeSearchQuery(@Context HttpServletRequest request, String queryString) {
         InteractiveAnalyticsRequest interactiveAnalyticsRequest = new Gson().fromJson(queryString, InteractiveAnalyticsRequest.class);
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
@@ -45,7 +45,7 @@ public class InteractiveAnalyticsEndpoint {
                 interactiveAnalyticsRequest.getPaginationFrom(),
                 interactiveAnalyticsRequest.getPaginationCount()
             );
-            jsonString = new GsonBuilder().serializeNulls().create().toJson(new LazyLoadedTable(
+            jsonString = new Gson().toJson(new LazyLoadedTable(
                 interactiveAnalyticsRequest.getDraw(),
                 ServiceHolder.getAnalyticsDataService().searchCount(
                         tenantID,
@@ -68,7 +68,7 @@ public class InteractiveAnalyticsEndpoint {
      */
     @POST
     @Path("/search/time-range")
-    public javax.ws.rs.core.Response searchByDateRange(@Context HttpServletRequest request, String queryString) {
+    public Response searchByDateRange(@Context HttpServletRequest request, String queryString) {
         InteractiveAnalyticsRequest interactiveAnalyticsRequest = new Gson().fromJson(queryString, InteractiveAnalyticsRequest.class);
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
@@ -83,7 +83,7 @@ public class InteractiveAnalyticsEndpoint {
                 interactiveAnalyticsRequest.getPaginationFrom(),
                 interactiveAnalyticsRequest.getPaginationCount()
             );
-            jsonString = new GsonBuilder().serializeNulls().create().toJson(new LazyLoadedTable(
+            jsonString = new Gson().toJson(new LazyLoadedTable(
                 interactiveAnalyticsRequest.getDraw(),
                 ServiceHolder.getAnalyticsDataService().getRecordCount(
                     tenantID,

@@ -10,7 +10,8 @@ function PreprocessorParagraphClient(paragraph) {
     var paragraphUtils = new ParagraphUtils(paragraph);
     var table;
 
-    self.type = constants.paragraphs.PREPROCESSOR.key;
+    self.type = constants.paragraphs.preprocessor.key;
+    self.unsavedContentAvailable = false;
 
     /**
      * Initialize the preprocessor paragraph
@@ -34,6 +35,7 @@ function PreprocessorParagraphClient(paragraph) {
 
         // Adding event receivers
         paragraph.find(".preprocessor-input.input-table").change(function () {
+            self.unsavedContentAvailable = true;
             onInputTableChange();
         });
     };

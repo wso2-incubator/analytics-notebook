@@ -9,7 +9,8 @@ function BatchAnalyticsParagraphClient(paragraph) {
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
 
-    self.type = constants.paragraphs.BATCH_ANALYTICS.key;
+    self.type = constants.paragraphs.batchAnalytics.key;
+    self.unsavedContentAvailable = false;
 
     /**
      * Initialize the batch analytics paragraph
@@ -28,7 +29,8 @@ function BatchAnalyticsParagraphClient(paragraph) {
 
         // Adding event listeners for the batch analytics paragraph
         paragraph.find(".add-table-button").click(function (event) {
-            addTable($(event.target));
+            self.unsavedContentAvailable = true;
+            addTable();
         });
 
         paragraph.find(".input-table").change(function () {
@@ -37,6 +39,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
         });
 
         paragraph.find(".query").keyup(function() {
+            self.unsavedContentAvailable = true;
             adjustRunButton();
         });
     };

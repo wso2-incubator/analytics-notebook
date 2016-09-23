@@ -34,14 +34,16 @@ public class DataSetInformationRetrievalEndpoint {
      * @return response
      */
     @GET
-    public Response listTableName() {
+    public Response listTableName(@Context HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
 
         try {
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
             response.put(
                     "tableNames",
-                    ServiceHolder.getAnalyticsDataService().listTables(MultitenantConstants.SUPER_TENANT_ID)
+                    ServiceHolder.getAnalyticsDataService().listTables(tenantID)
             );
             jsonString = new Gson().toJson(response);
         } catch (AnalyticsException e) {

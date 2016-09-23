@@ -125,15 +125,19 @@
                                <i class="fw fw-circle fw-stack-2x"></i>
                                <i class="fw fw-user fw-stack-1x fw-inverse"></i>
                             </span>
-                    <span id=class="hidden-xs"><span class="username"></span> <span class="caret"></span></span>
+                    <span id=class="hidden-xs">
+                        <span class="username"><!-- Automatically updated by JS --></span> <span class="caret"></span>
+                    </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right float-remove-xs position-static-xs text-center-xs remove-margin-xs slideInDown"
                     role="menu">
-                    <li class="dropdown-header visible-xs"><span class="username"></span> <span class="caret"></span>
+                    <li class="dropdown-header visible-xs">
+                        <span class="username"><!-- Automatically updated by JS --></span> <span class="caret">
+
+                    </span>
                     </li>
                     <li class="divider visible-xs"></li>
-                    <li><a href="#">Profile Settings</a></li>
-                    <li><a href="#">Sign out</a></li>
+                    <li><a id="sign-out">Sign out</a></li>
                 </ul>
             </li>
         </ul>
@@ -154,49 +158,63 @@
     </nav>
 </div>
 
-<div class="page-content-wrapper">
+<div class="page-content-wrapper loading-overlay" data-toggle="loading" data-loading-style="overlay">
     <!-- page content -->
     <div class="container-fluid">
         <div class="body-wrapper">
-            <div class="page-header">
-                <h1 id="note-name"></h1>
-            </div>
+            <div class="container col-sm-12">
+                <div class="page-header">
+                    <h1 id="note-name">
+                        <!-- Automatically updated by JS -->
+                    </h1>
+                </div>
 
-            <div class="form-horizontal">
-                <div class="form-group">
-                    <div class="col-sm-12">
-                        <div class="input-group input-wrap">
-                            <div class="input-group-btn">
-                                <button id="run-all-paragraphs-button" class="btn btn-primary" disabled>
-                                    <i class="fw fw-right"></i> Run All
-                                </button>
-                                <button id="toggle-all-source-views-button" class="btn btn-primary" disabled>
-                                    <i class="fw fw-hide"></i> Hide Source
-                                </button>
-                                <button id="toggle-all-output-views-button" class="btn btn-primary" disabled>
-                                    <i class="fw fw-hide"></i> Hide Output
-                                </button>
-                            </div>
-                            <div class="input-group-btn">
-                                <button id="add-paragraph-button" class="btn btn-primary">
-                                    <i class="fw fw-add"></i> Add Paragraph
-                                </button>
-                            </div>
-                            <div class="input-group-btn">
-                                <button id="save-note-button" class="btn btn-primary">
-                                    <i class="fw fw-save"></i> Save Note
-                                </button>
+                <!-- Note controls -->
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <div class="input-group input-wrap">
+                                <div class="input-group-btn">
+                                    <button id="run-all-paragraphs-button" class="btn btn-primary" disabled>
+                                        <i class="fw fw-right"></i> Run All
+                                    </button>
+                                    <button id="toggle-all-source-views-button" class="btn btn-primary" disabled>
+                                        <i class="fw fw-hide"></i> Hide Source
+                                    </button>
+                                    <button id="toggle-all-output-views-button" class="btn btn-primary" disabled>
+                                        <i class="fw fw-hide"></i> Hide Output
+                                    </button>
+                                </div>
+                                <div class="input-group-btn">
+                                    <button id="add-paragraph-button" class="btn btn-primary">
+                                        <i class="fw fw-add"></i> Add Paragraph
+                                    </button>
+                                </div>
+                                <div class="input-group-btn">
+                                    <button id="save-note-button" class="btn btn-primary">
+                                        <i class="fw fw-save"></i> Save Note
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Note notifications area -->
+                <div id="notification-container">
+                    <!-- Automatically updated by JS -->
+                </div>
+
+                <!-- Note Body -->
+                <div id="paragraphs">
+                    <!-- Automatically updated by JS -->
+                </div>
+
+                <!-- Modal Window generation area -->
+                <div id="modal-window-container">
+                    <!-- Automatically updated by JS -->
+                </div>
             </div>
-
-            <!-- Note notifications area -->
-            <div id="note-notification-container"></div>
-
-            <!-- Note Body -->
-            <div id="paragraphs"></div>
         </div>
     </div>
     <!-- /page content -->

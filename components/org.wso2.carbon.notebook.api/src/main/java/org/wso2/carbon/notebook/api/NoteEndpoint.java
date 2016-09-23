@@ -32,14 +32,13 @@ public class NoteEndpoint {
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
 
-        List<String> noteNamesList = new ArrayList<>();
-        noteNamesList.add("Note_1");
-        noteNamesList.add("Note_2");
-        noteNamesList.add("Note_3");
-
-        Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
-        response.put("notes", noteNamesList);
-        jsonString = new Gson().toJson(response);
+        try {
+            Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
+            response.put("notes", NoteUtils.getAllNotes(tenantID));
+            jsonString = new Gson().toJson(response);
+        } catch (RegistryException e) {
+            return Response.serverError().entity(e.getMessage()).build();
+        }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
@@ -51,7 +50,7 @@ public class NoteEndpoint {
      */
     @POST
     @Path("/{note-name}")
-    public Response addNoteContent(@Context HttpServletRequest request, @PathParam("note-name") String noteName, String content) {
+    public Response addNoteContent(@Context HttpServletRequest request, @PathParam("note-name") String noteName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
@@ -120,9 +119,13 @@ public class NoteEndpoint {
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
 
-        // TODO : implement the deleting of the note
+        try {
+            NoteUtils.deleteNote(tenantID, noteName);
+            jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
+        } catch (RegistryException e) {
+            return Response.serverError().entity(e.getMessage()).build();
+        }
 
-        jsonString = new Gson().toJson(new GeneralResponse("NOT_IMPLEMENTED DELETE"));
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }

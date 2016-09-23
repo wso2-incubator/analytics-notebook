@@ -22,3 +22,8 @@ label.checkbox {
 .output {
     border-left: 5px solid #5cb85c;
 }
+
+.paragraph-reorder-icon {
+    padding: 0;
+    list-style-type: none;
+}
