@@ -117,7 +117,7 @@
 <header class="header header-default">
     <div class="container-fluid">
         <div class="pull-left brand float-remove-xs text-center-xs">
-            <a href="#">
+            <a href="index.html">
                 <img src="libs/theme-wso2_1.0.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
                 <h1 class="display-block-xs">
                     <script>document.write(constants.PRODUCT_NAME);</script>
@@ -143,7 +143,7 @@
                     </span>
                     </li>
                     <li class="divider visible-xs"></li>
-                    <li><a id="sign-out">Sign out</a></li>
+                    <li><a id="sign-out"><i class="fw fw-sign-out"></i> Sign out</a></li>
                 </ul>
             </li>
         </ul>
@@ -153,7 +153,7 @@
 <div class="navbar-wrapper">
     <nav class="navbar navbar-default affix-top" data-spy="affix" data-offset-top="50" data-offset-bottom="40">
         <div class="container-fluid">
-            <div class="navbar-header">
+            <div class="navbar-header"><i class="fw fw-sign-out"></i>
                 <ol class="breadcrumb navbar-brand">
                     <li><a href="index.html"><i class="icon fw fw-home"></i> <span class="hidden-xs">Home</span></a>
                     </li>
@@ -181,23 +181,33 @@
                         <div class="col-sm-12">
                             <div class="input-group input-wrap">
                                 <div class="input-group-btn">
-                                    <button id="run-all-paragraphs-button" class="btn btn-primary" disabled>
+                                    <button id="run-all-paragraphs-button" class="btn btn-primary" disabled
+                                            title="Click to run all paragraphs in the note"
+                                            data-toggle="tooltip" data-placement="bottom">
                                         <i class="fw fw-right"></i> Run All
                                     </button>
-                                    <button id="toggle-all-source-views-button" class="btn btn-primary" disabled>
+                                    <button id="toggle-all-source-views-button" class="btn btn-primary" disabled
+                                            title="Click to hide the source views in all paragraphs"
+                                            data-toggle="tooltip" data-placement="bottom">
                                         <i class="fw fw-hide"></i> Hide Source
                                     </button>
-                                    <button id="toggle-all-output-views-button" class="btn btn-primary" disabled>
+                                    <button id="toggle-all-output-views-button" class="btn btn-primary" disabled
+                                            title="Click to hide the output views in all paragraphs"
+                                            data-toggle="tooltip" data-placement="bottom">
                                         <i class="fw fw-hide"></i> Hide Output
                                     </button>
                                 </div>
                                 <div class="input-group-btn">
-                                    <button id="add-paragraph-button" class="btn btn-primary">
+                                    <button id="add-paragraph-button" class="btn btn-primary"
+                                            title="Click to add a new paragraph at the end of the note"
+                                            data-toggle="tooltip" data-placement="bottom">
                                         <i class="fw fw-add"></i> Add Paragraph
                                     </button>
                                 </div>
                                 <div class="input-group-btn">
-                                    <button id="save-note-button" class="btn btn-primary">
+                                    <button id="save-note-button" class="btn btn-primary"
+                                            title="Click to save the note in the server"
+                                            data-toggle="tooltip" data-placement="bottom">
                                         <i class="fw fw-save"></i> Save Note
                                     </button>
                                 </div>

@@ -382,6 +382,7 @@ function Utils() {
         var modalContent = $("<div class='modal-content clearfix'>");
         var modalHeader = $("<div class='modal-header'>");
         var modalTitle = $("<h3 class='modal-title'>");
+        var modalBody = $("<div class='modal-body add-margin-top-2x add-margin-bottom-2x'>");
         var modalFooter = $("<div class='modal-footer'>");
 
         // Appending the modal window elements to make the modal window structure
@@ -392,9 +393,10 @@ function Utils() {
             "</button>"
         ));
         modalHeader.append(modalTitle);
+        modalBody.html(content);
         modalFooter.html(footer);
         modalContent.html(modalHeader);
-        modalContent.append(content);
+        modalContent.append(modalBody);
         modalContent.append(modalFooter);
         modalDialog.html(modalContent);
         modalWindow.html(modalDialog);

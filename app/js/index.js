@@ -89,11 +89,11 @@ function Notebook() {
         utils.clearPageNotification();
 
         // Creating the modal content elements
-        var modalBody = $("<div class='pull-left'>");
+        var modalBody = $("<div >");
         var noteNameInput = $(
-            "<div class='form-group col-sm-12 output-table-container'>" +
-                "<input type='text' class='form-control' />" +
-            "</div>"
+            "<div class='pull-left'><div class='form-group col-sm-12'>" +
+                "<input type='text' class='form-control form-control-lg' />" +
+            "</div></div>"
         );
         var modalFooter = $("<div class='pull-right'>");
         var createButton = $("<button type='button' class='btn btn-primary'>Create</button>");
