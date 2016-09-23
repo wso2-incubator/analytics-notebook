@@ -42,10 +42,13 @@ function PreprocessorParagraphClient(paragraph) {
 
                             });
                         }
+                        adjustRunButton();
                     });
                     if (content.outputTable != undefined) {
                         paragraph.find(".output-table").val(content.outputTable);
+                        adjustRunButton();
                     }
+
                 }
             }
         });
@@ -149,28 +152,36 @@ function PreprocessorParagraphClient(paragraph) {
     self.getSourceContent = function () {
         var content;
         var inputTable = paragraph.find(".input-table").val();
-        var outputTable = paragraph.find(".output-table").val();
-        var features = [];
-        table.find("tbody > tr").each(function () {
-            var feature = $(this);
-            var feature_name = feature.find(".feature-include").val();
-            var feature_include = false;
-            if (feature.find(".feature-include").is(':checked')) {
-                feature_include = true;
-            }
-            var feature_type = feature.find(".feature-type").val();
-            var impute_option = feature.find(".impute-option").val();
-            var featureObject = {
-                name: feature_name,
-                type: feature_type,
-                imputeOption: impute_option,
-                include: feature_include
-            };
-            features.push(featureObject);
-        });
         if (inputTable != undefined) {
-            content = {inputTable: inputTable, outputTable: outputTable, features: features};
+            content = { inputTable: inputTable };
+
+            var outputTable = paragraph.find(".output-table").val();
+            if (outputTable != undefined){
+                content.outputTable = outputTable;
+            }
+
+            var features = [];
+            table.find("tbody > tr").each(function () {
+                var feature = $(this);
+                var feature_name = feature.find(".feature-include").val();
+                var feature_include = false;
+                if (feature.find(".feature-include").is(':checked')) {
+                    feature_include = true;
+                }
+                var feature_type = feature.find(".feature-type").val();
+                var impute_option = feature.find(".impute-option").val();
+                var featureObject = {
+                    name: feature_name,
+                    type: feature_type,
+                    imputeOption: impute_option,
+                    include: feature_include
+                };
+                features.push(featureObject);
+            });
+
+            content.features = features;
         }
+        console.log(content);
         return content;
     };
 
@@ -253,15 +264,7 @@ function PreprocessorParagraphClient(paragraph) {
                             adjustRunButton();
                         });
 
-                        function adjustRunButton() {
-                            var runButton = paragraph.find(".run-paragraph-button");
-                            if (paragraph.find('.feature-include:checked').size() > 0 && $(paragraph.find('.output-table')).val().length > 0) {
-                                runButton.prop('disabled', false);
-                            } else {
-                                runButton.prop('disabled', true);
-                            }
-                            paragraphUtils.clearNotification();
-                        }
+
                     });
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
@@ -304,6 +307,21 @@ function PreprocessorParagraphClient(paragraph) {
         var outputTableContainer = paragraph.find(".output-table-container");
         outputTableContainer.slideDown();
 
+    }
+    /**
+     * Activate the run button when features are selected and
+     * a output table name is set
+     *
+     * @private
+     */
+    function adjustRunButton() {
+        var runButton = paragraph.find(".run-paragraph-button");
+        if (paragraph.find('.feature-include:checked').size() > 0 && $(paragraph.find('.output-table')).val().length > 0) {
+            runButton.prop('disabled', false);
+        } else {
+            runButton.prop('disabled', true);
+        }
+        paragraphUtils.clearNotification();
     }
 
 }
