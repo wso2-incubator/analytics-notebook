@@ -74,6 +74,16 @@ function Note() {
         $("#sign-out").click(function() {
             utils.signOut("./");
         });
+
+        $(window).on('beforeunload', function() {
+            $.each(noteSelf.paragraphs, function(index, paragraph) {
+                if (paragraph.paragraphClient != undefined &&
+                        paragraph.paragraphClient.unsavedContentAvailable) {
+                    event.returnValue = true;
+                    return false;   // To break the loop
+                }
+            });
+        });
     };
 
     /**

@@ -22,6 +22,7 @@ function DataExploreParagraphClient(paragraph) {
     var numericalFeatureNames = [];
 
     self.type = constants.paragraphs.dataExplore.key;
+    self.unsavedContentAvailable = false;
 
     /**
      * Initialize the data explore paragraph
@@ -47,10 +48,12 @@ function DataExploreParagraphClient(paragraph) {
 
         //Adding event listeners
         paragraph.find(".input-table").change(function () {
+            self.unsavedContentAvailable = true;
             onInputTableChange();
         });
 
         paragraph.find(".chart-type").change(function() {
+            self.unsavedContentAvailable = true;
             onChartTypeChange();
         });
 
@@ -272,6 +275,7 @@ function DataExploreParagraphClient(paragraph) {
             paragraph.find(".scatter-plot-options").slideDown();
 
             paragraph.find(".scatter-plot-x, .scatter-plot-y, .scatter-plot-group").change(function() {
+                self.unsavedContentAvailable = true;
                 adjustRunButton();
             });
         } else {
@@ -403,6 +407,7 @@ function DataExploreParagraphClient(paragraph) {
             paragraph.find(".parallel-sets-options").slideDown();
 
             paragraph.find(".parallel-sets-features").click(function () {
+                self.unsavedContentAvailable = true;
                 adjustRunButton();
             });
         } else {
@@ -502,9 +507,11 @@ function DataExploreParagraphClient(paragraph) {
             paragraph.find(".trellis-chart-options").slideDown();
 
             paragraph.find(".trellis-chart-numerical-features").click(function () {
+                self.unsavedContentAvailable = true;
                 adjustRunButton();
             });
             paragraph.find(".trellis-chart-categorical-feature").change(function () {
+                self.unsavedContentAvailable = true;
                 adjustRunButton();
             });
         } else {
@@ -734,6 +741,7 @@ function DataExploreParagraphClient(paragraph) {
             paragraph.find(".cluster-diagram-independent-feature, " +
                     ".cluster-diagram-dependent-feature, " +
                     ".cluster-diagram-features-count").change(function() {
+                self.unsavedContentAvailable = true;
                 adjustRunButton();
             });
         } else {

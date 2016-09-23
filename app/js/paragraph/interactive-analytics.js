@@ -17,6 +17,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
     var queryContainer;
 
     self.type = constants.paragraphs.interactiveAnalytics.key;
+    self.unsavedContentAvailable = false;
 
     /**
      * Initialize the interactive analytics paragraph
@@ -75,6 +76,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                 dateRangePickerOptions.endDate = new Date(timeTo);
             }
             paragraph.find(".time-range").daterangepicker(dateRangePickerOptions, function (start, end) {
+                self.unsavedContentAvailable = true;
                 timeFrom = new Date(start).getTime();
                 timeTo = new Date(end).getTime();
             });
@@ -82,18 +84,17 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
 
         // Adding event listeners
         paragraph.find(".input-table").change(function () {
+            self.unsavedContentAvailable = true;
             onInputTableChange();
         });
 
-        paragraph.find(".maximum-result-count").keyup(function() {
-            adjustRunButton();
-        });
-
         paragraph.find(".search-by-time-range").click(function () {
+            self.unsavedContentAvailable = true;
             onSearchByTimeRangeRadioButtonClick();
         });
 
         paragraph.find(".search-by-query").click(function () {
+            self.unsavedContentAvailable = true;
             onSearchByQueryRadioButtonClick();
         });
 
@@ -104,16 +105,9 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             }
         });
 
-        /**
-         * Disable or enable the run button depending on whether the requirements to run the paragraph are met
-         */
-        function adjustRunButton() {
-            if (paragraph.find(".maximum-result-count").val() > 0) {
-                paragraph.find(".run-paragraph-button").prop('disabled', false);
-            } else {
-                paragraph.find(".run-paragraph-button").prop('disabled', true);
-            }
-        }
+        paragraph.find(".query").keyup(function() {
+            self.unsavedContentAvailable = true;
+        });
 
         /**
          * Run input table change tasks
@@ -135,7 +129,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                     searchByAndMaxResultCountContainer.slideDown();
             }
             paragraph.find("input[name=search-by-option]").prop('checked', false);
-            adjustRunButton();
+            paragraph.find(".run-paragraph-button").prop('disabled', false);
         }
 
         /**

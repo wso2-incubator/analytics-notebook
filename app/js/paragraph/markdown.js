@@ -9,6 +9,7 @@ function Markdown(paragraph) {
     var paragraphUtils = new ParagraphUtils(paragraph);
 
     self.type = constants.paragraphs.markdown.key;
+    self.unsavedContentAvailable = false;
 
     /**
      * Initialize the markdown paragraph
@@ -24,6 +25,7 @@ function Markdown(paragraph) {
         }
 
         paragraph.find(".markdown-source").keyup(function() {
+            self.unsavedContentAvailable = true;
             adjustRunButton();
         });
     };
