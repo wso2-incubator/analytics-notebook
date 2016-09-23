@@ -293,7 +293,7 @@ function Note() {
          */
         paragraphSelf.getContent = function() {
             var paragraph = {};
-            if (paragraphSelf.paragraphClient.getSourceContent != undefined) {
+            if (paragraphSelf.paragraphClient != undefined && paragraphSelf.paragraphClient.getSourceContent != undefined) {
                 var source = paragraphSelf.paragraphClient.getSourceContent();
                 if (source != undefined) {
                     paragraph.content = {};
@@ -308,8 +308,7 @@ function Note() {
                         }
                     }
                 } else {
-                    paragraphUtils.handleNotification("error", "Error", "Paragraph cannot be saved");
-                    utils.handlePageNotification("error", "Error", "Some paragraphs could not be saved");
+                    paragraphUtils.handleNotification("info", "Info", "No paragraph content to be saved");
                 }
             } else {
                 paragraphUtils.handleNotification("error", "Error", "Paragraph cannot be saved");

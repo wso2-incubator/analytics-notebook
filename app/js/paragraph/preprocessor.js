@@ -256,11 +256,13 @@ function PreprocessorParagraphClient(paragraph) {
                         preprocessorTableContainer.slideDown();
 
                         paragraph.find(".feature-include").click(function () {
+                            self.unsavedContentAvailable = true;
                             adjustRunButton();
                         });
                         paragraphUtils.clearNotification();
 
                         paragraph.find(".output-table").keyup(function () {
+                            self.unsavedContentAvailable = true;
                             adjustRunButton();
                         });
 
