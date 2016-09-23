@@ -1,21 +1,21 @@
 package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
-import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.notebook.commons.request.paragraph.PreprocessorRequest;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
+import org.wso2.carbon.notebook.commons.response.GeneralResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
-import org.wso2.carbon.notebook.commons.response.dto.Column;
+import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.ml.DataSetPreprocessor;
 import org.wso2.carbon.notebook.core.util.MLUtils;
-import org.wso2.carbon.notebook.core.util.paragraph.DataSetInformationUtils;
+import org.wso2.carbon.notebook.core.util.paragraph.GeneralUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -51,16 +51,16 @@ public class PreprocessorEndpoint {
         String preprocessedTableName = preprocessRequest.getPreprocessedTableName();
         List<Feature> featureList = preprocessRequest.getFeatureList();
         List<Feature> orderedFeatureList = new ArrayList<>();
+        String headerLine;
+        List<String> headerArray = new ArrayList<>();
+        String jsonString;
+        JavaRDD<String[]> preprocessedLines;
+        List<String[]> resultantArray = null;
+        GeneralResponse response;
 
         for (int i = 0; i < featureList.size(); i++) {
             orderedFeatureList.add(new Feature());
         }
-        String headerLine;
-        List<String> headerArray = new ArrayList<>();
-        String jsonString;
-        List<String[]> resultantArray = null;
-
-        Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
 
         try {
             headerLine = MLUtils.extractHeaderLine(tableName, tenantID);
@@ -69,6 +69,7 @@ public class PreprocessorEndpoint {
                 feature.setIndex(index);
                 orderedFeatureList.set(index, feature);
             }
+
             //create the header list in the order
             for (Feature feature : orderedFeatureList) {
                 if (feature.isInclude()) {
@@ -76,12 +77,14 @@ public class PreprocessorEndpoint {
                 }
             }
             DataSetPreprocessor preprocessor = new DataSetPreprocessor(tenantID, tableName, orderedFeatureList, headerLine);
-            resultantArray = preprocessor.preProcess();
-
-            this.savePreprocessedTable(tenantID,tableName,preprocessedTableName,featureList,resultantArray);
+            preprocessedLines = preprocessor.preProcess();
+            resultantArray = preprocessedLines.collect();
+            GeneralUtils.saveTable(tenantID,tableName,preprocessedTableName,featureList, preprocessedLines);
+            response = new GeneralResponse(Status.SUCCESS);
 
         } catch (AnalyticsException e) {
             e.printStackTrace();
+            response = new 
         }
 
         response.put("headerArray", headerArray.toArray());
@@ -102,7 +105,7 @@ public class PreprocessorEndpoint {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
-        Map <String , String> columnList = new HashMap<>();
+        Map<String, String> columnList = new HashMap<>();
 
         try {
             Collection<ColumnDefinition> columns = ServiceHolder.getAnalyticsDataService()
@@ -111,14 +114,13 @@ public class PreprocessorEndpoint {
 
                 //set Numerical or categorical
                 String type = column.getType().toString();
-                if( type.equals("INTEGER") || type.equals("LONG") ||
-                        type.equals("FLOAT") || type.equals("DOUBLE")){
+                if (type.equals("INTEGER") || type.equals("LONG") ||
+                        type.equals("FLOAT") || type.equals("DOUBLE")) {
                     type = FeatureType.NUMERICAL;
-                }
-                else {
+                } else {
                     type = FeatureType.CATEGORICAL;
                 }
-                columnList.put(column.getName() , type);
+                columnList.put(column.getName(), type);
             }
 
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
@@ -131,51 +133,6 @@ public class PreprocessorEndpoint {
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 
-    public void savePreprocessedTable(int tenantID , String tableName , String preprocessedTableName , List<Feature> featureList, List<String[]> resultant) {
-
-        List<Column> includedColumnList = new ArrayList<>();
-        try {
-            List<Column> schema = DataSetInformationUtils.getTableSchema(tableName, tenantID);
-            for (Feature feature : featureList) {
-                if (feature.isInclude()) {
-                    includedColumnList.add(schema.get(feature.getIndex()));
-                }
-            }
-            String newSchema = "";
-            for (Column column : includedColumnList) {
-                if (column.isScoreParam()) {
-                    newSchema += column.getName() + ' ' + column.getType() + " -sp" + ", ";
-                } else if (column.isIndexed()) {
-                    newSchema += column.getName() + ' ' + column.getType() + " -i" + ", ";
-                } else {
-                    newSchema += column.getName() + ' ' + column.getType() + ", ";
-                }
-            }
-
-            newSchema = newSchema.substring(0, newSchema.length() - 2);
-            String createTempTableQuery =
-                    "CREATE TEMPORARY TABLE " +
-                            preprocessedTableName +
-                            " USING CarbonAnalytics OPTIONS (tableName \"" +
-                            preprocessedTableName +
-                            "\", schema \"" +
-                            newSchema +
-                            "\");";
-            List<Record> records = new ArrayList<>();
-            for(String[] row : resultant){
-                Map<String , Object> values = new HashedMap();
-                for(int i=0 ; i < row.length ; i++){
-                    values.put(includedColumnList.get(i).getName() , row[i]);
-                }
-                Record record = new Record(tenantID , preprocessedTableName, values );
-                records.add(record);
-            }
-            ServiceHolder.getAnalyticsProcessorService().executeQuery(tenantID , createTempTableQuery);
-            ServiceHolder.getAnalyticsDataService().put(records);
-        } catch (AnalyticsException e) {
-            e.printStackTrace();
-        }
-    }
 }
 
 

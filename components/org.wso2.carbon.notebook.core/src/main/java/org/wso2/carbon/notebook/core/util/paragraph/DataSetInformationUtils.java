@@ -12,17 +12,5 @@ import java.util.List;
 
 public class DataSetInformationUtils {
 
-    public static List<Column> getTableSchema(String tableName, int tenantID) throws AnalyticsException {
 
-        List<Column> schema = new ArrayList<Column>();
-        Collection<ColumnDefinition> columns = null;
-
-        columns = ServiceHolder.getAnalyticsDataService()
-                .getTableSchema(tenantID, tableName).getColumns().values();
-
-        for (ColumnDefinition column : columns) {
-            schema.add(new Column(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
-        }
-        return schema;
-    }
 }

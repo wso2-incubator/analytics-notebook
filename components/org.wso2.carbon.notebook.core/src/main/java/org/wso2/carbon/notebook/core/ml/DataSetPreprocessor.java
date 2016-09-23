@@ -7,6 +7,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.core.spark.transformations.RemoveResponseColumn;
+import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.ml.transformation.*;
@@ -39,7 +40,9 @@ public class DataSetPreprocessor {
         this.resultantArray = null;
     }
 
-    public List<String[]> preProcess() {
+    public JavaRDD<String[]> preProcess() {
+
+        JavaRDD<String[]> preprocessedLines= null;
 
         try {
             this.lines = MLUtils.getLinesFromDASTable(this.tableName, this.tenantID, ServiceHolder.getSparkContextService().getJavaSparkContext());
@@ -67,7 +70,7 @@ public class DataSetPreprocessor {
 
             MeanImputation meanImputationFilter = new MeanImputation.Builder().init(this.meanOfEachColumn , this.features).build();
 
-            JavaRDD<String[]> preprocessedLines = tokens.filter(discardedRowsFilter).map(removeDiscardedFeatures)
+            preprocessedLines = tokens.filter(discardedRowsFilter).map(removeDiscardedFeatures)
                     .map(responseColumnFilter).map(meanImputationFilter).cache();
             this.resultantArray = preprocessedLines.collect();
         } catch (Exception e) {
@@ -77,7 +80,8 @@ public class DataSetPreprocessor {
                 lines.unpersist();
             }
         }
-        return this.resultantArray;
+//        return this.resultantArray;
+        return preprocessedLines;
     }
 
     //map the mean of each column with the column name
