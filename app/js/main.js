@@ -71,7 +71,7 @@ function Utils() {
      */
     self.generateAlertMessage = function(type, title, message) {
         return $(
-            "<div id='login-" + type + "' class='alert alert-" + getClassByType(type) + "' role='alert'>" +
+            "<div class='alert alert-" + getClassByType(type) + "' role='alert'>" +
                 "<i class='icon fw fw-" + type + "'></i>" +
                 "<strong>" + title + "</strong> " + message +
                 "<button type='button' class='close' aria-label='close' data-dismiss='alert'>" +
