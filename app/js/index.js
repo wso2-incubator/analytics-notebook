@@ -90,23 +90,21 @@ function Notebook() {
 
         // Creating the modal content elements
         var modalBody = $("<div >");
-        var noteNameInput = $(
-            "<div class='pull-left'><div class='form-group col-sm-12'>" +
-                "<input type='text' class='form-control form-control-lg' />" +
-            "</div></div>"
-        );
+        var noteNameInput = $("<input type='text' class='form-control form-control-lg' />");
+        var noteNameInputContainer = $("<div class='pull-left'><div class='form-group col-sm-12'>");
         var modalFooter = $("<div class='pull-right'>");
         var createButton = $("<button type='button' class='btn btn-primary'>Create</button>");
 
         // Appending to create the modal content structure
-        modalBody.append(noteNameInput);
+        noteNameInputContainer.append(noteNameInput)
+        modalBody.append(noteNameInputContainer);
         modalFooter.append(createButton);
 
         var modal = utils.showModalPopup("Enter a name for your new note", modalBody, modalFooter);
 
         // Registering event listeners for the modal window
         createButton.click(function() {
-            createNote(noteNameInput.children().first().val());
+            createNote(noteNameInput.val());
             modal.modal("hide");
         });
     }
