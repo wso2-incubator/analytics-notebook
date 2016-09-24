@@ -20,6 +20,7 @@ function DataExploreParagraphClient(paragraph) {
     var sample;
     var categoricalFeatureNames = [];
     var numericalFeatureNames = [];
+    var redrawClusterData;  // keeps cluster data to redraw chart on marker size change
 
     self.type = constants.paragraphs.dataExplore.key;
     self.unsavedContentAvailable = false;
@@ -147,6 +148,7 @@ function DataExploreParagraphClient(paragraph) {
      * @param [paragraphsLeftToRun] {Object[]} The array of paragraphs left to be run in run all paragraphs task
      */
     self.run = function(paragraphsLeftToRun) {
+        redrawClusterData = undefined;
         chart.draw();
         paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
     };
@@ -700,9 +702,6 @@ function DataExploreParagraphClient(paragraph) {
      */
     function ClusterDiagram(chartOptions) {
         var clusterDiagramSelf = this;
-
-        // keeps cluster data to redraw chart on marker size change
-        var redrawClusterData;
 
         if (numericalFeatureNames.length > 1) {
             paragraph.find('.cluster-diagram-independent-feature, .cluster-diagram-dependent-feature').html(
