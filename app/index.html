@@ -80,7 +80,9 @@
             <a href="#">
                 <img src="libs/theme-wso2_1.0.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
                 <h1 class="display-block-xs">
-                    <script>document.write(constants.PRODUCT_NAME);</script>
+                    <span class="global-product-name">
+                        <!-- Automatically updated by JS -->
+                    </span>
                 </h1>
             </a>
         </div>
@@ -130,7 +132,6 @@
 </div>
 
 <div class="page-content-wrapper loading-overlay" data-toggle="loading" data-loading-style="overlay">
-    <!-- page content -->
     <div class="container-fluid">
         <div class="body-wrapper">
             <div class="container form-horizontal col-centered">
@@ -157,17 +158,16 @@
             </div>
         </div>
     </div>
-    <!-- /page content -->
 </div>
 
 <footer class="footer">
     <div class="container-fluid">
         <p>
             WSO2
-            <script>document.write(constants.PRODUCT_NAME);</script>
-            <script>document.write(constants.PRODUCT_VERSION);</script>
+            <span class="global-product-name"><!-- Automatically updated by JS --></span>
+            <span class="global-product-version"><!-- Automatically updated by JS --></span>
             | &copy;
-            <script>document.write((new Date().getFullYear()).toString());</script>
+            <span class="global-year"><!-- Automatically updated by JS --></span>
             <a href="http://wso2.com/" target="_blank"><i class="icon fw fw-wso2"></i> Inc</a>.
         </p>
     </div>

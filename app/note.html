@@ -120,7 +120,9 @@
             <a href="index.html">
                 <img src="libs/theme-wso2_1.0.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
                 <h1 class="display-block-xs">
-                    <script>document.write(constants.PRODUCT_NAME);</script>
+                    <span class="global-product-name">
+                        <!-- Automatically updated by JS -->
+                    </span>
                 </h1>
             </a>
         </div>
@@ -164,8 +166,8 @@
     </nav>
 </div>
 
+<!-- page content -->
 <div class="page-content-wrapper loading-overlay" data-toggle="loading" data-loading-style="overlay">
-    <!-- page content -->
     <div class="container-fluid">
         <div class="body-wrapper">
             <div class="container col-sm-12">
@@ -181,33 +183,23 @@
                         <div class="col-sm-12">
                             <div class="input-group input-wrap">
                                 <div class="input-group-btn">
-                                    <button id="run-all-paragraphs-button" class="btn btn-primary" disabled
-                                            title="Click to run all paragraphs in the note"
-                                            data-toggle="tooltip" data-placement="bottom">
+                                    <button id="run-all-paragraphs-button" class="btn btn-primary" disabled>
                                         <i class="fw fw-right"></i> Run All
                                     </button>
-                                    <button id="toggle-all-source-views-button" class="btn btn-primary" disabled
-                                            title="Click to hide the source views in all paragraphs"
-                                            data-toggle="tooltip" data-placement="bottom">
+                                    <button id="toggle-all-source-views-button" class="btn btn-primary" disabled>
                                         <i class="fw fw-hide"></i> Hide Source
                                     </button>
-                                    <button id="toggle-all-output-views-button" class="btn btn-primary" disabled
-                                            title="Click to hide the output views in all paragraphs"
-                                            data-toggle="tooltip" data-placement="bottom">
+                                    <button id="toggle-all-output-views-button" class="btn btn-primary" disabled>
                                         <i class="fw fw-hide"></i> Hide Output
                                     </button>
                                 </div>
                                 <div class="input-group-btn">
-                                    <button id="add-paragraph-button" class="btn btn-primary"
-                                            title="Click to add a new paragraph at the end of the note"
-                                            data-toggle="tooltip" data-placement="bottom">
+                                    <button id="add-paragraph-button" class="btn btn-primary">
                                         <i class="fw fw-add"></i> Add Paragraph
                                     </button>
                                 </div>
                                 <div class="input-group-btn">
-                                    <button id="save-note-button" class="btn btn-primary"
-                                            title="Click to save the note in the server"
-                                            data-toggle="tooltip" data-placement="bottom">
+                                    <button id="save-note-button" class="btn btn-primary">
                                         <i class="fw fw-save"></i> Save Note
                                     </button>
                                 </div>
@@ -233,17 +225,16 @@
             </div>
         </div>
     </div>
-    <!-- /page content -->
 </div>
 
 <footer class="footer">
     <div class="container-fluid">
         <p>
             WSO2
-            <script>document.write(constants.PRODUCT_NAME);</script>
-            <script>document.write(constants.PRODUCT_VERSION);</script>
+            <span class="global-product-name"><!-- Automatically updated by JS --></span>
+            <span class="global-product-version"><!-- Automatically updated by JS --></span>
             | &copy;
-            <script>document.write((new Date().getFullYear()).toString());</script>
+            <span class="global-year"><!-- Automatically updated by JS --></span>
             <a href="http://wso2.com/" target="_blank"><i class="icon fw fw-wso2"></i> Inc</a>.
         </p>
     </div>

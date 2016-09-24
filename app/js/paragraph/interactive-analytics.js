@@ -1,17 +1,15 @@
 /**
  * Interactive analytics paragraph client prototype
  *
- * @param paragraph {jQuery} The paragraph in which the client resides in
+ * @param {jQuery} paragraph The paragraph in which the client resides in
  * @constructor
  */
 function InteractiveAnalyticsParagraphClient(paragraph) {
-    // Private variables used in the prototype
     var self = this;
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
     var timeFrom;
     var timeTo;
-
     var searchByAndMaxResultCountContainer;
     var timeRangeContainer;
     var queryContainer;
@@ -23,30 +21,31 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
      * Initialize the interactive analytics paragraph
      * If content is passed into this the source content will be set from it
      *
-     * @param [content] {Object} Source content of the paragraph encoded into an object
+     * @param {Object} [content] Source content of the paragraph encoded into an object
      */
-    self.initialize = function (content) {
-        searchByAndMaxResultCountContainer = paragraph.find(".search-by-container, .maximum-result-count-container");
-        timeRangeContainer = paragraph.find(".time-range-container");
-        queryContainer = paragraph.find(".query-container");
+    self.initialize = function(content) {
+        searchByAndMaxResultCountContainer =
+            paragraph.find('.search-by-container, .maximum-result-count-container');
+        timeRangeContainer = paragraph.find('.time-range-container');
+        queryContainer = paragraph.find('.query-container');
 
         paragraphUtils.loadTableNames(function() {
             // Load source content
             if (content != undefined) {
                 // Loading the source content from the content object provided
                 if (content.inputTable != undefined) {
-                    paragraph.find(".input-table").val(content.inputTable);
+                    paragraph.find('.input-table').val(content.inputTable);
                     onInputTableChange();
                     if (content.searchMethod != undefined) {
-                        paragraph.find("input[value=" + content.searchMethod + "]").prop("checked", true);
+                        paragraph.find('input[value=' + content.searchMethod + ']').prop('checked', true);
                         switch (content.searchMethod) {
-                            case "query" :
+                            case 'query' :
                                 onSearchByQueryRadioButtonClick();
                                 if (content.query != undefined) {
-                                    paragraph.find(".query").val(content.query);
+                                    paragraph.find('.query').val(content.query);
                                 }
                                 break;
-                            case "time-range" :
+                            case 'time-range' :
                                 onSearchByTimeRangeRadioButtonClick();
                                 if (content.timeFrom != undefined && content.timeTo != undefined) {
                                     timeFrom = content.timeFrom;
@@ -55,19 +54,18 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                                 break;
                             default :
                                 onSearchByQueryRadioButtonClick();
-                                content.searchMethod = "query";
+                                content.searchMethod = 'query';
                         }
                     }
                 }
             }
 
-            // Adding the date pickers
-            // Content needed to be loaded for this to load
+            // Adding the date pickers. Content needed to be loaded before this
             var dateRangePickerOptions = {
                 timePicker: true,
                 autoApply: true,
                 timePicker24Hour: true,
-                drops : "up"
+                drops: 'up'
             };
             if (timeFrom != undefined) {
                 dateRangePickerOptions.startDate = new Date(timeFrom);
@@ -75,37 +73,37 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             if (timeTo != undefined) {
                 dateRangePickerOptions.endDate = new Date(timeTo);
             }
-            paragraph.find(".time-range").daterangepicker(dateRangePickerOptions, function (start, end) {
+            paragraph.find('.time-range').daterangepicker(dateRangePickerOptions, function(start, end) {
                 self.unsavedContentAvailable = true;
                 timeFrom = new Date(start).getTime();
                 timeTo = new Date(end).getTime();
             });
         });
 
-        // Adding event listeners
-        paragraph.find(".input-table").change(function () {
+        // Registering event listeners
+        paragraph.find('.input-table').change(function() {
             self.unsavedContentAvailable = true;
             onInputTableChange();
         });
 
-        paragraph.find(".search-by-time-range").click(function () {
+        paragraph.find('.search-by-time-range').click(function() {
             self.unsavedContentAvailable = true;
             onSearchByTimeRangeRadioButtonClick();
         });
 
-        paragraph.find(".search-by-query").click(function () {
+        paragraph.find('.search-by-query').click(function() {
             self.unsavedContentAvailable = true;
             onSearchByQueryRadioButtonClick();
         });
 
-        var maxResultCount = paragraph.find(".maximum-result-count");
-        maxResultCount.focusout(function () {
-            if (maxResultCount.val() == "") {
+        var maxResultCount = paragraph.find('.maximum-result-count');
+        maxResultCount.focusout(function() {
+            if (maxResultCount.val() == '') {
                 maxResultCount.val(1000);
             }
         });
 
-        paragraph.find(".query").keyup(function() {
+        paragraph.find('.query').keyup(function() {
             self.unsavedContentAvailable = true;
         });
 
@@ -113,14 +111,14 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
          * Run input table change tasks
          */
         function onInputTableChange() {
-            var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
-            switch(searchMethod) {
-                case "time-range" :
+            var searchMethod = paragraph.find('input[name=search-by-option]:checked').val();
+            switch (searchMethod) {
+                case 'time-range' :
                     timeRangeContainer.slideUp(function() {
                         searchByAndMaxResultCountContainer.slideDown();
                     });
                     break;
-                case "query" :
+                case 'query' :
                     queryContainer.slideUp(function() {
                         searchByAndMaxResultCountContainer.slideDown();
                     });
@@ -128,8 +126,8 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                 default :
                     searchByAndMaxResultCountContainer.slideDown();
             }
-            paragraph.find("input[name=search-by-option]").prop('checked', false);
-            paragraph.find(".run-paragraph-button").prop('disabled', false);
+            paragraph.find('input[name=search-by-option]').prop('checked', false);
+            paragraph.find('.run-paragraph-button').prop('disabled', false);
         }
 
         /**
@@ -152,52 +150,51 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
     /**
      * Run the interactive analytics paragraph
      *
-     * @param [paragraphsLeftToRun] {Object[]} The array of paragraphs left to be run in run all paragraphs task
+     * @param {Object[]} [paragraphsLeftToRun] The array of paragraphs left to be run in run all paragraphs task
      */
-    self.run = function (paragraphsLeftToRun) {
-        var tableName = paragraph.find(".input-table").val();
+    self.run = function(paragraphsLeftToRun) {
+        var tableName = paragraph.find('.input-table').val();
         utils.showLoadingOverlay(paragraph);
         $.ajax({
-            type: "GET",
-            url: constants.API_URI + "tables/" + tableName + "/columns",
-            success: function (response) {
+            type: 'GET',
+            url: constants.API_URI + 'tables/' + tableName + '/columns',
+            success: function(response) {
                 if (response.status == constants.response.SUCCESS) {
                     var columns = response.columnNames;
-                    columns.push("_timestamp");
-                    columns.push("_version");
-
-                    var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
-
+                    columns.push('_timestamp');
+                    columns.push('_version');
+                    var searchMethod = paragraph.find('input[name=search-by-option]:checked').val();
                     var queryParameters = {
                         tableName: tableName
                     };
-                    if (searchMethod == "time-range") {
+
+                    if (searchMethod == 'time-range') {
                         queryParameters.timeFrom = timeFrom;
                         queryParameters.timeTo = timeTo;
-                    } else if (searchMethod == "query") {
-                        queryParameters.query = paragraph.find(".query").val();
+                    } else if (searchMethod == 'query') {
+                        queryParameters.query = paragraph.find('.query').val();
                     } else {
-                        searchMethod = "query";
-                        queryParameters.query = "";
+                        searchMethod = 'query';
+                        queryParameters.query = '';
                     }
 
                     paragraphUtils.setOutput(utils.generateDataTableWithLazyLoading(
-                        "POST",
-                        constants.API_URI + "interactive-analytics/search/" + searchMethod,
+                        'POST',
+                        constants.API_URI + 'interactive-analytics/search/' + searchMethod,
                         queryParameters,
                         columns,
-                        paragraph.find(".maximum-result-count").val()
+                        paragraph.find('.maximum-result-count').val()
                     ));
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
-                    window.location.href = "sign-in.html";
+                    window.location.href = 'sign-in.html';
                 } else {
-                    paragraphUtils.handleNotification("error", "Error", response.message);
+                    paragraphUtils.handleNotification('error', 'Error', response.message);
                 }
                 utils.hideLoadingOverlay(paragraph);
             },
-            error : function(response) {
+            error: function(response) {
                 paragraphUtils.handleNotification(
-                    "error", "Error", utils.generateErrorMessageFromStatusCode(response.readyState)
+                    'error', 'Error', utils.generateErrorMessageFromStatusCode(response.readyState)
                 );
                 utils.hideLoadingOverlay(paragraph);
             }
@@ -212,24 +209,24 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
      */
     self.getSourceContent = function() {
         var content;
-        var inputTable = paragraph.find(".input-table").val();
+        var inputTable = paragraph.find('.input-table').val();
         if (inputTable != undefined) {
-            content = { inputTable : inputTable };
-            var searchMethod = paragraph.find("input[name=search-by-option]:checked").val();
+            content = { inputTable: inputTable };
+            var searchMethod = paragraph.find('input[name=search-by-option]:checked').val();
             if (searchMethod != undefined) {
                 content.searchMethod = searchMethod;
-                var maxResultCount = paragraph.find("maximum-result-count").val();
+                var maxResultCount = paragraph.find('maximum-result-count').val();
                 if (maxResultCount != undefined) {
                     content.maxResultCount = maxResultCount;
                 }
                 switch (searchMethod) {
-                    case "query" :
-                        var query = paragraph.find(".query").val();
+                    case 'query' :
+                        var query = paragraph.find('.query').val();
                         if (query != undefined) {
                             content.query = query;
                         }
                         break;
-                    case "time-range" :
+                    case 'time-range' :
                         if (timeFrom != undefined && timeTo != undefined) {
                             content.timeFrom = timeFrom;
                             content.timeTo = timeTo;
@@ -240,4 +237,4 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
         }
         return content;
     };
-}
+}   // End of InteractiveAnalyticsParagraphClient prototype constructor
