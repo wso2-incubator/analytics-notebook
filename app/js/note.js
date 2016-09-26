@@ -50,6 +50,21 @@ function Note() {
         // Initializing note
         $("#note-name").html(noteSelf.name);
 
+        // Making the paragraphs sortable
+        $("#paragraphs").sortable({
+            start: function(event, ui) {
+                ui.item.data('startPosition', ui.item.index());
+            },
+            update : function(event, ui) {
+                // Reordering the paragraph array according to the new arrangement in the page
+                var oldPosition = ui.item.data('startPosition');
+                var newPosition = ui.item.index();
+                var movedParagraph = noteSelf.paragraphs[oldPosition];
+                noteSelf.paragraphs.splice(oldPosition, 1);
+                noteSelf.paragraphs.splice(newPosition, 0, movedParagraph);
+            }
+        });
+
         // Registering event listeners
         $("#run-all-paragraphs-button").click(function () {
             runAllParagraphs();
@@ -80,7 +95,7 @@ function Note() {
                 if (paragraph.paragraphClient != undefined &&
                         paragraph.paragraphClient.unsavedContentAvailable) {
                     event.returnValue = true;
-                    return false;   // To break the loop
+                    return true;
                 }
             });
         });
@@ -157,6 +172,10 @@ function Note() {
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     utils.handlePageNotification("info", "Info", "Note successfully saved");
+
+                    $.each(noteSelf.paragraphs, function (index, paragraph) {
+                        paragraph.paragraphClient.unsavedContentAvailable = false;
+                    });
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = "sign-in.html";
                 } else {
@@ -214,7 +233,7 @@ function Note() {
         var paragraphSelf = this;
 
         // Initializing paragraph
-        var paragraphContainer = $("<div class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
+        var paragraphContainer = $("<li class='loading-overlay' data-toggle='loading' data-loading-style='overlay'>");
         paragraphSelf.paragraphElement = $("<div class='paragraph well fluid-container collapse'>");
 
         // Private variables
