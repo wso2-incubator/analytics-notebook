@@ -125,7 +125,7 @@ function PreprocessorParagraphClient(paragraph) {
             success: function (response) {
                 if (response.status == constants.response.SUCCESS) {
                     output = $("<p><strong> Successful: </strong>" + tableName + " was successfully preprocessed and saved to table "
-                        + preprocessedTableName + "</p>");
+                        + preprocessedTableName.toUpperCase() + "</p>");
                     paragraphUtils.setOutput(output);
                     paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
@@ -181,7 +181,6 @@ function PreprocessorParagraphClient(paragraph) {
 
             content.features = features;
         }
-        console.log(content);
         return content;
     };
 
