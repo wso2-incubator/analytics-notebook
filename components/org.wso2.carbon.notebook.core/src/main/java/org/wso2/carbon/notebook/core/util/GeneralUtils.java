@@ -46,9 +46,6 @@ public class GeneralUtils implements Serializable {
                 for (int i = 0; i < row.length; i++) {
                     String dataType = includedColumnList.get(i).getType().toString();
                     switch (dataType) {
-                        case "STRING":
-                            dataObject = row[i];
-                            break;
                         case "FACET":
                             dataObject = row[i];
                             break;
@@ -67,22 +64,26 @@ public class GeneralUtils implements Serializable {
                         case "BOOLEAN":
                             dataObject = Boolean.parseBoolean(row[i]);
                             break;
+                        default:    // For strings
+                            dataObject = row[i];
                     }
                     values.put(includedColumnList.get(i).getName(), dataObject);
                 }
                 Record record = new Record(tenantID, preprocessedTableName, values);
                 records.add(record);
                 //Generate the schema string for the new table
-                String newSchema = "";
+                StringBuilder builder = new StringBuilder();
                 for (Column includedColumn : includedColumnList) {
+                    builder.append(includedColumn.getName() + ' ' + includedColumn.getType());
                     if (includedColumn.isScoreParam()) {
-                        newSchema += includedColumn.getName() + ' ' + includedColumn.getType() + " -sp" + ", ";
+                        builder.append(" -sp" + ", ");
                     } else if (includedColumn.isIndexed()) {
-                        newSchema += includedColumn.getName() + ' ' + includedColumn.getType() + " -i" + ", ";
+                        builder.append(" -i" + ", ");
                     } else {
-                        newSchema += includedColumn.getName() + ' ' + includedColumn.getType() + ", ";
+                        builder.append(", ");
                     }
                 }
+                String newSchema = builder.toString();
                 newSchema = newSchema.substring(0, newSchema.length() - 2);
                 String createTempTableQuery =
                         "CREATE TEMPORARY TABLE " +

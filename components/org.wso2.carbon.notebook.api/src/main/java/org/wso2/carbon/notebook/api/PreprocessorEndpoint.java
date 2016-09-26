@@ -53,10 +53,8 @@ public class PreprocessorEndpoint {
         List<Feature> featureList = preprocessRequest.getFeatureList();
         List<Feature> orderedFeatureList = new ArrayList<>();
         String headerLine;
-        List<String> headerArray = new ArrayList<>();
         String jsonString;
         JavaRDD<String[]> preprocessedLines;
-        List<String[]> resultantArray = null;
         GeneralResponse response;
 
         for (int i = 0; i < featureList.size(); i++) {
@@ -71,12 +69,6 @@ public class PreprocessorEndpoint {
                 orderedFeatureList.set(index, feature);
             }
 
-            //create the header list in the order
-            for (Feature feature : orderedFeatureList) {
-                if (feature.isInclude()) {
-                    headerArray.add(feature.getName());
-                }
-            }
             DataSetPreprocessor preprocessor = new DataSetPreprocessor(tenantID, tableName, orderedFeatureList, headerLine);
             preprocessedLines = preprocessor.preProcess();
             GeneralUtils.saveTable(tenantID,tableName,preprocessedTableName,orderedFeatureList, preprocessedLines);

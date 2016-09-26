@@ -71,7 +71,7 @@ public class DataExploreUtils {
         for (String feature : features) {
             featureIndices.add(MLUtils.getFeatureIndex(feature, headerRow, columnSeparator));
         }
-        double sampleFraction = MLConstants.SAMPLE_SIZE / (lines.count() - 1);
+        double sampleFraction = MLConstants.SAMPLE_SIZE / (double) (lines.count() - 1);
 
         HeaderFilter headerFilter = new HeaderFilter.Builder().init(headerRow).build();
         LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();

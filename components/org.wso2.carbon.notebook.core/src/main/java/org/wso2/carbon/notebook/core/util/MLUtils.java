@@ -123,21 +123,10 @@ public class MLUtils {
         JavaRDD<Row> rows = dataFrame.drop("_timestamp").javaRDD();
 
         lines = rows.map(new RowsToLines.Builder().separator(CSVFormat.RFC4180.getDelimiter() + "").build());
-        List<String> testResult = lines.collect();
         return lines;
     }
 
     private static JavaRDD<String[]> getTokensFromLines(CSVFormat dataFormat, JavaRDD<String> lines) {
-        // take the first line
-        String firstLine = lines.first();
-        // count the number of features
-        int featureSize = getFeatureSize(firstLine, dataFormat);
-
-        List<Integer> featureIndices = new ArrayList<Integer>();
-        for (int i = 0; i < featureSize; i++) {
-            featureIndices.add(i);
-        }
-
         String columnSeparator = String.valueOf(dataFormat.getDelimiter());
         HeaderFilter headerFilter = new HeaderFilter.Builder().init(lines.first()).build();
 
@@ -580,11 +569,11 @@ public class MLUtils {
         }
 
         //calculate the sample size
-        long datasetSize = tokenizeDataToSample.count();
+        long dataSetSize = tokenizeDataToSample.count();
 
-        if ( datasetSize > 0) {
+        if ( dataSetSize > 0) {
             double sampleFraction
-                    = org.wso2.carbon.notebook.commons.constants.MLConstants.SAMPLE_SIZE / (tokenizeDataToSample.count() - 1);
+                    = org.wso2.carbon.notebook.commons.constants.MLConstants.SAMPLE_SIZE / (double) (dataSetSize - 1);
             if (sampleFraction > 1) {
                 sampleFraction = 1;
             }

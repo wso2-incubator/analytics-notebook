@@ -15,11 +15,10 @@ import java.net.URLEncoder;
  * Used for filtering requests sent to the api without logging in
  */
 public class APIAccessFilter implements Filter {
-    private FilterConfig filterConfig;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        this.filterConfig = filterConfig;
+
     }
 
     @Override

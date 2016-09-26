@@ -114,7 +114,8 @@ public class DataSetInformationRetrievalEndpoint {
         String jsonString;
 
         try {
-            List<String> primaryKeys = GeneralUtils.getPrimaryKeys(tenantID, tableName);
+            List<String> primaryKeys =
+                    ServiceHolder.getAnalyticsDataService().getTableSchema(tenantID, tableName).getPrimaryKeys();
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
             response.put("primaryKeys", primaryKeys);
             jsonString = new Gson().toJson(response);

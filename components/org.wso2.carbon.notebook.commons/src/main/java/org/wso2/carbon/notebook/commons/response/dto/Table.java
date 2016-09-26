@@ -10,20 +10,20 @@ import java.util.List;
  */
 
 public class Table extends GeneralResponse {
-    private String[] columns;
+    private List<String> columns;
     private List<List<Object>> data;
 
-    public Table(String[] columns, List<List<Object>> data) {
+    public Table(List<String> columns, List<List<Object>> data) {
         super(Status.SUCCESS);
         this.columns = columns;
         this.data = data;
     }
 
-    public String[] getColumns() {
+    public List<String> getColumns() {
         return columns;
     }
 
-    public void setColumns(String[] columns) {
+    public void setColumns(List<String> columns) {
         this.columns = columns;
     }
 

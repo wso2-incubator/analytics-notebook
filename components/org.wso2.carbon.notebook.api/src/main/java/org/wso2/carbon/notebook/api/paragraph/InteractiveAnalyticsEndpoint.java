@@ -40,7 +40,7 @@ public class InteractiveAnalyticsEndpoint {
         String jsonString;
 
         try {
-            List<Map<String, Object>> data = null;
+            List<Map<String, Object>> data;
             switch (searchMethod) {
                 case "query":
                     data = InteractiveAnalyticsUtils.executeSearchQuery(
@@ -67,6 +67,9 @@ public class InteractiveAnalyticsEndpoint {
                             interactiveAnalyticsRequest.getTableName(),
                             interactiveAnalyticsRequest.getPrimaryKeys()
                     );
+                    break;
+                default:
+                    data = null;
             }
             if (data == null) {
                 jsonString = new Gson().toJson(new ErrorResponse("Invalid search method"));

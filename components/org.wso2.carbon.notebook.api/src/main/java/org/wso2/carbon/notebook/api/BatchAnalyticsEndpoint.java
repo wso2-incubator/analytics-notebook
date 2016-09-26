@@ -18,6 +18,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ public class BatchAnalyticsEndpoint {
             for (String query : queriesInScript) {
                 AnalyticsQueryResult result = ServiceHolder.getAnalyticsProcessorService()
                         .executeQuery(tenantID, query);
-                tables.add(new Table(result.getColumns(), result.getRows()));
+                tables.add(new Table(Arrays.asList(result.getColumns()), result.getRows()));
             }
         } catch (AnalyticsExecutionException | RuntimeException e) {
             tables.add(new ErrorResponse(Status.INVALID_QUERY, e.getMessage()));
