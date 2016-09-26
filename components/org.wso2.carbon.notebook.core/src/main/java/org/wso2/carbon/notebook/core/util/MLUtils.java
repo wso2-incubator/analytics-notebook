@@ -13,20 +13,18 @@ import org.wso2.carbon.analytics.datasource.commons.AnalyticsSchema;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
-import org.wso2.carbon.ml.commons.domain.*;
-import org.wso2.carbon.ml.commons.domain.config.MLProperty;
+import org.wso2.carbon.ml.commons.domain.Feature;
+import org.wso2.carbon.ml.commons.domain.FeatureType;
+import org.wso2.carbon.ml.commons.domain.SamplePoints;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.exception.PreprocessorException;
-import org.wso2.carbon.notebook.core.ml.transformation.DiscardedRowsFilter;
 import org.wso2.carbon.notebook.core.ml.transformation.HeaderFilter;
 import org.wso2.carbon.notebook.core.ml.transformation.LineToTokens;
+import org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter;
 
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -34,45 +32,6 @@ import java.util.regex.Pattern;
  * Machine learner utility functions for the notebook
  */
 public class MLUtils {
-    /**
-     * Generate a random sample of the dataset using Spark.
-     */
-    public static SamplePoints getSample(String path, String dataType, int sampleSize, boolean containsHeader)
-            throws MLMalformedDatasetException {
-
-        JavaSparkContext sparkContext = null;
-        try {
-            Map<String, Integer> headerMap = null;
-            // List containing actual data of the sample.
-            List<List<String>> columnData = new ArrayList<List<String>>();
-            CSVFormat dataFormat = DataTypeFactory.getCSVFormat(dataType);
-
-            // java spark context
-            sparkContext = ServiceHolder.getSparkContextService().getJavaSparkContext();
-            JavaRDD<String> lines;
-
-            // parse lines in the dataset
-            lines = sparkContext.textFile(path);
-            // validates the data format of the file
-            String firstLine = lines.first();
-            if (!firstLine.contains("" + dataFormat.getDelimiter())) {
-                throw new MLMalformedDatasetException(String.format(
-                        "File content does not match the data format. [First Line] %s [Data Format] %s", firstLine,
-                        dataType));
-            }
-            return getSamplePoints(sampleSize, containsHeader, headerMap, columnData, dataFormat, lines);
-
-        } catch (Exception e) {
-            throw new MLMalformedDatasetException("Failed to extract the sample points from path: " + path
-                    + ". Cause: " + e, e);
-        }
-    }
-
-    public static String getFirstLine(String filePath) {
-        JavaSparkContext sparkContext = ServiceHolder.getSparkContextService().getJavaSparkContext();
-        return sparkContext.textFile(filePath).first();
-    }
-
     /**
      * Generate a random sample of the dataset using Spark.
      */
@@ -278,7 +237,7 @@ public class MLUtils {
      *
      * @param feature         Feature name
      * @param headerRow       First row (header) in the data file
-     * @param columnSeparator Column separator character
+     * @param columnSeparator ColumnDefinition separator character
      * @return Index of the response variable
      */
     public static int getFeatureIndex(String feature, String headerRow, String columnSeparator) {
@@ -297,54 +256,6 @@ public class MLUtils {
     }
 
     /**
-     * Retrieve the index of a feature in the dataset.
-     */
-    public static int getFeatureIndex(String featureName, List<org.wso2.carbon.ml.commons.domain.Feature> features) {
-        if (featureName == null || features == null) {
-            return -1;
-        }
-        for (org.wso2.carbon.ml.commons.domain.Feature feature : features) {
-            if (featureName.equals(feature.getName())) {
-                return feature.getIndex();
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * @param workflow Workflow
-     * @return A list of indices of features to be included in the model
-     */
-    public static SortedMap<Integer, String> getIncludedFeaturesAfterReordering(Workflow workflow,
-                                                                                List<Integer> newToOldIndicesList, int responseIndex) {
-        SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
-        List<org.wso2.carbon.ml.commons.domain.Feature> features = workflow.getFeatures();
-        for (org.wso2.carbon.ml.commons.domain.Feature feature : features) {
-            if (feature.isInclude() == true && feature.getIndex() != responseIndex) {
-                int currentIndex = feature.getIndex();
-                int newIndex = newToOldIndicesList.indexOf(currentIndex);
-                inlcudedFeatures.put(newIndex, feature.getName());
-            }
-        }
-        return inlcudedFeatures;
-    }
-
-    /**
-     * @param workflow Workflow
-     * @return A list of indices of features to be included in the model
-     */
-    public static SortedMap<Integer, String> getIncludedFeatures(Workflow workflow, int responseIndex) {
-        SortedMap<Integer, String> inlcudedFeatures = new TreeMap<Integer, String>();
-        List<org.wso2.carbon.ml.commons.domain.Feature> features = workflow.getFeatures();
-        for (org.wso2.carbon.ml.commons.domain.Feature feature : features) {
-            if (feature.isInclude() == true && feature.getIndex() != responseIndex) {
-                inlcudedFeatures.put(feature.getIndex(), feature.getName());
-            }
-        }
-        return inlcudedFeatures;
-    }
-
-    /**
      * @param features list of features of the dataset
      * @return A list of indices of features to be included after processed
      */
@@ -358,67 +269,6 @@ public class MLUtils {
         return includedFeatureIndices;
     }
 
-    /**
-     * @param tenantId   Tenant ID of the current user
-     * @param datasetId  ID of the datstet
-     * @param userName   Name of the current user
-     * @param name       Dataset name
-     * @param version    Dataset version
-     * @param targetPath path of the stored data set
-     * @return Dataset Version Object
-     */
-    public static MLDatasetVersion getMLDatsetVersion(int tenantId, long datasetId, String userName, String name,
-                                                      String version, String targetPath) {
-        MLDatasetVersion valueSet = new MLDatasetVersion();
-        valueSet.setTenantId(tenantId);
-        valueSet.setDatasetId(datasetId);
-        valueSet.setName(name);
-        valueSet.setVersion(version);
-        valueSet.setTargetPath(targetPath);
-        valueSet.setUserName(userName);
-        return valueSet;
-    }
-
-    /**
-     * @return Current date and time
-     */
-    public static String getDate() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-        Date date = new Date();
-        return dateFormat.format(date);
-    }
-
-    /**
-     * Get {@link Properties} from a list of {@link MLProperty}
-     *
-     * @param mlProperties list of {@link MLProperty}
-     * @return {@link Properties}
-     */
-    public static Properties getProperties(List<MLProperty> mlProperties) {
-        Properties properties = new Properties();
-        for (MLProperty mlProperty : mlProperties) {
-            if (mlProperty != null) {
-                properties.put(mlProperty.getName(), mlProperty.getValue());
-            }
-        }
-        return properties;
-
-    }
-
-    /**
-     * @param inArray String array
-     * @return Double array
-     */
-    public static double[] toDoubleArray(String[] inArray) {
-        double[] outArray = new double[inArray.length];
-        int idx = 0;
-        for (String string : inArray) {
-            outArray[idx] = Double.parseDouble(string);
-            idx++;
-        }
-
-        return outArray;
-    }
 
     public static Map<String, Integer> generateHeaderMap(int numberOfFeatures) {
         Map<String, Integer> headerMap = new HashMap<String, Integer>();
@@ -444,78 +294,6 @@ public class MLUtils {
         return values.length;
     }
 
-    public static String[] getFeatures(String line, CSVFormat format) {
-        String[] values = line.split("" + format.getDelimiter());
-        return values;
-    }
-
-    /**
-     * Applies the discard filter to a JavaRDD
-     *
-     * @param delimiter      Column separator of the dataset
-     * @param headerRow      Header row
-     * @param lines          JavaRDD which contains the dataset
-     * @param featureIndices Indices of the features to apply filter
-     * @return filtered JavaRDD
-     */
-    public static JavaRDD<String[]> filterRows(String delimiter, String headerRow, JavaRDD<String> lines,
-                                               List<Integer> featureIndices) {
-        String columnSeparator = String.valueOf(delimiter);
-        HeaderFilter headerFilter = new HeaderFilter.Builder().init(headerRow).build();
-        JavaRDD<String> data = lines.filter(headerFilter).cache();
-        Pattern pattern = getPatternFromDelimiter(columnSeparator);
-        LineToTokens lineToTokens = new LineToTokens.Builder().separator(pattern).build();
-        JavaRDD<String[]> tokens = data.map(lineToTokens).cache();
-
-        // get feature indices for discard imputation
-        DiscardedRowsFilter discardedRowsFilter = new DiscardedRowsFilter.Builder().indices(featureIndices).build();
-        // Discard the row if any of the impute indices content have a missing value
-        JavaRDD<String[]> tokensDiscardedRemoved = tokens.filter(discardedRowsFilter).cache();
-
-        return tokensDiscardedRemoved;
-    }
-
-    /**
-     * format an error message.
-     */
-    public static String getErrorMsg(String customMessage, Exception ex) {
-        if (ex != null) {
-            return customMessage + " Cause: " + ex.getClass().getName() + " - " + ex.getMessage();
-        }
-        return customMessage;
-    }
-
-    /**
-     * Utility method to get key from value of a map.
-     *
-     * @param map   Map to be searched for a key
-     * @param value Value of the key
-     */
-    public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
-        for (Map.Entry<T, E> entry : map.entrySet()) {
-            if (Objects.equals(value, entry.getValue())) {
-                return entry.getKey();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Utility method to convert a String array to CSV/TSV row string.
-     *
-     * @param array     String array to be converted
-     * @param delimiter Delimiter to be used (comma for CSV tab for TSV)
-     * @return CSV/TSV row string
-     */
-    public static String arrayToCsvString(String[] array, char delimiter) {
-        StringBuilder arrayString = new StringBuilder();
-        for (String arrayElement : array) {
-            arrayString.append(arrayElement);
-            arrayString.append(delimiter);
-        }
-        return arrayString.toString();
-    }
-
     /**
      * Generates a pattern to represent CSV or TSV format.
      *
@@ -527,31 +305,16 @@ public class MLUtils {
     }
 
     /**
-     * Check for restricted characters in a given name
+     * Generate descriptive statistics for each column of the table
      *
-     * @param file
+     * @param tokenizeDataToSample dataset of the table; each cell as a token
+     * @param features columns of the table selected for processing
+     * @param tableName table selected for processing
+     * @return List of Descriptive Statistics of each column
+     * @throws PreprocessorException
      */
-    public static boolean isValidName(String file) {
-        return (!file.contains("../") && !file.contains("..\\"));
-    }
-
-    public static class DataTypeFactory {
-        public static CSVFormat getCSVFormat(String dataType) {
-            if ("TSV".equalsIgnoreCase(dataType)) {
-                return CSVFormat.TDF;
-            }
-            return CSVFormat.RFC4180;
-        }
-    }
-
-    public static class ColumnSeparatorFactory {
-        public static String getColumnSeparator(String dataType) {
-            CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataType);
-            return csvFormat.getDelimiter() + "";
-        }
-    }
-
-    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features, String tableName) throws PreprocessorException {
+    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features, String tableName)
+            throws PreprocessorException {
         int featureSize;
         int[] stringCellCount;
         double cellValue;
@@ -562,25 +325,22 @@ public class MLUtils {
         stringCellCount = new int[featureSize];
 
         //initiate the columnData and descriptiveStat lists
-        for (int count= 0; count < featureSize; count++) {
+        for (int count = 0; count < featureSize; count++) {
             columnData.add(new ArrayList<String>());
             descriptiveStats.add(new DescriptiveStatistics());
-
         }
 
         //calculate the sample size
         long dataSetSize = tokenizeDataToSample.count();
-
-        if ( dataSetSize > 0) {
+        if (dataSetSize > 0) {
             double sampleFraction
                     = org.wso2.carbon.notebook.commons.constants.MLConstants.SAMPLE_SIZE / (double) (dataSetSize - 1);
             if (sampleFraction > 1) {
                 sampleFraction = 1;
             }
 
-            // take a random sample
-            org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter missingValuesFilter
-                    = new org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter.Builder().build();
+            // take a random sample removing null values in each row
+            MissingValuesFilter missingValuesFilter = new MissingValuesFilter.Builder().build();
             JavaRDD<String[]> filteredDataToSample = tokenizeDataToSample.filter(missingValuesFilter);
             List<String[]> sampleLines = filteredDataToSample.sample(false, sampleFraction).collect();
 
@@ -594,7 +354,6 @@ public class MLUtils {
                     if (currentCol < columnValues.length) {
                         // Append the cell to the respective column.
                         columnData.get(currentCol).add(columnValues[currentCol]);
-
                         if (!NumberUtils.isNumber(columnValues[currentCol])) {
                             stringCellCount[currentCol]++;
                         }
@@ -618,8 +377,8 @@ public class MLUtils {
                 }
             }
             return descriptiveStats;
-        }else{
-            throw  new PreprocessorException("No data found in table " + tableName );
+        } else {
+            throw new PreprocessorException("No data found in table " + tableName);
         }
     }
 
@@ -676,5 +435,21 @@ public class MLUtils {
         }
 
         return type;
+    }
+
+    public static class DataTypeFactory {
+        public static CSVFormat getCSVFormat(String dataType) {
+            if ("TSV".equalsIgnoreCase(dataType)) {
+                return CSVFormat.TDF;
+            }
+            return CSVFormat.RFC4180;
+        }
+    }
+
+    public static class ColumnSeparatorFactory {
+        public static String getColumnSeparator(String dataType) {
+            CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataType);
+            return csvFormat.getDelimiter() + "";
+        }
     }
 }
