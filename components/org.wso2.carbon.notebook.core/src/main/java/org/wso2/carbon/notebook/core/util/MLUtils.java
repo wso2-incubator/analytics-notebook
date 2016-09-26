@@ -19,6 +19,7 @@ import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
+import org.wso2.carbon.notebook.core.exception.PreprocessorException;
 import org.wso2.carbon.notebook.core.ml.transformation.DiscardedRowsFilter;
 import org.wso2.carbon.notebook.core.ml.transformation.HeaderFilter;
 import org.wso2.carbon.notebook.core.ml.transformation.LineToTokens;
@@ -561,7 +562,7 @@ public class MLUtils {
         }
     }
 
-    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features) {
+    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features, String tableName) throws PreprocessorException {
         int featureSize;
         int[] stringCellCount;
         double cellValue;
@@ -579,52 +580,58 @@ public class MLUtils {
         }
 
         //calculate the sample size
-        double sampleFraction
-                = org.wso2.carbon.notebook.commons.constants.MLConstants.SAMPLE_SIZE / (tokenizeDataToSample.count() - 1);
-        if (sampleFraction > 1){
-            sampleFraction = 1;
-        }
+        long datasetSize = tokenizeDataToSample.count();
 
-        // take a random sample
-        org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter missingValuesFilter
-                = new org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter.Builder().build();
-        JavaRDD<String[]> filteredDataToSample = tokenizeDataToSample.filter(missingValuesFilter);
-        List<String[]> sampleLines = filteredDataToSample.sample(false, sampleFraction).collect();
+        if ( datasetSize > 0) {
+            double sampleFraction
+                    = org.wso2.carbon.notebook.commons.constants.MLConstants.SAMPLE_SIZE / (tokenizeDataToSample.count() - 1);
+            if (sampleFraction > 1) {
+                sampleFraction = 1;
+            }
 
-        // remove from cache
-        tokenizeDataToSample.unpersist();
+            // take a random sample
+            org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter missingValuesFilter
+                    = new org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter.Builder().build();
+            JavaRDD<String[]> filteredDataToSample = tokenizeDataToSample.filter(missingValuesFilter);
+            List<String[]> sampleLines = filteredDataToSample.sample(false, sampleFraction).collect();
 
-        // iterate through sample lines
-        for (String[] columnValues : sampleLines) {
+            // remove from cache
+            tokenizeDataToSample.unpersist();
+
+            // iterate through sample lines
+            for (String[] columnValues : sampleLines) {
+                for (int currentCol = 0; currentCol < featureSize; currentCol++) {
+                    // Check whether the row is complete.
+                    if (currentCol < columnValues.length) {
+                        // Append the cell to the respective column.
+                        columnData.get(currentCol).add(columnValues[currentCol]);
+
+                        if (!NumberUtils.isNumber(columnValues[currentCol])) {
+                            stringCellCount[currentCol]++;
+                        }
+                    }
+                }
+            }
+
+            // Iterate through each column.
             for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-                // Check whether the row is complete.
-                if (currentCol < columnValues.length) {
-                    // Append the cell to the respective column.
-                    columnData.get(currentCol).add(columnValues[currentCol]);
-
-                    if (!NumberUtils.isNumber(columnValues[currentCol])) {
-                        stringCellCount[currentCol]++;
+                // If the column is numerical.
+                if (stringCellCount[currentCol] == 0) {
+                    // Convert each cell value to double and append to the
+                    // Descriptive-statistics object.
+                    for (int row = 0; row < columnData.get(currentCol).size(); row++) {
+                        if (columnData.get(currentCol).get(row) != null
+                                && !org.wso2.carbon.notebook.commons.constants.MLConstants.MISSING_VALUES.contains(columnData.get(currentCol).get(row))) {
+                            cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
+                            descriptiveStats.get(currentCol).addValue(cellValue);
+                        }
                     }
                 }
             }
+            return descriptiveStats;
+        }else{
+            throw  new PreprocessorException("No data found in table " + tableName );
         }
-
-        // Iterate through each column.
-        for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-            // If the column is numerical.
-            if (stringCellCount[currentCol] == 0) {
-                // Convert each cell value to double and append to the
-                // Descriptive-statistics object.
-                for (int row = 0; row < columnData.get(currentCol).size(); row++) {
-                    if (columnData.get(currentCol).get(row) != null
-                            && !org.wso2.carbon.notebook.commons.constants.MLConstants.MISSING_VALUES.contains(columnData.get(currentCol).get(row))) {
-                        cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
-                        descriptiveStats.get(currentCol).addValue(cellValue);
-                    }
-                }
-            }
-        }
-        return descriptiveStats;
     }
 
     public static String[] getColumnTypes(SamplePoints samplePoints) {

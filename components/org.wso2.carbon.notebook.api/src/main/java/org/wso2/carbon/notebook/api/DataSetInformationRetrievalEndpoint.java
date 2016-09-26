@@ -2,13 +2,11 @@ package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
-import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.dto.Column;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-import org.wso2.carbon.notebook.core.util.paragraph.DataSetInformationUtils;
-import org.wso2.carbon.notebook.core.util.paragraph.GeneralUtils;
+import org.wso2.carbon.notebook.core.util.GeneralUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
