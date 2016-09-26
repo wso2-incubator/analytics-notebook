@@ -5,7 +5,6 @@ import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.core.exceptions.MLModelBuilderException;
 import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.util.MLUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ public class MeanImputation implements Function<String[], String[]> {
     private static final long serialVersionUID = 6936249532612016896L;
     private final Map<Integer, Double> meanImputation;
     private List<Integer> columnIndices;
-
 
     public MeanImputation(Builder builder) {
         this.meanImputation = builder.meanImputation;

@@ -1,19 +1,15 @@
 package org.wso2.carbon.notebook.core.ml;
 
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.core.spark.transformations.RemoveResponseColumn;
-import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
-import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.exception.PreprocessorException;
 import org.wso2.carbon.notebook.core.ml.transformation.*;
 import org.wso2.carbon.notebook.core.util.MLUtils;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

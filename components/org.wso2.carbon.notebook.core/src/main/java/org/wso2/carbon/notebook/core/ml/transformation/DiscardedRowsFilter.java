@@ -4,7 +4,6 @@ import org.apache.spark.api.java.function.Function;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.util.MLUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 
