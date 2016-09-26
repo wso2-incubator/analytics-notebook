@@ -87,14 +87,15 @@ function BatchAnalyticsParagraphClient(paragraph) {
                 success: function(response) {
                     if (response.status == constants.response.SUCCESS) {
                         $.each(response.schema, function(index, column) {
+                            schema += column.name + ' ' + column.type;
                             if (column.scoreParam == true) {
-                                schema += column.name + ' ' + column.type + ' -sp' + ', ';
+                                schema += ' -sp' + ', ';
                             }
                             else if (column.indexed == true) {
-                                schema += column.name + ' ' + column.type + ' -i' + ', ';
+                                schema += ' -i' + ', ';
                             }
                             else {
-                                schema += column.name + ' ' + column.type + ', ';
+                                schema += ', ';
                             }
                             if (index == response.schema.length - 1) {
                                 schema = schema.substring(0, schema.length - 2);
