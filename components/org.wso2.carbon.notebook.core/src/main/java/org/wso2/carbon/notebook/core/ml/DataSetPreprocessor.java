@@ -10,6 +10,7 @@ import org.wso2.carbon.ml.core.spark.transformations.RemoveResponseColumn;
 import org.wso2.carbon.ml.core.spark.transformations.StringArrayToDoubleArray;
 import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
+import org.wso2.carbon.notebook.core.exception.PreprocessorException;
 import org.wso2.carbon.notebook.core.ml.transformation.*;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 import java.util.ArrayList;
@@ -28,7 +29,6 @@ public class DataSetPreprocessor {
     private String tableName;
     private String columnSeparator;
     private String headerLine;
-    private List<String[]> resultantArray;
 
     public DataSetPreprocessor(int tenantID, String tableName , List<Feature> featureList , String headerLine){
         this.features = featureList;
@@ -37,18 +37,12 @@ public class DataSetPreprocessor {
         this.columnSeparator = String.valueOf(CSVFormat.RFC4180.getDelimiter());
         this.headerLine = headerLine;
         this.meanOfEachColumn = new HashMap<String, Double>();
-        this.resultantArray = null;
     }
 
-    public JavaRDD<String[]> preProcess() {
+    public JavaRDD<String[]> preProcess() throws PreprocessorException, AnalyticsException {
 
         JavaRDD<String[]> preprocessedLines= null;
-
-        try {
             this.lines = MLUtils.getLinesFromDASTable(this.tableName, this.tenantID, ServiceHolder.getSparkContextService().getJavaSparkContext());
-        } catch (AnalyticsException e) {
-            e.printStackTrace();
-        }
 
         try {
 
@@ -59,7 +53,7 @@ public class DataSetPreprocessor {
             JavaRDD<String[]> tokens = data.map(lineToTokens);
 
             //generate Descriptive Statistics for each column
-            this.descriptiveStats = MLUtils.generateDescriptiveStat(tokens, this.features);
+            this.descriptiveStats = MLUtils.generateDescriptiveStat(tokens, this.features , this.tableName);
 
             this.setMeanOfEachColumn();
 
@@ -72,15 +66,11 @@ public class DataSetPreprocessor {
 
             preprocessedLines = tokens.filter(discardedRowsFilter).map(removeDiscardedFeatures)
                     .map(responseColumnFilter).map(meanImputationFilter).cache();
-            this.resultantArray = preprocessedLines.collect();
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             if (lines != null) {
                 lines.unpersist();
             }
         }
-//        return this.resultantArray;
         return preprocessedLines;
     }
 

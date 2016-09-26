@@ -13,9 +13,10 @@ import org.wso2.carbon.notebook.commons.response.GeneralResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.notebook.core.ServiceHolder;
+import org.wso2.carbon.notebook.core.exception.PreprocessorException;
 import org.wso2.carbon.notebook.core.ml.DataSetPreprocessor;
 import org.wso2.carbon.notebook.core.util.MLUtils;
-import org.wso2.carbon.notebook.core.util.paragraph.GeneralUtils;
+import org.wso2.carbon.notebook.core.util.GeneralUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -81,8 +82,7 @@ public class PreprocessorEndpoint {
             GeneralUtils.saveTable(tenantID,tableName,preprocessedTableName,orderedFeatureList, preprocessedLines);
             response = new GeneralResponse(Status.SUCCESS);
 
-        } catch (AnalyticsException e) {
-            e.printStackTrace();
+        } catch (AnalyticsException | PreprocessorException e) {
             response = new ErrorResponse(e.getMessage());
         }
 
