@@ -1,5 +1,8 @@
 package org.wso2.carbon.notebook.commons.request.paragraph;
 
+import java.util.List;
+import java.util.Map;
+
 public class InteractiveAnalyticsRequest {
 
     private int draw;
@@ -9,6 +12,7 @@ public class InteractiveAnalyticsRequest {
     private int paginationCount;
     private long timeFrom;
     private long timeTo;
+    private List<Map<String, Object>> primaryKeys;
 
     public int getDraw() {
         return draw;
@@ -64,5 +68,13 @@ public class InteractiveAnalyticsRequest {
 
     public void setTimeTo(long timeTo) {
         this.timeTo = timeTo;
+    }
+
+    public List<Map<String, Object>> getPrimaryKeys() {
+        return primaryKeys;
+    }
+
+    public void setPrimaryKeys(List<Map<String, Object>> primaryKeys) {
+        this.primaryKeys = primaryKeys;
     }
 }

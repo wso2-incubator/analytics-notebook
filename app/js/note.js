@@ -182,7 +182,9 @@ function Note() {
                     utils.handlePageNotification('info', 'Info', 'Note successfully saved');
 
                     $.each(noteSelf.paragraphs, function(index, paragraph) {
-                        paragraph.paragraphClient.unsavedContentAvailable = false;
+                        if (paragraph.paragraphClient != null) {
+                            paragraph.paragraphClient.unsavedContentAvailable = false;
+                        }
                     });
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = 'sign-in.html';

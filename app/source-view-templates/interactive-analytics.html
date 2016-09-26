@@ -20,11 +20,15 @@
             </div>
 
             <label class="radio">
-                <input type="radio" name="search-by-option" class="search-by-time-range" value="time-range">
+                <input type="radio" name="search-by-option" value="time-range">
                 <span class="helper">Time Range</span>
             </label>
             <label class="radio">
-                <input type="radio" name="search-by-option" class="search-by-query" value="query">
+                <input type="radio" name="search-by-option" value="primary-keys">
+                <span class="helper">Primary Keys</span>
+            </label>
+            <label class="radio">
+                <input type="radio" name="search-by-option" value="query">
                 <span class="helper">Query</span>
             </label>
         </div>
@@ -38,8 +42,12 @@
     </div>
 </div>
 
+<div class="row primary-keys-container collapse">
+    <div class="form-group col-sm-12 col-md-6 col-lg-3 primary-keys-table"></div>
+</div>
+
 <div class="row query-container collapse">
-    <div class="form-group col-sm-12">
+    <div class="form-group col-sm-12 col-md-6">
         <label class="control-label">Query</label>
         <textarea class="form-control query" rows="5"></textarea>
     </div>

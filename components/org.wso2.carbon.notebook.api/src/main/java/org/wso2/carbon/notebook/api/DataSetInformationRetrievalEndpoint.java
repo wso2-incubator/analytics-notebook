@@ -59,8 +59,8 @@ public class DataSetInformationRetrievalEndpoint {
      * @return response
      */
     @GET
-    @Path("/{tableName}/columns")
-    public Response getColumns(@Context HttpServletRequest request, @PathParam("tableName") String tableName) {
+    @Path("/{table-name}/columns")
+    public Response getColumns(@Context HttpServletRequest request, @PathParam("table-name") String tableName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
@@ -90,8 +90,8 @@ public class DataSetInformationRetrievalEndpoint {
      * @return The schema of the table
      */
     @GET
-    @Path("/{tableName}/schema")
-    public Response getTableSchema(@Context HttpServletRequest request, @PathParam("tableName") String tableName) {
+    @Path("/{table-name}/schema")
+    public Response getTableSchema(@Context HttpServletRequest request, @PathParam("table-name") String tableName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
@@ -100,6 +100,25 @@ public class DataSetInformationRetrievalEndpoint {
             List<Column> schema = GeneralUtils.getTableSchema(tableName , tenantID);
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
             response.put("schema", schema);
+            jsonString = new Gson().toJson(response);
+        } catch (AnalyticsException e) {
+            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+        }
+
+        return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
+    }
+
+    @GET
+    @Path("/{table-name}/primary-keys")
+    public Response getPrimaryKeys(@Context HttpServletRequest request, @PathParam("table-name") String tableName) {
+        HttpSession session = request.getSession();
+        int tenantID = (Integer) session.getAttribute("tenantID");
+        String jsonString;
+
+        try {
+            List<String> primaryKeys = GeneralUtils.getPrimaryKeys(tenantID, tableName);
+            Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
+            response.put("primaryKeys", primaryKeys);
             jsonString = new Gson().toJson(response);
         } catch (AnalyticsException e) {
             jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));

@@ -3,6 +3,7 @@ package org.wso2.carbon.notebook.core.util.paragraph;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.spark.api.java.JavaRDD;
+import org.wso2.carbon.analytics.datasource.commons.AnalyticsSchema;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
@@ -114,6 +115,11 @@ public class GeneralUtils implements Serializable {
             schema.add(new Column(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
         }
         return schema;
+    }
+
+    public static List<String> getPrimaryKeys(int tenantID, String tableName) throws AnalyticsException {
+        AnalyticsSchema schema = ServiceHolder.getAnalyticsDataService().getTableSchema(tenantID, tableName);
+        return schema.getPrimaryKeys();
     }
 }
 

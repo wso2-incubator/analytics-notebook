@@ -12,6 +12,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
     var timeTo;
     var searchByAndMaxResultCountContainer;
     var timeRangeContainer;
+    var primaryKeysContainer;
     var queryContainer;
 
     self.type = constants.paragraphs.interactiveAnalytics.key;
@@ -27,6 +28,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
         searchByAndMaxResultCountContainer =
             paragraph.find('.search-by-container, .maximum-result-count-container');
         timeRangeContainer = paragraph.find('.time-range-container');
+        primaryKeysContainer = paragraph.find('.primary-keys-container');
         queryContainer = paragraph.find('.query-container');
 
         paragraphUtils.loadTableNames(function() {
@@ -51,6 +53,9 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                                     timeFrom = content.timeFrom;
                                     timeTo = content.timeTo;
                                 }
+                                break;
+                            case 'primary-keys':
+                                onSearchByPrimaryKeysRadioButtonClick();
                                 break;
                             default :
                                 onSearchByQueryRadioButtonClick();
@@ -86,14 +91,18 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
             onInputTableChange();
         });
 
-        paragraph.find('.search-by-time-range').click(function() {
+        paragraph.find('input[name=search-by-option]').click(function(event) {
             self.unsavedContentAvailable = true;
-            onSearchByTimeRangeRadioButtonClick();
-        });
-
-        paragraph.find('.search-by-query').click(function() {
-            self.unsavedContentAvailable = true;
-            onSearchByQueryRadioButtonClick();
+            switch($(event.target).val()) {
+                case "time-range":
+                    onSearchByTimeRangeRadioButtonClick();
+                    break;
+                case "primary-keys":
+                    onSearchByPrimaryKeysRadioButtonClick();
+                    break;
+                case "query":
+                    onSearchByQueryRadioButtonClick();
+            }
         });
 
         var maxResultCount = paragraph.find('.maximum-result-count');
@@ -111,21 +120,10 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
          * Run input table change tasks
          */
         function onInputTableChange() {
-            var searchMethod = paragraph.find('input[name=search-by-option]:checked').val();
-            switch (searchMethod) {
-                case 'time-range' :
-                    timeRangeContainer.slideUp(function() {
-                        searchByAndMaxResultCountContainer.slideDown();
-                    });
-                    break;
-                case 'query' :
-                    queryContainer.slideUp(function() {
-                        searchByAndMaxResultCountContainer.slideDown();
-                    });
-                    break;
-                default :
-                    searchByAndMaxResultCountContainer.slideDown();
-            }
+            timeRangeContainer.slideUp();
+            queryContainer.slideUp();
+            primaryKeysContainer.slideUp();
+            searchByAndMaxResultCountContainer.slideDown();
             paragraph.find('input[name=search-by-option]').prop('checked', false);
             paragraph.find('.run-paragraph-button').prop('disabled', false);
         }
@@ -134,8 +132,59 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
          * Run search method changing to time range tasks
          */
         function onSearchByTimeRangeRadioButtonClick() {
+            primaryKeysContainer.slideUp();
             queryContainer.slideUp();
             timeRangeContainer.slideDown();
+        }
+
+        /**
+         * Run search method changing to primary keys tasks
+         */
+        function onSearchByPrimaryKeysRadioButtonClick() {
+            timeRangeContainer.slideUp();
+            queryContainer.slideUp();
+            var tableName = paragraph.find('.input-table').val();
+            $.ajax({
+                type: 'GET',
+                url: constants.API_URI + 'tables/' + tableName + '/primary-keys',
+                success: function (response) {
+                    if (response.status == constants.response.SUCCESS) {
+                        var primaryKeysTable = $('.primary-keys-table');
+                        var headerArray = ['Primary Key', 'Search Value'];
+                        var dataArray = [];
+                        var primaryKeys = response.primaryKeys;
+                        for (var i = 0; i < primaryKeys.length; i++) {
+                            dataArray.push([
+                                '<span class="primary-key">' + primaryKeys[i] + '</span>',
+                                '<input type="text" class="form-control primary-key-value">'
+                            ]);
+                        }
+
+                        // Updating the UI
+                        var table = utils.generateListTable(
+                            headerArray, dataArray, { searching : false }
+                        );
+                        if (primaryKeysContainer.hasClass('collapse')) {
+                            primaryKeysContainer.slideUp(function() {
+                                primaryKeysTable.html(table);
+                                primaryKeysContainer.slideDown();
+                            });
+                        } else {
+                            primaryKeysTable.html(table);
+                            primaryKeysContainer.slideDown();
+                        }
+                    } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                        window.location.href = 'sign-in.html';
+                    } else {
+                        paragraphUtils.handleNotification('error', 'Error', response.message);
+                    }
+                },
+                error: function (response) {
+                    utils.handlePageNotification('error', 'Error',
+                        utils.generateErrorMessageFromStatusCode(response.readyState)
+                    );
+                }
+            });
         }
 
         /**
@@ -143,6 +192,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
          */
         function onSearchByQueryRadioButtonClick() {
             timeRangeContainer.slideUp();
+            primaryKeysContainer.slideUp();
             queryContainer.slideDown();
         }
     };
@@ -171,6 +221,18 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                     if (searchMethod == 'time-range') {
                         queryParameters.timeFrom = timeFrom;
                         queryParameters.timeTo = timeTo;
+                    } else if (searchMethod == 'primary-keys') {
+                        var primaryKeys = paragraph.find('.primary-key');
+                        var primaryKeyValues = paragraph.find('.primary-key-value');
+                        queryParameters.primaryKeys = [];
+                        for (var i = 0; i < primaryKeys.length; i++) {
+                            if (primaryKeyValues.get(i).value != undefined) {
+                                queryParameters.primaryKeys.push({
+                                    key: primaryKeys.get(i).innerHTML,
+                                    value: primaryKeyValues.get(i).value
+                                });
+                            }
+                        }
                     } else if (searchMethod == 'query') {
                         queryParameters.query = paragraph.find('.query').val();
                     } else {
@@ -180,7 +242,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
 
                     paragraphUtils.setOutput(utils.generateDataTableWithLazyLoading(
                         'POST',
-                        constants.API_URI + 'interactive-analytics/search/' + searchMethod,
+                        constants.API_URI + 'interactive-analytics/' + searchMethod,
                         queryParameters,
                         columns,
                         paragraph.find('.maximum-result-count').val()

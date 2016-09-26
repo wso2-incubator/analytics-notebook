@@ -1,13 +1,11 @@
 package org.wso2.carbon.notebook.core.util.paragraph;
 
-import org.apache.commons.csv.CSVFormat;
 import org.wso2.carbon.analytics.dataservice.commons.AnalyticsDataResponse;
 import org.wso2.carbon.analytics.dataservice.commons.SearchResultEntry;
 import org.wso2.carbon.analytics.dataservice.core.AnalyticsDataServiceUtils;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-import org.wso2.carbon.notebook.core.util.MLUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -73,10 +71,7 @@ public class InteractiveAnalyticsUtils {
         // Fetching the list of records from the analytics response
         List<Record> records;
         if (!ServiceHolder.getAnalyticsDataService().isPaginationSupported(
-                ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(
-                        tenantID, tableName
-                )
-        )) {
+                ServiceHolder.getAnalyticsDataService().getRecordStoreNameByTable(tenantID, tableName))) {
             Iterator<Record> itr = AnalyticsDataServiceUtils.responseToIterator(
                     ServiceHolder.getAnalyticsDataService(),
                     resp
@@ -95,6 +90,18 @@ public class InteractiveAnalyticsUtils {
         return getTableDataFromRecords(records);
     }
 
+    public static List<Map<String, Object>> searchByPrimaryKeys(int tenantID, String tableName,
+                                                                List<Map<String, Object>> primaryKeySearches)
+            throws AnalyticsException {
+        AnalyticsDataResponse resp = ServiceHolder.getAnalyticsDataService().getWithKeyValues(
+                tenantID, tableName, 1, null, primaryKeySearches
+        );
+        List<Record> records = AnalyticsDataServiceUtils.listRecords(
+                ServiceHolder.getAnalyticsDataService(), resp
+        );
+        return getTableDataFromRecords(records);
+    }
+
     /**
      * Generates a list of maps with each map corresponding to a row and the column names as key and data in the cell as value in each map
      *
@@ -105,7 +112,10 @@ public class InteractiveAnalyticsUtils {
         List<Map<String, Object>> data = new ArrayList<Map<String, Object>>();
         for (Record record : records) {
             Map<String, Object> row = record.getValues();
-            row.put("_timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date(record.getTimestamp())));
+            row.put(
+                "_timestamp",
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Date(record.getTimestamp()))
+            );
             data.add(row);
         }
         return data;
