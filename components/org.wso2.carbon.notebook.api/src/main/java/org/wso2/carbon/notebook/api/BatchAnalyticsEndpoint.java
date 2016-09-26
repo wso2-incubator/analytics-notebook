@@ -9,7 +9,6 @@ import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.notebook.commons.response.dto.Table;
 import org.wso2.carbon.notebook.commons.response.paragraph.BatchAnalyticsGeneralResponse;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.POST;
@@ -26,6 +25,7 @@ import java.util.List;
  */
 @Path("/batch-analytics")
 public class BatchAnalyticsEndpoint {
+
     /**
      * Execute a given script
      *
@@ -40,7 +40,6 @@ public class BatchAnalyticsEndpoint {
         int tenantID = (Integer) session.getAttribute("tenantID");
         BatchAnalyticsRequest batchAnalyticsRequest = new Gson().fromJson(scriptContent, BatchAnalyticsRequest.class);
         String jsonString;
-
         String[] queriesInScript = ServiceHolder.getAnalyticsProcessorService()
                 .getQueries(batchAnalyticsRequest.getQuery());
         List<Object> tables = new ArrayList<>();
@@ -58,7 +57,6 @@ public class BatchAnalyticsEndpoint {
         BatchAnalyticsGeneralResponse response = new BatchAnalyticsGeneralResponse();
         response.setTables(tables);
         jsonString = new Gson().toJson(response);
-
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 }

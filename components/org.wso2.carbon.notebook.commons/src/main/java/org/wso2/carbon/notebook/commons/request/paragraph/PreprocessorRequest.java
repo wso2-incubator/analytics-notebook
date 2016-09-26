@@ -1,10 +1,11 @@
 package org.wso2.carbon.notebook.commons.request.paragraph;
 
-
 import org.wso2.carbon.ml.commons.domain.Feature;
-
 import java.util.List;
 
+/**
+ * Store the attributes of a Preproceesor request
+ */
 public class PreprocessorRequest {
     private String tableName;
     private String preprocessedTableName;

@@ -6,6 +6,8 @@ public class MLConstants {
     // feature settings
     public static final String DISCARD = "DISCARD";
     public static final String MEAN_IMPUTATION = "REPLACE_WITH_MEAN";
+
+    //constant
     public static final int SAMPLE_SIZE = 10000;
     public static final double CATEGORICAL_THRESHOLD = 0.01;
 
