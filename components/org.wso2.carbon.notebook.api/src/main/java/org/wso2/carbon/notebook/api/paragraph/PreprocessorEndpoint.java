@@ -14,9 +14,8 @@ import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.exception.PreprocessorException;
-import org.wso2.carbon.notebook.core.ml.DataSetPreprocessor;
-import org.wso2.carbon.notebook.core.util.GeneralUtils;
 import org.wso2.carbon.notebook.core.util.MLUtils;
+import org.wso2.carbon.notebook.core.util.paragraph.PreprocessorUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -27,11 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * HTTP response to perform pre-processing tasks
@@ -73,12 +68,13 @@ public class PreprocessorEndpoint {
                 orderedFeatureList.set(index, feature);
             }
 
-            DataSetPreprocessor preprocessor = new DataSetPreprocessor(tenantID, tableName, orderedFeatureList, headerLine);
-            preprocessedLines = preprocessor.preProcess();
-            GeneralUtils.saveTable(tenantID, tableName, preprocessedTableName, orderedFeatureList, preprocessedLines);
+            preprocessedLines = PreprocessorUtils.preProcess(tenantID, tableName, orderedFeatureList, headerLine);
+            PreprocessorUtils.saveTable(tenantID, tableName, preprocessedTableName, orderedFeatureList, preprocessedLines);
             response = new GeneralResponse(Status.SUCCESS);
         } catch (AnalyticsException | PreprocessorException e) {
             response = new ErrorResponse(e.getMessage());
+        } catch (RuntimeException e) {
+            response = new ErrorResponse("Internal Server Error");
         }
 
         jsonString = new Gson().toJson(response);

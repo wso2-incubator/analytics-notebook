@@ -2,7 +2,6 @@ package org.wso2.carbon.notebook.core.util;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.DataFrame;
@@ -20,19 +19,10 @@ import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.spark.transformations.RowsToLines;
 import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-import org.wso2.carbon.notebook.core.exception.PreprocessorException;
 import org.wso2.carbon.notebook.core.ml.transformation.HeaderFilter;
 import org.wso2.carbon.notebook.core.ml.transformation.LineToTokens;
-import org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -373,84 +363,6 @@ public class MLUtils {
      */
     public static Pattern getPatternFromDelimiter(String delimiter) {
         return Pattern.compile(delimiter + "(?=([^\"]*\"[^\"]*\")*(?![^\"]*\"))");
-    }
-
-    /**
-     * Generate descriptive statistics for each column of the table
-     *
-     * @param tokenizeDataToSample dataset of the table; each cell as a token
-     * @param features             columns of the table selected for processing
-     * @param tableName            table selected for processing
-     * @return List of Descriptive Statistics of each column
-     * @throws PreprocessorException
-     */
-    public static List<DescriptiveStatistics> generateDescriptiveStat(JavaRDD<String[]> tokenizeDataToSample, List<Feature> features, String tableName)
-            throws PreprocessorException {
-        int featureSize;
-        int[] stringCellCount;
-        double cellValue;
-        List<List<String>> columnData = new ArrayList<List<String>>();
-        List<DescriptiveStatistics> descriptiveStats = new ArrayList<DescriptiveStatistics>();
-
-        featureSize = features.size();
-        stringCellCount = new int[featureSize];
-
-        //initiate the columnData and descriptiveStat lists
-        for (int count = 0; count < featureSize; count++) {
-            columnData.add(new ArrayList<String>());
-            descriptiveStats.add(new DescriptiveStatistics());
-        }
-
-        //calculate the sample size
-        long dataSetSize = tokenizeDataToSample.count();
-        if (dataSetSize > 0) {
-            double sampleFraction
-                    = org.wso2.carbon.notebook.commons.constants.MLConstants.SAMPLE_SIZE / (double) (dataSetSize - 1);
-            if (sampleFraction > 1) {
-                sampleFraction = 1;
-            }
-
-            // take a random sample removing null values in each row
-            MissingValuesFilter missingValuesFilter = new MissingValuesFilter.Builder().build();
-            JavaRDD<String[]> filteredDataToSample = tokenizeDataToSample.filter(missingValuesFilter);
-            List<String[]> sampleLines = filteredDataToSample.sample(false, sampleFraction).collect();
-
-            // remove from cache
-            tokenizeDataToSample.unpersist();
-
-            // iterate through sample lines
-            for (String[] columnValues : sampleLines) {
-                for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-                    // Check whether the row is complete.
-                    if (currentCol < columnValues.length) {
-                        // Append the cell to the respective column.
-                        columnData.get(currentCol).add(columnValues[currentCol]);
-                        if (!NumberUtils.isNumber(columnValues[currentCol])) {
-                            stringCellCount[currentCol]++;
-                        }
-                    }
-                }
-            }
-
-            // Iterate through each column.
-            for (int currentCol = 0; currentCol < featureSize; currentCol++) {
-                // If the column is numerical.
-                if (stringCellCount[currentCol] == 0) {
-                    // Convert each cell value to double and append to the
-                    // Descriptive-statistics object.
-                    for (int row = 0; row < columnData.get(currentCol).size(); row++) {
-                        if (columnData.get(currentCol).get(row) != null
-                                && !org.wso2.carbon.notebook.commons.constants.MLConstants.MISSING_VALUES.contains(columnData.get(currentCol).get(row))) {
-                            cellValue = Double.parseDouble(columnData.get(currentCol).get(row));
-                            descriptiveStats.get(currentCol).addValue(cellValue);
-                        }
-                    }
-                }
-            }
-            return descriptiveStats;
-        } else {
-            throw new PreprocessorException("No data found in table " + tableName);
-        }
     }
 
     /**

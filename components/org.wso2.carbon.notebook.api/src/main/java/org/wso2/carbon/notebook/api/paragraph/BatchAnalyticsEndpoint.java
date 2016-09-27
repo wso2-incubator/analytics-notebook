@@ -50,8 +50,10 @@ public class BatchAnalyticsEndpoint {
                         .executeQuery(tenantID, query);
                 tables.add(new Table(Arrays.asList(result.getColumns()), result.getRows()));
             }
-        } catch (AnalyticsExecutionException | RuntimeException e) {
+        } catch (AnalyticsExecutionException e) {
             tables.add(new ErrorResponse(Status.INVALID_QUERY, e.getMessage()));
+        } catch (RuntimeException e) {
+            tables.add(new ErrorResponse("Internal Server Error"));
         }
 
         BatchAnalyticsResponse response = new BatchAnalyticsResponse();
