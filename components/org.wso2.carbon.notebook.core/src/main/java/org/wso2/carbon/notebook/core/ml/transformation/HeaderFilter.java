@@ -3,10 +3,9 @@ package org.wso2.carbon.notebook.core.ml.transformation;
 import org.apache.spark.api.java.function.Function;
 
 /**
- * A filter to remove header row
+ * Spark filter to remove header row
  */
 public class HeaderFilter implements Function<String, Boolean> {
-
     private final String header;
 
     private HeaderFilter(Builder builder) {

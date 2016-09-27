@@ -6,7 +6,7 @@ import org.wso2.carbon.notebook.commons.response.Status;
 import java.util.List;
 
 /**
- * Used for returning the result from a query execution
+ * Store the attributes of a table response
  */
 
 public class Table extends GeneralResponse {

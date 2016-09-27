@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.api;
+package org.wso2.carbon.notebook.api.paragraph;
 
 import com.google.gson.Gson;
 import org.apache.spark.sql.AnalysisException$;
@@ -8,7 +8,7 @@ import org.wso2.carbon.notebook.commons.request.paragraph.BatchAnalyticsRequest;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.notebook.commons.response.dto.Table;
-import org.wso2.carbon.notebook.commons.response.paragraph.BatchAnalyticsGeneralResponse;
+import org.wso2.carbon.notebook.commons.response.paragraph.BatchAnalyticsResponse;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +57,7 @@ public class BatchAnalyticsEndpoint {
             tables.add(new ErrorResponse("Internal Server Error"));
         }
 
-        BatchAnalyticsGeneralResponse response = new BatchAnalyticsGeneralResponse();
+        BatchAnalyticsResponse response = new BatchAnalyticsResponse();
         response.setTables(tables);
         jsonString = new Gson().toJson(response);
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();

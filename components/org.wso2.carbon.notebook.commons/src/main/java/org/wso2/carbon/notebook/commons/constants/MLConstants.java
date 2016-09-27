@@ -1,13 +1,14 @@
 package org.wso2.carbon.notebook.commons.constants;
 
-
+/**
+ * Constants used by machine learning related tasks
+ */
 public class MLConstants {
-
-    // feature settings
+    // Feature settings
     public static final String DISCARD = "DISCARD";
     public static final String MEAN_IMPUTATION = "REPLACE_WITH_MEAN";
 
-    //constant
+    // Constants
     public static final int SAMPLE_SIZE = 10000;
     public static final double CATEGORICAL_THRESHOLD = 0.01;
 
@@ -20,7 +21,7 @@ public class MLConstants {
 
         private final String value;
 
-        private MISSING_VALUES(final String str) {
+        MISSING_VALUES(final String str) {
             this.value = str;
         }
 

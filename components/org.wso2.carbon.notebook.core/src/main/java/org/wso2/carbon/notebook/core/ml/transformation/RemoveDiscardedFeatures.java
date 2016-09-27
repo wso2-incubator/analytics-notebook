@@ -7,23 +7,16 @@ import org.wso2.carbon.notebook.core.util.MLUtils;
 import java.util.List;
 
 /**
- * This class removes columns with discarded features and also will restructure the columns such that the response
- * column is the last column.
+ * Spark transformation to remove columns with discarded features
+ * Also will restructure the columns such that the response column is the last column.
  */
 public class RemoveDiscardedFeatures implements Function<String[], String[]> {
-
     private final List<Integer> newToOldIndicesList;
 
     private RemoveDiscardedFeatures(Builder builder) {
         this.newToOldIndicesList = builder.newToOldIndicesList;
     }
 
-    /**
-     * Function to remove discarded columns.
-     *
-     * @param tokens String array of tokens
-     * @return String array
-     */
     @Override
     public String[] call(String[] tokens) {
         int size = newToOldIndicesList.size() + 1;
@@ -32,9 +25,6 @@ public class RemoveDiscardedFeatures implements Function<String[], String[]> {
             int newIndex = newToOldIndicesList.indexOf(i);
             if (newIndex != -1) {
                 features[newIndex] = tokens[i];
-            } else {
-                // discarded feature
-                continue;
             }
         }
         return features;
@@ -45,11 +35,6 @@ public class RemoveDiscardedFeatures implements Function<String[], String[]> {
 
         public Builder init(List<Feature> features) {
             this.newToOldIndicesList = MLUtils.getIncludedFeatureIndices(features);
-            return this;
-        }
-
-        public Builder indices(List<Integer> indices) {
-            this.newToOldIndicesList = indices;
             return this;
         }
 

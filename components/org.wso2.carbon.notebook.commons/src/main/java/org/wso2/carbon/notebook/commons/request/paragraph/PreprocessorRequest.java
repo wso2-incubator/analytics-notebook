@@ -1,10 +1,11 @@
 package org.wso2.carbon.notebook.commons.request.paragraph;
 
 import org.wso2.carbon.ml.commons.domain.Feature;
+
 import java.util.List;
 
 /**
- * Store the attributes of a Preproceesor request
+ * Store the attributes of a preprocessor request
  */
 public class PreprocessorRequest {
     private String tableName;
@@ -39,5 +40,4 @@ public class PreprocessorRequest {
     public void setFeatureList(List<Feature> featureList) {
         this.featureList = featureList;
     }
-
 }

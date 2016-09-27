@@ -1,5 +1,8 @@
 package org.wso2.carbon.notebook.commons.response;
 
+/**
+ * Store the attributes of a error response
+ */
 public class ErrorResponse extends GeneralResponse {
     private String message;
 

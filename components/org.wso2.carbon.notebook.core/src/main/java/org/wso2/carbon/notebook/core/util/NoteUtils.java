@@ -2,7 +2,7 @@ package org.wso2.carbon.notebook.core.util;
 
 import org.wso2.carbon.notebook.commons.constants.NoteConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
-import org.wso2.carbon.notebook.core.exception.NotebookPersistenceException;
+import org.wso2.carbon.notebook.core.exception.NotePersistenceException;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -14,6 +14,12 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
  * General utility functions for the notebook
  */
 public class NoteUtils {
+    /**
+     * Get the list of note names in the server
+     *
+     * @param tenantID Tenant ID
+     * @return The list of note names
+     */
     public static String[] getAllNotes(int tenantID) throws RegistryException {
         UserRegistry userRegistry = ServiceHolder.getRegistryService().getConfigSystemRegistry(tenantID);
         createNotesCollectionIfNotExists(userRegistry);
@@ -33,10 +39,17 @@ public class NoteUtils {
         return notes;
     }
 
-    public static void addNewNote(int tenantID, String noteName) throws NotebookPersistenceException, RegistryException {
+    /**
+     * Add a new note into the server
+     * Content is set to empty
+     *
+     * @param tenantID Tenant ID
+     * @param noteName Name of the note to be created
+     */
+    public static void addNewNote(int tenantID, String noteName) throws NotePersistenceException, RegistryException {
         UserRegistry userRegistry = ServiceHolder.getRegistryService().getConfigSystemRegistry(tenantID);
         createNotesCollectionIfNotExists(userRegistry);
-        String noteLocation = getScriptLocation(noteName);
+        String noteLocation = getNoteLocation(noteName);
 
         if (!userRegistry.resourceExists(noteLocation)) {
             Resource resource = userRegistry.newResource();
@@ -44,14 +57,21 @@ public class NoteUtils {
             resource.setMediaType(NoteConstants.NOTE_MEDIA_TYPE);
             userRegistry.put(noteLocation, resource);
         } else {
-            throw new NotebookPersistenceException("Already a note exists with same name : " + noteName
+            throw new NotePersistenceException("Already a note exists with same name : " + noteName
                     + " for tenantId :" + tenantID);
         }
     }
 
-    public static void updateNote(int tenantID, String noteName, String content) throws RegistryException, NotebookPersistenceException {
+    /**
+     * Update the contents of the given note
+     *
+     * @param tenantID Tenant ID
+     * @param noteName Name of the note
+     * @param content  New content of the note to be updated
+     */
+    public static void updateNote(int tenantID, String noteName, String content) throws RegistryException, NotePersistenceException {
         UserRegistry userRegistry = ServiceHolder.getRegistryService().getConfigSystemRegistry(tenantID);
-        String noteLocation = getScriptLocation(noteName);
+        String noteLocation = getNoteLocation(noteName);
 
         if (userRegistry.resourceExists(noteLocation)) {
             Resource resource = userRegistry.get(noteLocation);
@@ -63,27 +83,45 @@ public class NoteUtils {
         }
     }
 
-    public static String getNote(int tenantID, String noteName) throws RegistryException, NotebookPersistenceException {
+    /**
+     * Get the contents of the note as a JSON string
+     *
+     * @param tenantID Tenant ID
+     * @param noteName Name of the note
+     * @return JSON string containing the note content
+     */
+    public static String getNote(int tenantID, String noteName) throws RegistryException, NotePersistenceException {
         UserRegistry userRegistry = ServiceHolder.getRegistryService().getConfigSystemRegistry(tenantID);
-        String noteLocation = getScriptLocation(noteName);
+        String noteLocation = getNoteLocation(noteName);
 
         if (userRegistry.resourceExists(noteLocation)) {
             return RegistryUtils.decodeBytes((byte[]) userRegistry.get(noteLocation).getContent());
         } else {
-            throw new NotebookPersistenceException("No note exists with name : "
+            throw new NotePersistenceException("No note exists with name : "
                     + noteName + " for tenantId : " + tenantID);
         }
     }
 
+    /**
+     * Delete a note in the server
+     *
+     * @param tenantID Tenant ID
+     * @param noteName Name of the note to be deleted
+     */
     public static void deleteNote(int tenantID, String noteName) throws RegistryException {
         UserRegistry userRegistry = ServiceHolder.getRegistryService().getConfigSystemRegistry(tenantID);
-        String noteLocation = getScriptLocation(noteName);
+        String noteLocation = getNoteLocation(noteName);
 
         if (userRegistry.resourceExists(noteLocation)) {
             userRegistry.delete(noteLocation);
         }
     }
 
+    /**
+     * Create the note directory if it does not exist
+     *
+     * @param registry User registry
+     */
     private static void createNotesCollectionIfNotExists(UserRegistry registry) throws RegistryException {
         if (!registry.resourceExists(NoteConstants.NOTE_LOCATION)) {
             Collection collection = registry.newCollection();
@@ -91,7 +129,14 @@ public class NoteUtils {
         }
     }
 
-    private static String getScriptLocation(String noteName) {
+    /**
+     * Get the location of the note
+     * Including the note file name and extension
+     *
+     * @param noteName Name of the note of which the location returned
+     * @return Location of the note
+     */
+    private static String getNoteLocation(String noteName) {
         return NoteConstants.NOTE_LOCATION + RegistryConstants.PATH_SEPARATOR + noteName +
                 NoteConstants.NOTE_FILE_EXTENSION_SEPARATOR + NoteConstants.NOTE_FILE_EXTENSION;
     }

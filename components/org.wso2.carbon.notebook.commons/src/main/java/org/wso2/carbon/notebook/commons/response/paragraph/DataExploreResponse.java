@@ -6,12 +6,16 @@ import org.wso2.carbon.notebook.commons.response.Status;
 
 import java.util.List;
 
+/**
+ * Store the attributes of a data explore response
+ */
 public class DataExploreResponse extends GeneralResponse {
     private SamplePoints sample;
     private List<String> categoricalFeatureNames;
     private List<String> numericalFeatureNames;
 
-    public DataExploreResponse(SamplePoints sample, List<String> categoricalFeatureNames, List<String> numericalFeatureNames) {
+    public DataExploreResponse(SamplePoints sample, List<String> categoricalFeatureNames,
+                               List<String> numericalFeatureNames) {
         super(Status.SUCCESS);
         this.sample = sample;
         this.categoricalFeatureNames = categoricalFeatureNames;

@@ -1,7 +1,8 @@
 package org.wso2.carbon.notebook.commons.response;
 
 /**
- * Used for returning the status of a request sent to the server
+ * Store the attributes of a general response
+ * All other responses inherits from this apart from custom responses generated using ResponseFactory
  */
 public class GeneralResponse {
     private String status;

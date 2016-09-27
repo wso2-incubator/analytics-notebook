@@ -6,6 +6,10 @@ import org.wso2.carbon.notebook.commons.response.Status;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Store the attributes of a table response with lazy loading
+ * Some fields are specific for the data table plugin used in the front end
+ */
 public class LazyLoadedTable extends GeneralResponse {
     private int draw;
     private long recordsCount;
