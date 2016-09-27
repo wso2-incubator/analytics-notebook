@@ -34,7 +34,7 @@ public class NoteEndpoint {
      * @return Http servlet response
      */
     @GET
-    public Response getAllNotes(@Context HttpServletRequest request) {
+    public Response getAllNoteNames(@Context HttpServletRequest request) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
@@ -44,7 +44,7 @@ public class NoteEndpoint {
             response.put("notes", NoteUtils.getAllNotes(tenantID));
             jsonString = new Gson().toJson(response);
         } catch (RegistryException e) {
-            return Response.serverError().entity(e.getMessage()).build();
+            jsonString = new Gson().toJson(new ErrorResponse("Internal Server Error"));
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
@@ -59,7 +59,7 @@ public class NoteEndpoint {
      */
     @POST
     @Path("/{note-name}")
-    public Response addNoteContent(@Context HttpServletRequest request, @PathParam("note-name") String noteName) {
+    public Response addNewNote(@Context HttpServletRequest request, @PathParam("note-name") String noteName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
@@ -70,7 +70,7 @@ public class NoteEndpoint {
         } catch (NotePersistenceException e) {
             jsonString = new Gson().toJson(new ErrorResponse(Status.AlREADY_EXISTS, "Note Already Exists"));
         } catch (RegistryException e) {
-            return Response.serverError().entity(e.getMessage()).build();
+            jsonString = new Gson().toJson(new ErrorResponse("Internal Server Error"));
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
@@ -95,7 +95,7 @@ public class NoteEndpoint {
             NoteUtils.updateNote(tenantID, noteName, content);
             jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
         } catch (RegistryException | NotePersistenceException e) {
-            return Response.serverError().entity(e.getMessage()).build();
+            jsonString = new Gson().toJson(new ErrorResponse("Internal Server Error"));
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
@@ -120,7 +120,7 @@ public class NoteEndpoint {
             response.put("note", NoteUtils.getNote(tenantID, noteName));
             jsonString = new Gson().toJson(response);
         } catch (RegistryException | NotePersistenceException e) {
-            return Response.serverError().entity(e.getMessage()).build();
+            jsonString = new Gson().toJson(new ErrorResponse("Internal Server Error"));
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
@@ -135,7 +135,7 @@ public class NoteEndpoint {
      */
     @DELETE
     @Path("/{note-name}")
-    public Response deleteNoteContent(@Context HttpServletRequest request, @PathParam("note-name") String noteName) {
+    public Response deleteNote(@Context HttpServletRequest request, @PathParam("note-name") String noteName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
@@ -144,7 +144,7 @@ public class NoteEndpoint {
             NoteUtils.deleteNote(tenantID, noteName);
             jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
         } catch (RegistryException e) {
-            return Response.serverError().entity(e.getMessage()).build();
+            jsonString = new Gson().toJson(new ErrorResponse("Internal Server Error"));
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();

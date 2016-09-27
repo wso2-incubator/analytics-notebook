@@ -50,7 +50,7 @@ public class DataExploreEndpoint {
                     features.get("numerical")
             ));
         } catch (MLMalformedDatasetException e) {
-            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+            jsonString = new Gson().toJson(new ErrorResponse("Error in sampling data from " + tableName));
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
@@ -83,7 +83,7 @@ public class DataExploreEndpoint {
             );
             jsonString = new Gson().toJson(response);
         } catch (MLMalformedDatasetException | MLModelHandlerException | AnalyticsException e) {
-            jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
+            jsonString = new Gson().toJson(new ErrorResponse("Error in fetching cluster points for " + tableName));
         }
 
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();

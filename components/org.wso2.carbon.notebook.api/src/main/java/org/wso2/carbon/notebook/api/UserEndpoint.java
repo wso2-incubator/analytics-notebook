@@ -26,7 +26,7 @@ public class UserEndpoint {
      */
     @GET
     @Path("/logged-in")
-    public Response signIn(@Context HttpServletRequest request) {
+    public Response getLoggedInUser(@Context HttpServletRequest request) {
         HttpSession session = request.getSession();
 
         String username = (String) session.getAttribute("username");

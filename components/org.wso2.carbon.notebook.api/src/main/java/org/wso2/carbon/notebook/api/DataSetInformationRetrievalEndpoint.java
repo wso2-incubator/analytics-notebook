@@ -33,7 +33,7 @@ public class DataSetInformationRetrievalEndpoint {
      * @return Http servlet response
      */
     @GET
-    public Response listTableName(@Context HttpServletRequest request) {
+    public Response listTableNames(@Context HttpServletRequest request) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;
@@ -61,7 +61,7 @@ public class DataSetInformationRetrievalEndpoint {
      */
     @GET
     @Path("/{table-name}/columns")
-    public Response getColumns(@Context HttpServletRequest request, @PathParam("table-name") String tableName) {
+    public Response getColumnNames(@Context HttpServletRequest request, @PathParam("table-name") String tableName) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
         String jsonString;

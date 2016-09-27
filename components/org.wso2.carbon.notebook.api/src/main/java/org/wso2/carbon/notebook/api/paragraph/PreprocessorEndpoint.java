@@ -77,7 +77,6 @@ public class PreprocessorEndpoint {
             preprocessedLines = preprocessor.preProcess();
             GeneralUtils.saveTable(tenantID, tableName, preprocessedTableName, orderedFeatureList, preprocessedLines);
             response = new GeneralResponse(Status.SUCCESS);
-
         } catch (AnalyticsException | PreprocessorException e) {
             response = new ErrorResponse(e.getMessage());
         }

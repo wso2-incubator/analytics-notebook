@@ -28,7 +28,7 @@ public class AuthenticationEndpoint {
      *
      * @param request           Http servlet request
      * @param credentialsString JSON object string with the user credentials
-     * @return respnse
+     * @return Http servlet respnse
      */
     @POST
     @Path("/sign-in")
@@ -65,7 +65,7 @@ public class AuthenticationEndpoint {
     /**
      * Sign out the user currently logged in user
      *
-     * @return respnse
+     * @return Http servlet respnse
      */
     @POST
     @Path("/sign-out")
