@@ -1,7 +1,7 @@
 package org.wso2.carbon.notebook.commons.request.paragraph;
 
 /**
- * Store the attributes of a batch analytic query
+ * Store the attributes of a batch analytic query request
  */
 public class BatchAnalyticsRequest {
     private String query;
@@ -13,5 +13,4 @@ public class BatchAnalyticsRequest {
     public void setQuery(String query) {
         this.query = query;
     }
-
 }

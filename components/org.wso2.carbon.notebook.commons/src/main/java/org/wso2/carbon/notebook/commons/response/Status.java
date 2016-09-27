@@ -1,7 +1,7 @@
 package org.wso2.carbon.notebook.commons.response;
 
 /**
- * Used for storing the constants used in returning responses from the REST API
+ * Constants used for returning responses for API requests
  */
 public class Status {
     public static final String SUCCESS = "SUCCESS";
@@ -11,5 +11,5 @@ public class Status {
     public static final String ALREADY_LOGGED_IN = "ALREADY_LOGGED_IN";
     public static final String AlREADY_EXISTS = "AlREADY_EXISTS";
 
-    public static final String KEY = "status";
+    public static final String STATUS = "status";
 }

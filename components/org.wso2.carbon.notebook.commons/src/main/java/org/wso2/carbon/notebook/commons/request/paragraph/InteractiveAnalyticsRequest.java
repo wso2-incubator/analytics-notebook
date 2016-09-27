@@ -3,8 +3,10 @@ package org.wso2.carbon.notebook.commons.request.paragraph;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Store the attributes of a interactive analytics query request
+ */
 public class InteractiveAnalyticsRequest {
-
     private int draw;
     private String tableName;
     private String query;

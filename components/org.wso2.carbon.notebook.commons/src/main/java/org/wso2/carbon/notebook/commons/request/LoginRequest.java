@@ -1,5 +1,8 @@
 package org.wso2.carbon.notebook.commons.request;
 
+/**
+ * Store the attributes of a login request
+ */
 public class LoginRequest {
     private String username;
     private String password;

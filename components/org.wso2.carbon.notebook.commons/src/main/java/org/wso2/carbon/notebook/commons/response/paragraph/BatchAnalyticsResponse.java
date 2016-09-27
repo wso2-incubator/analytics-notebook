@@ -5,10 +5,13 @@ import org.wso2.carbon.notebook.commons.response.Status;
 
 import java.util.List;
 
-public class BatchAnalyticsGeneralResponse extends GeneralResponse {
+/**
+ * Store the attributes of a batch analytics response
+ */
+public class BatchAnalyticsResponse extends GeneralResponse {
     private List<Object> tables;
 
-    public BatchAnalyticsGeneralResponse() {
+    public BatchAnalyticsResponse() {
         super(Status.SUCCESS);
     }
 
