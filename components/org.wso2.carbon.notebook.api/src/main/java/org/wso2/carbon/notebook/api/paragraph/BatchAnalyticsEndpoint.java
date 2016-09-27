@@ -1,7 +1,6 @@
 package org.wso2.carbon.notebook.api.paragraph;
 
 import com.google.gson.Gson;
-import org.apache.spark.sql.AnalysisException$;
 import org.wso2.carbon.analytics.spark.core.exception.AnalyticsExecutionException;
 import org.wso2.carbon.analytics.spark.core.util.AnalyticsQueryResult;
 import org.wso2.carbon.notebook.commons.request.paragraph.BatchAnalyticsRequest;
@@ -53,7 +52,7 @@ public class BatchAnalyticsEndpoint {
             }
         } catch (AnalyticsExecutionException e) {
             tables.add(new ErrorResponse(Status.INVALID_QUERY, e.getMessage()));
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             tables.add(new ErrorResponse("Internal Server Error"));
         }
 
