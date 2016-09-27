@@ -1,4 +1,4 @@
-package org.wso2.carbon.notebook.api;
+package org.wso2.carbon.notebook.api.paragraph;
 
 import com.google.gson.Gson;
 import org.apache.commons.csv.CSVFormat;

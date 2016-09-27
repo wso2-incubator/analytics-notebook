@@ -35,13 +35,12 @@
             <param-value>
                 org.wso2.carbon.notebook.api.auth.AuthenticationEndpoint
                 org.wso2.carbon.notebook.api.NoteEndpoint
-                org.wso2.carbon.notebook.api.BatchAnalyticsEndpoint
-                org.wso2.carbon.notebook.api.paragraph.DataExploreEndpoint
-                org.wso2.carbon.notebook.api.DataSetInformationRetrievalEndpoint
-                org.wso2.carbon.notebook.api.EventReceiverInformationRetrievalEndpoint
-                org.wso2.carbon.notebook.api.paragraph.InteractiveAnalyticsEndpoint
-                org.wso2.carbon.notebook.api.PreprocessorEndpoint
                 org.wso2.carbon.notebook.api.UserEndpoint
+                org.wso2.carbon.notebook.api.DataSetInformationRetrievalEndpoint
+                org.wso2.carbon.notebook.api.paragraph.BatchAnalyticsEndpoint
+                org.wso2.carbon.notebook.api.paragraph.DataExploreEndpoint
+                org.wso2.carbon.notebook.api.paragraph.InteractiveAnalyticsEndpoint
+                org.wso2.carbon.notebook.api.paragraph.PreprocessorEndpoint
             </param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
