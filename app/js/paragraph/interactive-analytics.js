@@ -14,6 +14,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
     var timeRangeContainer;
     var primaryKeysContainer;
     var queryContainer;
+    var runButton;
 
     self.type = constants.paragraphs.interactiveAnalytics.key;
     self.unsavedContentAvailable = false;
@@ -30,6 +31,7 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
         timeRangeContainer = paragraph.find('.time-range-container');
         primaryKeysContainer = paragraph.find('.primary-keys-container');
         queryContainer = paragraph.find('.query-container');
+        runButton = paragraph.find('.run-paragraph-button');
 
         paragraphUtils.loadTableNames(function() {
             // Load source content
@@ -55,7 +57,9 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                                 }
                                 break;
                             case 'primary-keys':
-                                onSearchByPrimaryKeysRadioButtonClick();
+                                if (content.primaryKeys != undefined) {
+                                    generatePrimaryKeySearchTable(content.primaryKeys);
+                                }
                                 break;
                             default :
                                 onSearchByQueryRadioButtonClick();
@@ -132,6 +136,8 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
          * Run search method changing to time range tasks
          */
         function onSearchByTimeRangeRadioButtonClick() {
+            runButton.prop('disabled', false);
+            paragraphUtils.clearNotification();
             primaryKeysContainer.slideUp();
             queryContainer.slideUp();
             timeRangeContainer.slideDown();
@@ -149,29 +155,20 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                 url: constants.API_URI + 'tables/' + tableName + '/primary-keys',
                 success: function (response) {
                     if (response.status == constants.response.SUCCESS) {
-                        var primaryKeysTable = $('.primary-keys-table');
-                        var headerArray = ['Primary Key', 'Search Value'];
-                        var dataArray = [];
                         var primaryKeys = response.primaryKeys;
-                        for (var i = 0; i < primaryKeys.length; i++) {
-                            dataArray.push([
-                                '<span class="primary-key">' + primaryKeys[i] + '</span>',
-                                '<input type="text" class="form-control primary-key-value">'
-                            ]);
-                        }
-
-                        // Updating the UI
-                        var table = utils.generateListTable(
-                            headerArray, dataArray, { searching : false }
-                        );
-                        if (primaryKeysContainer.hasClass('collapse')) {
-                            primaryKeysContainer.slideUp(function() {
-                                primaryKeysTable.html(table);
-                                primaryKeysContainer.slideDown();
-                            });
+                        if (primaryKeys.length > 0) {
+                            var primaryKeyValuePairs = [];
+                            for (var i = 0; i < primaryKeys.length; i++) {
+                                primaryKeyValuePairs.push({
+                                    key: primaryKeys[i],
+                                    value: ""
+                                });
+                            }
+                            generatePrimaryKeySearchTable(primaryKeyValuePairs);
                         } else {
-                            primaryKeysTable.html(table);
-                            primaryKeysContainer.slideDown();
+                            paragraphUtils.handleNotification('info', 'Info',
+                                tableName + ' does not have any primary keys'
+                            );
                         }
                     } else if (response.status == constants.response.NOT_LOGGED_IN) {
                         window.location.href = 'sign-in.html';
@@ -191,6 +188,8 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
          * Run search method changing to query tasks
          */
         function onSearchByQueryRadioButtonClick() {
+            runButton.prop('disabled', false);
+            paragraphUtils.clearNotification();
             timeRangeContainer.slideUp();
             primaryKeysContainer.slideUp();
             queryContainer.slideDown();
@@ -227,10 +226,10 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                         queryParameters.primaryKeys = [];
                         for (var i = 0; i < primaryKeys.length; i++) {
                             if (primaryKeyValues.get(i).value != undefined) {
-                                queryParameters.primaryKeys.push({
-                                    key: primaryKeys.get(i).innerHTML,
-                                    value: primaryKeyValues.get(i).value
-                                });
+                                var primaryKeySearchPair = {};
+                                primaryKeySearchPair[primaryKeys.get(i).innerHTML] =
+                                    primaryKeyValues.get(i).value;
+                                queryParameters.primaryKeys.push(primaryKeySearchPair);
                             }
                         }
                     } else if (searchMethod == 'query') {
@@ -282,16 +281,37 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
                     content.maxResultCount = maxResultCount;
                 }
                 switch (searchMethod) {
-                    case 'query' :
-                        var query = paragraph.find('.query').val();
-                        if (query != undefined) {
-                            content.query = query;
-                        }
-                        break;
                     case 'time-range' :
                         if (timeFrom != undefined && timeTo != undefined) {
                             content.timeFrom = timeFrom;
                             content.timeTo = timeTo;
+                        }
+                        break;
+                    case 'primary-keys':
+                        var primaryKeyElements = paragraph.find('.primary-key');
+                        var primaryKeyValueElements = paragraph.find('.primary-key-value');
+                        var primaryKeys;
+                        if (primaryKeyValueElements != undefined &&
+                                primaryKeyElements != undefined &&
+                                primaryKeyElements.length > 0) {
+                            primaryKeys = [];
+                            for (var i = 0; i < primaryKeyElements.length; i++) {
+                                if (primaryKeyValueElements.get(i).value != undefined) {
+                                    primaryKeys.push({
+                                        key: primaryKeyElements.get(i).innerHTML,
+                                        value: primaryKeyValueElements.get(i).value
+                                    });
+                                }
+                            }
+                        }
+                        if (primaryKeys != undefined) {
+                            content.primaryKeys = primaryKeys;
+                        }
+                        break;
+                    case 'query' :
+                        var query = paragraph.find('.query').val();
+                        if (query != undefined) {
+                            content.query = query;
                         }
                         break;
                 }
@@ -299,4 +319,54 @@ function InteractiveAnalyticsParagraphClient(paragraph) {
         }
         return content;
     };
+
+    /**
+     * Generate a table for the primary key search
+     *
+     * @param {Object[]} primaryKeys Key value pairs of the primary keys and the search values for each primary key
+     */
+    function generatePrimaryKeySearchTable(primaryKeys) {
+        var primaryKeysTable = $('.primary-keys-table');
+        var headerArray = ['Primary Key', 'Search Value'];
+        var dataArray = [];
+        for (var i = 0; i < primaryKeys.length; i++) {
+            dataArray.push([
+                '<span class="primary-key">' + primaryKeys[i].key + '</span>',
+                '<input type="text" class="form-control primary-key-value" value="' + primaryKeys[i].value + '">'
+            ]);
+        }
+
+        // Updating the UI
+        var table = utils.generateListTable(
+            headerArray, dataArray, { searching : false }
+        );
+        if (primaryKeysContainer.hasClass('collapse')) {
+            primaryKeysContainer.slideUp(function() {
+                primaryKeysTable.html(table);
+                primaryKeysContainer.slideDown();
+            });
+        } else {
+            primaryKeysTable.html(table);
+            primaryKeysContainer.slideDown();
+        }
+        adjustRunButton();
+
+        // Registering event listeners for the table
+        table.find('.primary-key-value').keyup(function() {
+            adjustRunButton();
+        });
+    }
+
+    /**
+     * Enable or disable the run button depending on whether the relevant requirements are met
+     */
+    function adjustRunButton() {
+        runButton.prop('disabled', false);
+        paragraph.find('.primary-key-value').each(function(index, element) {
+            if(element.value.length == undefined ||
+                element.value.length == 0) {
+                runButton.prop('disabled', true);
+            }
+        });
+    }
 }   // End of InteractiveAnalyticsParagraphClient prototype constructor
