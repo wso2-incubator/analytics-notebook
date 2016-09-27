@@ -4,10 +4,11 @@ import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.notebook.commons.constants.MLConstants;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.paragraph.DataExploreResponse;
-import org.wso2.carbon.notebook.core.MLDataHolder;
+import org.wso2.carbon.notebook.core.util.MLUtils;
 import org.wso2.carbon.notebook.core.util.paragraph.DataExploreUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,7 +45,7 @@ public class DataExploreEndpoint {
         try {
             Map<String, List<String>> features = DataExploreUtils.identifyColumnDataType(tableName, tenantID);
             jsonString = new Gson().toJson(new DataExploreResponse(
-                    MLDataHolder.getSamplePoints(tableName, tenantID),
+                    MLUtils.getSampleFromDAS(tableName, MLConstants.SAMPLE_SIZE, tenantID),
                     features.get("categorical"),
                     features.get("numerical")
             ));

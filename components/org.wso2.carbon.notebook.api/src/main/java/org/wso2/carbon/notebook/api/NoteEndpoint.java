@@ -5,7 +5,7 @@ import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.GeneralResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.Status;
-import org.wso2.carbon.notebook.core.exception.NotebookPersistenceException;
+import org.wso2.carbon.notebook.core.exception.NotePersistenceException;
 import org.wso2.carbon.notebook.core.util.NoteUtils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
@@ -67,7 +67,7 @@ public class NoteEndpoint {
         try {
             NoteUtils.addNewNote(tenantID, noteName);
             jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
-        } catch (NotebookPersistenceException e) {
+        } catch (NotePersistenceException e) {
             jsonString = new Gson().toJson(new ErrorResponse(Status.AlREADY_EXISTS, "Note Already Exists"));
         } catch (RegistryException e) {
             return Response.serverError().entity(e.getMessage()).build();
@@ -94,7 +94,7 @@ public class NoteEndpoint {
         try {
             NoteUtils.updateNote(tenantID, noteName, content);
             jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
-        } catch (RegistryException | NotebookPersistenceException e) {
+        } catch (RegistryException | NotePersistenceException e) {
             return Response.serverError().entity(e.getMessage()).build();
         }
 
@@ -119,7 +119,7 @@ public class NoteEndpoint {
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
             response.put("note", NoteUtils.getNote(tenantID, noteName));
             jsonString = new Gson().toJson(response);
-        } catch (RegistryException | NotebookPersistenceException e) {
+        } catch (RegistryException | NotePersistenceException e) {
             return Response.serverError().entity(e.getMessage()).build();
         }
 

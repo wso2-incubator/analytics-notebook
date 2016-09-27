@@ -6,10 +6,9 @@ import org.wso2.carbon.notebook.core.util.MLUtils;
 import java.util.regex.Pattern;
 
 /**
- * This class transforms each line (line-by-line) into an array of String tokens
+ * Spark transformation to transform each line (line-by-line) into an array of String tokens
  */
 public class LineToTokens implements Function<String, String[]> {
-
     private final Pattern tokenSeparator;
 
     public LineToTokens(Builder builder) {

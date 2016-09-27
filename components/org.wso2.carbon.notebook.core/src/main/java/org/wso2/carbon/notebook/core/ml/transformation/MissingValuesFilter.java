@@ -13,7 +13,6 @@ import org.wso2.carbon.notebook.commons.constants.MLConstants;
  * A filter to remove rows containing missing values
  */
 public class MissingValuesFilter implements Function<String[], Boolean> {
-
     private static final long serialVersionUID = -4767804423665643237L;
 
     private MissingValuesFilter() {

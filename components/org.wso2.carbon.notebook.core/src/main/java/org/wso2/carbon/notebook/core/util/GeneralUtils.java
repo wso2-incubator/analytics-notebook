@@ -1,6 +1,5 @@
 package org.wso2.carbon.notebook.core.util;
 
-
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
@@ -16,16 +15,26 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * General utilities for the Notebook
+ */
 public class GeneralUtils implements Serializable {
-
+    /**
+     * Save the preprocessed table data into a new table
+     *
+     * @param tenantID              Tenant ID
+     * @param tableName             Name of the table
+     * @param preprocessedTableName The new table into which the preprocessed lines should be saved to
+     * @param featureList           List of features to save
+     * @param lines                 List of preprocessed lines to save
+     */
     public static void saveTable(int tenantID, String tableName, String preprocessedTableName, List<Feature> featureList, JavaRDD<String[]> lines)
             throws PreprocessorException, AnalyticsException {
         List<ColumnDefinition> includedColumnList = new ArrayList<>();
-        List<ColumnDefinition> schema = null;
+        List<ColumnDefinition> schema;
 
-        //Get the schema of the table
-        schema = getTableSchema(tableName, tenantID);
-        //Get the column list included in the preprocessed table
+        schema = getTableSchema(tableName, tenantID);   //Get the schema of the table
+        // Get the column list included in the preprocessed table
         for (Feature feature : featureList) {
             if (feature.isInclude()) {
                 includedColumnList.add(schema.get(feature.getIndex()));
@@ -33,11 +42,11 @@ public class GeneralUtils implements Serializable {
         }
 
 
-        //Convert the table data into a list of string arrays. each array representing one row
+        // Convert the table data into a list of string arrays. each array representing one row
         if (lines.count() > 0) {
             List<String[]> rowsAsStringArray = lines.collect();
-            //Create record from each row in the table.
-            //Convert each string value into an object of the column datatype
+            // Create record from each row in the table.
+            // Convert each string value into an object of the column data type
             List<Record> records = new ArrayList<>();
             for (String[] row : rowsAsStringArray) {
                 Map<String, Object> values = new HashedMap();
@@ -70,7 +79,8 @@ public class GeneralUtils implements Serializable {
                 }
                 Record record = new Record(tenantID, preprocessedTableName, values);
                 records.add(record);
-                //Generate the schema string for the new table
+
+                // Generate the schema string for the new table
                 StringBuilder builder = new StringBuilder();
                 for (ColumnDefinition includedColumn : includedColumnList) {
                     builder.append(includedColumn.getName() + ' ' + includedColumn.getType());
@@ -82,6 +92,8 @@ public class GeneralUtils implements Serializable {
                         builder.append(", ");
                     }
                 }
+
+                // Create new table and insert data.
                 String newSchema = builder.toString();
                 newSchema = newSchema.substring(0, newSchema.length() - 2);
                 String createTempTableQuery =
@@ -92,8 +104,6 @@ public class GeneralUtils implements Serializable {
                                 "\", schema \"" +
                                 newSchema +
                                 "\");";
-
-                //Create new table and insert data.
                 ServiceHolder.getAnalyticsProcessorService().executeQuery(tenantID, createTempTableQuery);
                 ServiceHolder.getAnalyticsDataService().put(records);
             }
@@ -102,8 +112,14 @@ public class GeneralUtils implements Serializable {
         }
     }
 
+    /**
+     * Get the table schema for the given table
+     *
+     * @param tableName Name of the table
+     * @param tenantID  Tenant ID
+     * @return List of column definitions
+     */
     public static List<ColumnDefinition> getTableSchema(String tableName, int tenantID) throws AnalyticsException {
-
         List<ColumnDefinition> schema = new ArrayList<ColumnDefinition>();
         Collection<org.wso2.carbon.analytics.datasource.commons.ColumnDefinition> columns;
 

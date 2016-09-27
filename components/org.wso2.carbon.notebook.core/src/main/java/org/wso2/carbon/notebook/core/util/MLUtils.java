@@ -25,7 +25,14 @@ import org.wso2.carbon.notebook.core.ml.transformation.HeaderFilter;
 import org.wso2.carbon.notebook.core.ml.transformation.LineToTokens;
 import org.wso2.carbon.notebook.core.ml.transformation.MissingValuesFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -33,36 +40,48 @@ import java.util.regex.Pattern;
  */
 public class MLUtils {
     /**
-     * Generate a random sample of the dataset using Spark.
+     * Generate a random sample of the data set using Spark.
+     *
+     * @param tableName  Name of the table
+     * @param sampleSize Sample size
+     * @param tenantId   Tenant ID
+     * @return Sample points
      */
-    public static SamplePoints getSampleFromDAS(String path, int sampleSize, int tenantId)
+    public static SamplePoints getSampleFromDAS(String tableName, int sampleSize, int tenantId)
             throws MLMalformedDatasetException {
-
-        JavaSparkContext sparkContext = null;
+        JavaSparkContext sparkContext;
         try {
-            Map<String, Integer> headerMap = null;
+            Map<String, Integer> headerMap;
             // List containing actual data of the sample.
             List<List<String>> columnData = new ArrayList<List<String>>();
 
             // java spark context
             sparkContext = ServiceHolder.getSparkContextService().getJavaSparkContext();
             JavaRDD<String> lines;
-            String headerLine = extractHeaderLine(path, tenantId);
+            String headerLine = extractHeaderLine(tableName, tenantId);
             headerMap = generateHeaderMap(headerLine, CSVFormat.RFC4180);
 
             // DAS case path = table name
-            lines = getLinesFromDASTable(path, tenantId, sparkContext);
+            lines = getLinesFromDASTable(tableName, tenantId, sparkContext);
 
             return getSamplePoints(sampleSize, true, headerMap, columnData, CSVFormat.RFC4180, lines);
 
         } catch (Exception e) {
-            throw new MLMalformedDatasetException("Failed to extract the sample points from path: " + path
+            throw new MLMalformedDatasetException("Failed to extract the sample points from path: " + tableName
                     + ". Cause: " + e, e);
         }
     }
 
+    /**
+     * Get the rows as lines of a table in the DAS
+     *
+     * @param tableName    Name of the table
+     * @param tenantId     Tenant ID
+     * @param sparkContext Java spark context
+     * @return Table rows as lines
+     */
     public static JavaRDD<String> getLinesFromDASTable(String tableName, int tenantId, JavaSparkContext sparkContext)
-            throws AnalyticsTableNotAvailableException, AnalyticsException {
+            throws AnalyticsException {
         JavaRDD<String> lines;
         String tableSchema = extractTableSchema(tableName, tenantId);
         SQLContext sqlCtx = new SQLContext(sparkContext);
@@ -85,6 +104,13 @@ public class MLUtils {
         return lines;
     }
 
+    /**
+     * Get the cell values as String tokens from table lines
+     *
+     * @param dataFormat Data format of the lines
+     * @param lines      Table lines from which taken should be fetched
+     * @return The string tokens of the table cell values
+     */
     private static JavaRDD<String[]> getTokensFromLines(CSVFormat dataFormat, JavaRDD<String> lines) {
         String columnSeparator = String.valueOf(dataFormat.getDelimiter());
         HeaderFilter headerFilter = new HeaderFilter.Builder().init(lines.first()).build();
@@ -101,6 +127,17 @@ public class MLUtils {
         return tokens;
     }
 
+    /**
+     * Take a sample from the data provided
+     *
+     * @param sampleSize     Sample size
+     * @param containsHeader Whether the header should be contained in the sample
+     * @param headerMap      Header map form column name to column data list index
+     * @param columnData     Empty list of values in the columns as a list to which items will be filled
+     * @param dataFormat     Data format of the lines provided
+     * @param lines          Rows as lines
+     * @return
+     */
     private static SamplePoints getSamplePoints(int sampleSize, boolean containsHeader, Map<String, Integer> headerMap,
                                                 List<List<String>> columnData, CSVFormat dataFormat, JavaRDD<String> lines) {
         // take the first line
@@ -173,15 +210,21 @@ public class MLUtils {
         return samplePoints;
     }
 
-    public static String extractTableSchema(String path, int tenantId) throws AnalyticsTableNotAvailableException,
-            AnalyticsException {
-        if (path == null) {
+    /**
+     * Get the table schema of the table specified
+     *
+     * @param tableName Name of the table
+     * @param tenantId  Tenant ID
+     * @return Table schema as string
+     */
+    public static String extractTableSchema(String tableName, int tenantId) throws AnalyticsException {
+        if (tableName == null) {
             return null;
         }
         AnalyticsDataService analyticsDataApi = ServiceHolder.getAnalyticsDataService();
         // table schema will be something like; <col1_name> <col1_type>,<col2_name> <col2_type>
         StringBuilder sb = new StringBuilder();
-        AnalyticsSchema analyticsSchema = analyticsDataApi.getTableSchema(tenantId, path);
+        AnalyticsSchema analyticsSchema = analyticsDataApi.getTableSchema(tenantId, tableName);
         Map<String, ColumnDefinition> columnsMap = analyticsSchema.getColumns();
         for (Iterator<Map.Entry<String, ColumnDefinition>> iterator = columnsMap.entrySet().iterator(); iterator
                 .hasNext(); ) {
@@ -192,16 +235,23 @@ public class MLUtils {
         return sb.substring(0, sb.length() - 1);
     }
 
-    public static String extractHeaderLine(String path, int tenantId) throws AnalyticsTableNotAvailableException,
+    /**
+     * Header line of the table sepcified
+     *
+     * @param tableName Name of the table
+     * @param tenantId  Tenant ID
+     * @return Header line
+     */
+    public static String extractHeaderLine(String tableName, int tenantId) throws AnalyticsTableNotAvailableException,
             AnalyticsException {
-        if (path == null) {
+        if (tableName == null) {
             return null;
         }
 
         AnalyticsDataService analyticsDataService = ServiceHolder.getAnalyticsDataService();
         // header line will be something like; <col1_name>,<col2_name>
         StringBuilder sb = new StringBuilder();
-        AnalyticsSchema analyticsSchema = analyticsDataService.getTableSchema(tenantId, path);
+        AnalyticsSchema analyticsSchema = analyticsDataService.getTableSchema(tenantId, tableName);
         Map<String, ColumnDefinition> columnsMap = analyticsSchema.getColumns();
         for (String columnName : columnsMap.keySet()) {
             sb.append(columnName + ",");
@@ -256,6 +306,8 @@ public class MLUtils {
     }
 
     /**
+     * Get the indices of the included features
+     *
      * @param features list of features of the dataset
      * @return A list of indices of features to be included after processed
      */
@@ -269,7 +321,12 @@ public class MLUtils {
         return includedFeatureIndices;
     }
 
-
+    /**
+     * Generate the header map without column names
+     *
+     * @param numberOfFeatures Number of features for which the header map is created
+     * @return Header map
+     */
     public static Map<String, Integer> generateHeaderMap(int numberOfFeatures) {
         Map<String, Integer> headerMap = new HashMap<String, Integer>();
         for (int i = 1; i <= numberOfFeatures; i++) {
@@ -278,6 +335,13 @@ public class MLUtils {
         return headerMap;
     }
 
+    /**
+     * Generate the header map with column names
+     *
+     * @param line   Lines of the table for which the header map is created
+     * @param format Data format of the lines
+     * @return Header map
+     */
     public static Map<String, Integer> generateHeaderMap(String line, CSVFormat format) {
         Map<String, Integer> headerMap = new HashMap<String, Integer>();
         String[] values = line.split("" + format.getDelimiter());
@@ -289,6 +353,13 @@ public class MLUtils {
         return headerMap;
     }
 
+    /**
+     * Get the number of features in the lines
+     *
+     * @param line   Lines of the table
+     * @param format Data format of the lines
+     * @return Number of features
+     */
     public static int getFeatureSize(String line, CSVFormat format) {
         String[] values = line.split("" + format.getDelimiter());
         return values.length;
@@ -308,8 +379,8 @@ public class MLUtils {
      * Generate descriptive statistics for each column of the table
      *
      * @param tokenizeDataToSample dataset of the table; each cell as a token
-     * @param features columns of the table selected for processing
-     * @param tableName table selected for processing
+     * @param features             columns of the table selected for processing
+     * @param tableName            table selected for processing
      * @return List of Descriptive Statistics of each column
      * @throws PreprocessorException
      */
@@ -382,6 +453,12 @@ public class MLUtils {
         }
     }
 
+    /**
+     * Get the column types from the sample points : Categorical or Numerical
+     *
+     * @param samplePoints Sample points
+     * @return Column types list
+     */
     public static String[] getColumnTypes(SamplePoints samplePoints) {
         Map<String, Integer> headerMap = samplePoints.getHeader();
         int[] stringCellCount = samplePoints.getStringCellCount();
@@ -437,6 +514,9 @@ public class MLUtils {
         return type;
     }
 
+    /**
+     * Factory for getting the data type from the data type name
+     */
     public static class DataTypeFactory {
         public static CSVFormat getCSVFormat(String dataType) {
             if ("TSV".equalsIgnoreCase(dataType)) {
@@ -446,6 +526,9 @@ public class MLUtils {
         }
     }
 
+    /**
+     * Factory for getting the column separator from data type name
+     */
     public static class ColumnSeparatorFactory {
         public static String getColumnSeparator(String dataType) {
             CSVFormat csvFormat = DataTypeFactory.getCSVFormat(dataType);
