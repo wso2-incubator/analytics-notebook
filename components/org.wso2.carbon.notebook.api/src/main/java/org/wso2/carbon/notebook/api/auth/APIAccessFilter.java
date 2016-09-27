@@ -4,7 +4,12 @@ import com.google.gson.Gson;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.Status;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -15,7 +20,6 @@ import java.net.URLEncoder;
  * Used for filtering requests sent to the api without logging in
  */
 public class APIAccessFilter implements Filter {
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
@@ -50,19 +54,25 @@ public class APIAccessFilter implements Filter {
         boolean signUpRequest = currentURI.equals(signUpURI);
         boolean apiRequest = currentURI.substring(0, 13).equals(apiRequestURIPrefix);
 
+        // Checking the users request and filtering
         if (loggedIn && (signInPageRequest || signUpPageRequest)) {
             response.sendRedirect(homePageURI);
         } else if (loggedIn && (signInRequest || signUpRequest)) {
             response.setHeader("Content-Type", "application/json");
-            response.getWriter().print(new Gson().toJson(new ErrorResponse(Status.ALREADY_LOGGED_IN, "You have already logged in")));
+            response.getWriter().print(new Gson().toJson(
+                    new ErrorResponse(Status.ALREADY_LOGGED_IN, "You have already logged in")
+            ));
         } else if (loggedIn || signInPageRequest || signUpPageRequest || signInRequest || signUpRequest) {
             filterChain.doFilter(request, response);
         } else if (apiRequest) {
             response.setHeader("Content-Type", "application/json");
-            response.getWriter().print(new Gson().toJson(new ErrorResponse(Status.NOT_LOGGED_IN, "Please login first")));
+            response.getWriter().print(new Gson().toJson(
+                    new ErrorResponse(Status.NOT_LOGGED_IN, "Please login first")
+            ));
         } else {
-            // Generating the uri to redirect to after logging in
-            String uri = currentURI.substring(request.getContextPath().length()) + (request.getQueryString() == null ? "" : "?" + request.getQueryString());
+            // Generating the URI to redirect to after logging in
+            String uri = currentURI.substring(request.getContextPath().length()) +
+                    (request.getQueryString() == null ? "" : "?" + request.getQueryString());
             if (uri.charAt(0) == '/') {
                 uri = uri.substring(1);
             }

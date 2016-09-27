@@ -25,9 +25,12 @@ import java.util.Map;
 @Path("/interactive-analytics")
 public class InteractiveAnalyticsEndpoint {
     /**
-     * Run a lucene query for interactive analytics
+     * Run interactive analytics query
      *
-     * @return response
+     * @param request      Http servlet request
+     * @param searchMethod Search method for the interactive analytics
+     * @param queryString  JSON object string with the query parameters
+     * @return Http servlet response
      */
     @POST
     @Path("/{search-method}")
@@ -44,21 +47,21 @@ public class InteractiveAnalyticsEndpoint {
             switch (searchMethod) {
                 case "query":
                     data = InteractiveAnalyticsUtils.executeSearchQuery(
-                        tenantID,
-                        interactiveAnalyticsRequest.getTableName(),
-                        interactiveAnalyticsRequest.getQuery(),
-                        interactiveAnalyticsRequest.getPaginationFrom(),
-                        interactiveAnalyticsRequest.getPaginationCount()
+                            tenantID,
+                            interactiveAnalyticsRequest.getTableName(),
+                            interactiveAnalyticsRequest.getQuery(),
+                            interactiveAnalyticsRequest.getPaginationFrom(),
+                            interactiveAnalyticsRequest.getPaginationCount()
                     );
                     break;
                 case "time-range":
                     data = InteractiveAnalyticsUtils.searchByDateRange(
-                        tenantID,
-                        interactiveAnalyticsRequest.getTableName(),
-                        interactiveAnalyticsRequest.getTimeFrom(),
-                        interactiveAnalyticsRequest.getTimeTo(),
-                        interactiveAnalyticsRequest.getPaginationFrom(),
-                        interactiveAnalyticsRequest.getPaginationCount()
+                            tenantID,
+                            interactiveAnalyticsRequest.getTableName(),
+                            interactiveAnalyticsRequest.getTimeFrom(),
+                            interactiveAnalyticsRequest.getTimeTo(),
+                            interactiveAnalyticsRequest.getPaginationFrom(),
+                            interactiveAnalyticsRequest.getPaginationCount()
                     );
                     break;
                 case "primary-keys":
@@ -71,6 +74,7 @@ public class InteractiveAnalyticsEndpoint {
                 default:
                     data = null;
             }
+
             if (data == null) {
                 jsonString = new Gson().toJson(new ErrorResponse("Invalid search method"));
             } else {

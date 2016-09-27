@@ -26,6 +26,8 @@ public class AuthenticationEndpoint {
     /**
      * Sign in the user and save the username and tenant id as session variables
      *
+     * @param request           Http servlet request
+     * @param credentialsString JSON object string with the user credentials
      * @return respnse
      */
     @POST
@@ -53,7 +55,7 @@ public class AuthenticationEndpoint {
             } else {
                 jsonString = new Gson().toJson(new ErrorResponse("Invalid Credentials"));
             }
-        } catch(AuthenticationException e) {
+        } catch (AuthenticationException e) {
             jsonString = new Gson().toJson(new ErrorResponse("Unknown user"));
         }
 
@@ -61,7 +63,7 @@ public class AuthenticationEndpoint {
     }
 
     /**
-     * Sign out the user currently logged in
+     * Sign out the user currently logged in user
      *
      * @return respnse
      */
@@ -70,6 +72,8 @@ public class AuthenticationEndpoint {
     public Response signIn(@Context HttpServletRequest request) {
         HttpSession session = request.getSession();
         session.invalidate();
-        return Response.ok(new Gson().toJson(new GeneralResponse(Status.SUCCESS)), MediaType.APPLICATION_JSON).build();
+        return Response.ok(new Gson().toJson(
+                new GeneralResponse(Status.SUCCESS)), MediaType.APPLICATION_JSON
+        ).build();
     }
 }

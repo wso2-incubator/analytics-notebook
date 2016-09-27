@@ -18,13 +18,15 @@ import java.util.Map;
 @Path("/user")
 public class UserEndpoint {
     /**
-     * Get the name of the logged in user
+     * Get the name of the user currently sending the request
+     * This is used for showing the name of the user in the upper left corner of the web app page
      *
-     * @return respnse
+     * @param request HTTP servlet request
+     * @return HTTP servlet response
      */
     @GET
     @Path("/logged-in")
-    public Response signIn(@Context HttpServletRequest request, String credentialsString) {
+    public Response signIn(@Context HttpServletRequest request) {
         HttpSession session = request.getSession();
 
         String username = (String) session.getAttribute("username");

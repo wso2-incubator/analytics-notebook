@@ -9,6 +9,7 @@ import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.notebook.commons.response.dto.Table;
 import org.wso2.carbon.notebook.commons.response.paragraph.BatchAnalyticsGeneralResponse;
 import org.wso2.carbon.notebook.core.ServiceHolder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.POST;
@@ -25,13 +26,12 @@ import java.util.List;
  */
 @Path("/batch-analytics")
 public class BatchAnalyticsEndpoint {
-
     /**
      * Execute a given script
      *
-     * @param request       HttpServeletRequest
-     * @param scriptContent The script
-     * @return response
+     * @param request       Http servlet request
+     * @param scriptContent Spark scripts
+     * @return Http servlet response
      */
     @POST
     @Path("/execute-script")

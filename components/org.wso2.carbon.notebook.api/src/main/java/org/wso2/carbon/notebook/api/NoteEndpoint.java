@@ -1,19 +1,25 @@
 package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
-import org.wso2.carbon.notebook.commons.response.*;
+import org.wso2.carbon.notebook.commons.response.ErrorResponse;
+import org.wso2.carbon.notebook.commons.response.GeneralResponse;
+import org.wso2.carbon.notebook.commons.response.ResponseFactory;
+import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.notebook.core.exception.NotebookPersistenceException;
 import org.wso2.carbon.notebook.core.util.NoteUtils;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +30,8 @@ public class NoteEndpoint {
     /**
      * Return the list of notes available in the notebook
      *
-     * @return response
+     * @param request Http servlet request
+     * @return Http servlet response
      */
     @GET
     public Response getAllNotes(@Context HttpServletRequest request) {
@@ -44,9 +51,11 @@ public class NoteEndpoint {
     }
 
     /**
-     * Save the note content
+     * Add new note
      *
-     * @return response
+     * @param request  Http servlet request
+     * @param noteName Name of the note to be created
+     * @return Http servlet response
      */
     @POST
     @Path("/{note-name}")
@@ -68,9 +77,12 @@ public class NoteEndpoint {
     }
 
     /**
-     * Save the note content
+     * Update note content
      *
-     * @return response
+     * @param request  Http servlet request
+     * @param noteName Name of the note of which the content should be updated
+     * @param content  New content of the note
+     * @return Http servlet response
      */
     @PUT
     @Path("/{note-name}")
@@ -90,9 +102,11 @@ public class NoteEndpoint {
     }
 
     /**
-     * Return the content of the note specified
+     * Return the content of a note
      *
-     * @return response
+     * @param request  Http servlet request
+     * @param noteName Name of the note of which the content are fetched
+     * @return Http servlet response
      */
     @GET
     @Path("/{note-name}")
@@ -112,6 +126,13 @@ public class NoteEndpoint {
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 
+    /**
+     * Delete a note
+     *
+     * @param request  Http servlet request
+     * @param noteName Name of the note to be deleted
+     * @return Http servlet response
+     */
     @DELETE
     @Path("/{note-name}")
     public Response deleteNoteContent(@Context HttpServletRequest request, @PathParam("note-name") String noteName) {

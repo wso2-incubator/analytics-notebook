@@ -5,9 +5,9 @@ import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
-
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.util.GeneralUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
@@ -29,7 +29,8 @@ public class DataSetInformationRetrievalEndpoint {
     /**
      * List the set of tables available in the system
      *
-     * @return response
+     * @param request Http servlet request
+     * @return Http servlet response
      */
     @GET
     public Response listTableName(@Context HttpServletRequest request) {
@@ -54,6 +55,8 @@ public class DataSetInformationRetrievalEndpoint {
     /**
      * List the column names of the selected table
      *
+     * @param request   Http servlet request
+     * @param tableName Name of the table from which columns are fetched
      * @return response
      */
     @GET
@@ -65,7 +68,7 @@ public class DataSetInformationRetrievalEndpoint {
 
         try {
             List<String> columnNames = new ArrayList<>();
-            List<ColumnDefinition> schema = GeneralUtils.getTableSchema(tableName , tenantID);
+            List<ColumnDefinition> schema = GeneralUtils.getTableSchema(tableName, tenantID);
             for (ColumnDefinition column : schema) {
                 columnNames.add(column.getName());
             }
@@ -95,7 +98,7 @@ public class DataSetInformationRetrievalEndpoint {
         String jsonString;
 
         try {
-            List<ColumnDefinition> schema = GeneralUtils.getTableSchema(tableName , tenantID);
+            List<ColumnDefinition> schema = GeneralUtils.getTableSchema(tableName, tenantID);
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
             response.put("schema", schema);
             jsonString = new Gson().toJson(response);
@@ -106,6 +109,13 @@ public class DataSetInformationRetrievalEndpoint {
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 
+    /**
+     * Retrieve the list of primary keys from the given table
+     *
+     * @param request   Http servlet request
+     * @param tableName Name of the table from which the primary keys are fetched
+     * @return Http servlet response
+     */
     @GET
     @Path("/{table-name}/primary-keys")
     public Response getPrimaryKeys(@Context HttpServletRequest request, @PathParam("table-name") String tableName) {

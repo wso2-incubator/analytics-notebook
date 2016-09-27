@@ -15,8 +15,9 @@ import org.wso2.carbon.notebook.commons.response.Status;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.exception.PreprocessorException;
 import org.wso2.carbon.notebook.core.ml.DataSetPreprocessor;
-import org.wso2.carbon.notebook.core.util.MLUtils;
 import org.wso2.carbon.notebook.core.util.GeneralUtils;
+import org.wso2.carbon.notebook.core.util.MLUtils;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
@@ -26,7 +27,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * HTTP response to perform pre-processing tasks
@@ -36,8 +41,8 @@ public class PreprocessorEndpoint {
     /**
      * Process the selected the dataset
      *
-     * @param request              HttpServeletRequest
-     * @param preprocessParameters Parameters required for preprocessing: table name, set of features, name for the processed table
+     * @param request              Http servlet request
+     * @param preprocessParameters JSON object string with parameters for pre-processing
      * @return response
      */
     @POST
@@ -70,7 +75,7 @@ public class PreprocessorEndpoint {
 
             DataSetPreprocessor preprocessor = new DataSetPreprocessor(tenantID, tableName, orderedFeatureList, headerLine);
             preprocessedLines = preprocessor.preProcess();
-            GeneralUtils.saveTable(tenantID,tableName,preprocessedTableName,orderedFeatureList, preprocessedLines);
+            GeneralUtils.saveTable(tenantID, tableName, preprocessedTableName, orderedFeatureList, preprocessedLines);
             response = new GeneralResponse(Status.SUCCESS);
 
         } catch (AnalyticsException | PreprocessorException e) {
@@ -84,8 +89,9 @@ public class PreprocessorEndpoint {
     /**
      * List the columns of the selected table
      *
-     * @param tableName Table selected for processing
-     * @return response
+     * @param request   Http servlet request
+     * @param tableName Name of the table of which the columns are fetched
+     * @return Http servlet response
      */
     @GET
     @Path("/{tableName}/")

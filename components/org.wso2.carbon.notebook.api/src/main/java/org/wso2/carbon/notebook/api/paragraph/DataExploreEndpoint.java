@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.ml.core.exceptions.MLMalformedDatasetException;
 import org.wso2.carbon.ml.core.exceptions.MLModelHandlerException;
+import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
 import org.wso2.carbon.notebook.commons.response.paragraph.DataExploreResponse;
-import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.core.MLDataHolder;
 import org.wso2.carbon.notebook.core.util.paragraph.DataExploreUtils;
 
@@ -26,6 +26,13 @@ import java.util.Map;
  */
 @Path("/data-explore")
 public class DataExploreEndpoint {
+    /**
+     * Sample the given table and return the sampled points and supporting information for data exploration
+     *
+     * @param request   HTTP request
+     * @param tableName Name of the table from which the sample should be taken
+     * @return HTTP response
+     */
     @GET
     @Path("/sample")
     public Response getSampleFromDas(@Context HttpServletRequest request,
@@ -37,9 +44,9 @@ public class DataExploreEndpoint {
         try {
             Map<String, List<String>> features = DataExploreUtils.identifyColumnDataType(tableName, tenantID);
             jsonString = new Gson().toJson(new DataExploreResponse(
-                MLDataHolder.getSamplePoints(tableName, tenantID),
-                features.get("categorical"),
-                features.get("numerical")
+                    MLDataHolder.getSamplePoints(tableName, tenantID),
+                    features.get("categorical"),
+                    features.get("numerical")
             ));
         } catch (MLMalformedDatasetException e) {
             jsonString = new Gson().toJson(new ErrorResponse(e.getMessage()));
@@ -48,6 +55,15 @@ public class DataExploreEndpoint {
         return Response.ok(jsonString, MediaType.APPLICATION_JSON).build();
     }
 
+    /**
+     * Sample the given table and get the cluster points
+     *
+     * @param request           HTTP request
+     * @param tableName         The table from which the sample should be taken
+     * @param featureListString The independent feature and the dependent feature separated by comma
+     * @param noOfClusters      No of cluster that should be in the cluster points
+     * @return HTTP response
+     */
     @GET
     @Path("/cluster-points")
     public Response getClusterPoints(@Context HttpServletRequest request,
