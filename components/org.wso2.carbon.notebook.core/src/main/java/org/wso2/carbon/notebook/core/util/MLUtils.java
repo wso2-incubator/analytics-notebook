@@ -378,7 +378,7 @@ public class MLUtils {
             }
             return descriptiveStats;
         } else {
-            throw new PreprocessorException("No data found in table " + tableName);
+            throw new PreprocessorException("No data found in table " + tableName );
         }
     }
 

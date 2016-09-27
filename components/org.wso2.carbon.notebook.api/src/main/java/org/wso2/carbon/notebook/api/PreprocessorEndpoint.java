@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.spark.api.java.JavaRDD;
 import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
+import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsTableNotAvailableException;
 import org.wso2.carbon.ml.commons.domain.Feature;
 import org.wso2.carbon.ml.commons.domain.FeatureType;
 import org.wso2.carbon.notebook.commons.request.paragraph.PreprocessorRequest;
@@ -80,6 +81,8 @@ public class PreprocessorEndpoint {
 
         } catch (AnalyticsException | PreprocessorException e) {
             response = new ErrorResponse(e.getMessage());
+        } catch (RuntimeException e){
+            response = new ErrorResponse("Internal Server Error");
         }
 
         jsonString = new Gson().toJson(response);

@@ -161,7 +161,7 @@ function BatchAnalyticsParagraphClient(paragraph) {
                         if (result.status == constants.response.INVALID_QUERY) {
                             output.push($(
                                 '<p><strong>Query ' + (index + 1) + ' : </strong> ' +
-                                'ERROR' + result.message + '</p>'
+                                'ERROR ' + result.message + '</p>'
                             ));
                         } else {
                             if (result.columns.length == 0 || result.data.length == 0) {
