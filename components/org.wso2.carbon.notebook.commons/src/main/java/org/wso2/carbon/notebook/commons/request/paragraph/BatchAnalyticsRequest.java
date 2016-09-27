@@ -1,5 +1,8 @@
 package org.wso2.carbon.notebook.commons.request.paragraph;
 
+/**
+ * Store the attributes of a batch analytic query
+ */
 public class BatchAnalyticsRequest {
     private String query;
 

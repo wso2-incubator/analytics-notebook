@@ -30,11 +30,6 @@ public class HeaderFilter implements Function<String, Boolean> {
             return this;
         }
 
-//        public Builder header(String header) {
-//            this.header = header;
-//            return this;
-//        }
-
         public HeaderFilter build() {
             return new HeaderFilter(this);
         }

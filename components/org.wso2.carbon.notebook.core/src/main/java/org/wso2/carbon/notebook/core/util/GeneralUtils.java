@@ -7,7 +7,6 @@ import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.Record;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.ml.commons.domain.Feature;
-import org.wso2.carbon.notebook.commons.response.dto.Column;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.exception.PreprocessorException;
 
@@ -21,8 +20,8 @@ public class GeneralUtils implements Serializable {
 
     public static void saveTable(int tenantID, String tableName, String preprocessedTableName, List<Feature> featureList, JavaRDD<String[]> lines)
             throws PreprocessorException, AnalyticsException {
-        List<Column> includedColumnList = new ArrayList<>();
-        List<Column> schema = null;
+        List<ColumnDefinition> includedColumnList = new ArrayList<>();
+        List<ColumnDefinition> schema = null;
 
         //Get the schema of the table
         schema = getTableSchema(tableName, tenantID);
@@ -73,7 +72,7 @@ public class GeneralUtils implements Serializable {
                 records.add(record);
                 //Generate the schema string for the new table
                 StringBuilder builder = new StringBuilder();
-                for (Column includedColumn : includedColumnList) {
+                for (ColumnDefinition includedColumn : includedColumnList) {
                     builder.append(includedColumn.getName() + ' ' + includedColumn.getType());
                     if (includedColumn.isScoreParam()) {
                         builder.append(" -sp" + ", ");
@@ -103,16 +102,16 @@ public class GeneralUtils implements Serializable {
         }
     }
 
-    public static List<Column> getTableSchema(String tableName, int tenantID) throws AnalyticsException {
+    public static List<ColumnDefinition> getTableSchema(String tableName, int tenantID) throws AnalyticsException {
 
-        List<Column> schema = new ArrayList<Column>();
-        Collection<ColumnDefinition> columns;
+        List<ColumnDefinition> schema = new ArrayList<ColumnDefinition>();
+        Collection<org.wso2.carbon.analytics.datasource.commons.ColumnDefinition> columns;
 
         columns = ServiceHolder.getAnalyticsDataService()
                 .getTableSchema(tenantID, tableName).getColumns().values();
 
-        for (ColumnDefinition column : columns) {
-            schema.add(new Column(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
+        for (org.wso2.carbon.analytics.datasource.commons.ColumnDefinition column : columns) {
+            schema.add(new ColumnDefinition(column.getName(), column.getType(), column.isIndexed(), column.isScoreParam()));
         }
         return schema;
     }

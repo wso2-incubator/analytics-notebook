@@ -17,7 +17,6 @@ import org.wso2.carbon.notebook.core.exception.PreprocessorException;
 import org.wso2.carbon.notebook.core.ml.DataSetPreprocessor;
 import org.wso2.carbon.notebook.core.util.MLUtils;
 import org.wso2.carbon.notebook.core.util.GeneralUtils;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
@@ -35,10 +34,10 @@ import java.util.*;
 @Path("/preprocessor")
 public class PreprocessorEndpoint {
     /**
-     * Pre-process the selected the dataset
+     * Process the selected the dataset
      *
      * @param request              HttpServeletRequest
-     * @param preprocessParameters Parameters required for preprocessing
+     * @param preprocessParameters Parameters required for preprocessing: table name, set of features, name for the processed table
      * @return response
      */
     @POST
@@ -46,7 +45,6 @@ public class PreprocessorEndpoint {
     public Response preprocess(@Context HttpServletRequest request, String preprocessParameters) {
         HttpSession session = request.getSession();
         int tenantID = (Integer) session.getAttribute("tenantID");
-
         PreprocessorRequest preprocessRequest = new Gson().fromJson(preprocessParameters, PreprocessorRequest.class);
         String tableName = preprocessRequest.getTableName();
         String preprocessedTableName = preprocessRequest.getPreprocessedTableName();
@@ -57,6 +55,7 @@ public class PreprocessorEndpoint {
         JavaRDD<String[]> preprocessedLines;
         GeneralResponse response;
 
+        //order the features according to the schema
         for (int i = 0; i < featureList.size(); i++) {
             orderedFeatureList.add(new Feature());
         }
@@ -85,6 +84,7 @@ public class PreprocessorEndpoint {
     /**
      * List the columns of the selected table
      *
+     * @param tableName Table selected for processing
      * @return response
      */
     @GET
@@ -100,10 +100,9 @@ public class PreprocessorEndpoint {
                     .getTableSchema(tenantID, tableName).getColumns().values();
             for (ColumnDefinition column : columns) {
 
-                //set Numerical or categorical
+                //set Numerical or Categorical for the columns
                 String type = column.getType().toString();
-                if (type.equals("INTEGER") || type.equals("LONG") ||
-                        type.equals("FLOAT") || type.equals("DOUBLE")) {
+                if (type.equals("INTEGER") || type.equals("LONG") || type.equals("FLOAT") || type.equals("DOUBLE")) {
                     type = FeatureType.NUMERICAL;
                 } else {
                     type = FeatureType.CATEGORICAL;

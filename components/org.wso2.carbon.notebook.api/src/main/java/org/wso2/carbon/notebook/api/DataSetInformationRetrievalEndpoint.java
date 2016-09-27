@@ -1,13 +1,13 @@
 package org.wso2.carbon.notebook.api;
 
 import com.google.gson.Gson;
+import org.wso2.carbon.analytics.datasource.commons.ColumnDefinition;
 import org.wso2.carbon.analytics.datasource.commons.exception.AnalyticsException;
 import org.wso2.carbon.notebook.commons.response.ErrorResponse;
 import org.wso2.carbon.notebook.commons.response.ResponseFactory;
-import org.wso2.carbon.notebook.commons.response.dto.Column;
+
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.util.GeneralUtils;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
@@ -65,8 +65,8 @@ public class DataSetInformationRetrievalEndpoint {
 
         try {
             List<String> columnNames = new ArrayList<>();
-            List<Column> schema = GeneralUtils.getTableSchema(tableName , tenantID);
-            for (Column column : schema) {
+            List<ColumnDefinition> schema = GeneralUtils.getTableSchema(tableName , tenantID);
+            for (ColumnDefinition column : schema) {
                 columnNames.add(column.getName());
             }
 
@@ -95,7 +95,7 @@ public class DataSetInformationRetrievalEndpoint {
         String jsonString;
 
         try {
-            List<Column> schema = GeneralUtils.getTableSchema(tableName , tenantID);
+            List<ColumnDefinition> schema = GeneralUtils.getTableSchema(tableName , tenantID);
             Map<String, Object> response = ResponseFactory.getCustomSuccessResponse();
             response.put("schema", schema);
             jsonString = new Gson().toJson(response);

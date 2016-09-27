@@ -48,15 +48,10 @@ public class RemoveDiscardedFeatures implements Function<String[], String[]> {
             return this;
         }
 
-
         public Builder indices(List<Integer> indices) {
             this.newToOldIndicesList = indices;
             return this;
         }
-//        public Builder init(List<Integer> indices) {
-//            this.newToOldIndicesList = indices;
-//            return this;
-//        }
 
         public RemoveDiscardedFeatures build() {
             return new RemoveDiscardedFeatures(this);
