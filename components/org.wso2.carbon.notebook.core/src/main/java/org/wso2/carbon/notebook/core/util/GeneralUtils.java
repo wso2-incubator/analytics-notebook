@@ -32,7 +32,6 @@ public class GeneralUtils implements Serializable {
             }
         }
 
-
         //Convert the table data into a list of string arrays. each array representing one row
         if (lines.count() > 0) {
             List<String[]> rowsAsStringArray = lines.collect();
