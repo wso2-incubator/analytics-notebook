@@ -2,9 +2,10 @@
  * Data explore paragraph client prototype
  *
  * @param {jQuery} paragraph The paragraph in which the client resides in
+ * @param {Object} [content] Source content of the paragraph encoded into an object
  * @constructor
  */
-function DataExploreParagraphClient(paragraph) {
+function DataExploreParagraphClient(paragraph, content) {
     var self = this;
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
@@ -18,128 +19,38 @@ function DataExploreParagraphClient(paragraph) {
     var numericalFeatureNames = [];
     var redrawClusterData;  // keeps cluster data to redraw chart on marker size change
 
-    self.type = constants.paragraphs.dataExplore.key;
+    self.type = 'dataExplore';
     self.unsavedContentAvailable = false;
 
-    /**
-     * Initialize the data explore paragraph
-     * If content is passed into this the source content will be set from it
-     *
-     * @param {Object} [content] Source content of the paragraph encoded into an object
+    /*
+     * Initializing
      */
-    self.initialize = function(content) {
-        paragraphUtils.loadTableNames(function() {
-            // Load source content
-            if (content != undefined) {
-                // Loading the source content from the content object provided
-                if (content.inputTable != undefined && content.sampleInfo != undefined) {
-                    paragraph.find('.input-table').val(content.inputTable);
-                    onInputTableChange(content.sampleInfo);
-                    if (content.chartType != undefined && content.chartOptions != undefined) {
-                        paragraph.find('.chart-type').val(content.chartType);
-                        onChartTypeChange(content.chartOptions);
-                    }
+    paragraphUtils.loadTableNames(function() {
+        // Load source content
+        if (content != undefined) {
+            // Loading the source content from the content object provided
+            if (content.inputTable != undefined && content.sampleInfo != undefined) {
+                paragraph.find('.input-table').val(content.inputTable);
+                onInputTableChange(content.sampleInfo);
+                if (content.chartType != undefined && content.chartOptions != undefined) {
+                    paragraph.find('.chart-type').val(content.chartType);
+                    onChartTypeChange(content.chartOptions);
                 }
             }
-        });
-
-        // Registering event listeners
-        paragraph.find('.input-table').change(function() {
-            self.unsavedContentAvailable = true;
-            onInputTableChange();
-        });
-
-        paragraph.find('.chart-type').change(function() {
-            self.unsavedContentAvailable = true;
-            onChartTypeChange();
-        });
-
-        /**
-         * Run input table change tasks
-         *
-         * @private
-         * @param {Object} [sampleInfo] The object containing the sample, categorical feature names and numerical feature names
-         */
-        function onInputTableChange(sampleInfo) {
-            var tableName = paragraph.find('.input-table').val();
-            paragraphUtils.clearNotification();
-
-            if (sampleInfo == undefined) {
-                // Loading sample information from server
-                utils.showLoadingOverlay(paragraph);
-                $.ajax({
-                    type: 'GET',
-                    url: constants.API_URI + 'data-explore/sample?table-name=' + tableName,
-                    success: function(response) {
-                        if (response.status == constants.response.SUCCESS) {
-                            prepareSample(response);
-                        } else if (response.status == constants.response.NOT_LOGGED_IN) {
-                            window.location.href = 'sign-in.html';
-                        } else {
-                            paragraphUtils.handleNotification('error', 'Error', response.message);
-                        }
-                        utils.hideLoadingOverlay(paragraph);
-                    },
-                    error: function(response) {
-                        paragraphUtils.handleNotification('error', 'Error',
-                            utils.generateErrorMessageFromStatusCode(response.readyState)
-                        );
-                        utils.hideLoadingOverlay(paragraph);
-                    }
-                });
-            } else {
-                // Loading sample information from object
-                prepareSample(sampleInfo);
-            }
-
-            /**
-             * Run prepare sample tasks
-             *
-             * @private
-             * @param {Object} sampleInfo The object containing the sample, categorical feature names and numerical feature names
-             */
-            function prepareSample(sampleInfo) {
-                sample = sampleInfo.sample;
-                categoricalFeatureNames = sampleInfo.categoricalFeatureNames;
-                numericalFeatureNames = sampleInfo.numericalFeatureNames;
-
-                paragraph.find('.scatter-plot-options').slideUp();
-                paragraph.find('.parallel-sets-options').slideUp();
-                paragraph.find('.trellis-chart-options').slideUp();
-                paragraph.find('.cluster-diagram-options').slideUp();
-                paragraph.find('.chart-type-container').slideDown();
-
-                paragraph.find('.chart-type option').eq(0).prop('selected', true);
-            }
         }
+    });
 
-        /**
-         * Run chart type change tasks
-         *
-         * @private
-         * @param {Object} [chartOptions] The chart options to be set
-         */
-        function onChartTypeChange(chartOptions) {
-            paragraphUtils.clearNotification(function() {
-                paragraph.find('.run-paragraph-button').prop('disabled', true);
-                var chartType = paragraph.find('.chart-type').val();
-                switch (chartType) {
-                    case 'Scatter Plot' :
-                        chart = new ScatterPlotDiagram(chartOptions);
-                        break;
-                    case 'Parallel Sets' :
-                        chart = new ParallelSets(chartOptions);
-                        break;
-                    case 'Trellis Chart' :
-                        chart = new TrellisChart(chartOptions);
-                        break;
-                    case 'Cluster Diagram' :
-                        chart = new ClusterDiagram(chartOptions);
-                        break;
-                }
-            });
-        }
-    };
+    /*
+     * Registering event listeners
+     */
+    paragraph.find('.input-table').change(function() {
+        self.unsavedContentAvailable = true;
+        onInputTableChange();
+    });
+    paragraph.find('.chart-type').change(function() {
+        self.unsavedContentAvailable = true;
+        onChartTypeChange();
+    });
 
     /**
      * Run the data explore paragraph
@@ -233,6 +144,92 @@ function DataExploreParagraphClient(paragraph) {
         }
         return content;
     };
+
+    /**
+     * Run input table change tasks
+     *
+     * @private
+     * @param {Object} [sampleInfo] The object containing the sample, categorical feature names and numerical feature names
+     */
+    function onInputTableChange(sampleInfo) {
+        var tableName = paragraph.find('.input-table').val();
+        paragraphUtils.clearNotification();
+
+        if (sampleInfo == undefined) {
+            // Loading sample information from server
+            utils.showLoadingOverlay(paragraph);
+            $.ajax({
+                type: 'GET',
+                url: constants.API_URI + 'data-explore/sample?table-name=' + tableName,
+                success: function(response) {
+                    if (response.status == constants.response.SUCCESS) {
+                        prepareSample(response);
+                    } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                        window.location.href = 'sign-in.html';
+                    } else {
+                        paragraphUtils.handleNotification('error', 'Error', response.message);
+                    }
+                    utils.hideLoadingOverlay(paragraph);
+                },
+                error: function(response) {
+                    paragraphUtils.handleNotification('error', 'Error',
+                        utils.generateErrorMessageFromStatusCode(response.readyState)
+                    );
+                    utils.hideLoadingOverlay(paragraph);
+                }
+            });
+        } else {
+            // Loading sample information from object
+            prepareSample(sampleInfo);
+        }
+
+        /**
+         * Run prepare sample tasks
+         *
+         * @private
+         * @param {Object} sampleInfo The object containing the sample, categorical feature names and numerical feature names
+         */
+        function prepareSample(sampleInfo) {
+            sample = sampleInfo.sample;
+            categoricalFeatureNames = sampleInfo.categoricalFeatureNames;
+            numericalFeatureNames = sampleInfo.numericalFeatureNames;
+
+            paragraph.find('.scatter-plot-options').slideUp();
+            paragraph.find('.parallel-sets-options').slideUp();
+            paragraph.find('.trellis-chart-options').slideUp();
+            paragraph.find('.cluster-diagram-options').slideUp();
+            paragraph.find('.chart-type-container').slideDown();
+
+            paragraph.find('.chart-type option').eq(0).prop('selected', true);
+        }
+    }
+
+    /**
+     * Run chart type change tasks
+     *
+     * @private
+     * @param {Object} [chartOptions] The chart options to be set
+     */
+    function onChartTypeChange(chartOptions) {
+        paragraphUtils.clearNotification(function() {
+            paragraph.find('.run-paragraph-button').prop('disabled', true);
+            var chartType = paragraph.find('.chart-type').val();
+            switch (chartType) {
+                case 'Scatter Plot' :
+                    chart = new ScatterPlotDiagram(chartOptions);
+                    break;
+                case 'Parallel Sets' :
+                    chart = new ParallelSets(chartOptions);
+                    break;
+                case 'Trellis Chart' :
+                    chart = new TrellisChart(chartOptions);
+                    break;
+                case 'Cluster Diagram' :
+                    chart = new ClusterDiagram(chartOptions);
+                    break;
+            }
+        });
+    }
 
     /*
      * Chart prototype constructor definitions start here

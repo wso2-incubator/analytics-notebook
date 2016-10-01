@@ -2,32 +2,27 @@ constants.paragraphs = {
     batchAnalytics: {
         displayName: 'Batch Analytics',
         templateLink: 'batch-analytics.html',
-        paragraphClientPrototype: BatchAnalyticsParagraphClient,
-        JSScripts: []
+        paragraphClientPrototype: BatchAnalyticsParagraphClient
     },
     interactiveAnalytics: {
         displayName: 'Interactive Analytics',
         templateLink: 'interactive-analytics.html',
-        paragraphClientPrototype: InteractiveAnalyticsParagraphClient,
-        JSScripts: []
+        paragraphClientPrototype: InteractiveAnalyticsParagraphClient
     },
     dataExplore: {
         displayName: 'Data Explore',
         templateLink: 'data-explore.html',
-        paragraphClientPrototype: DataExploreParagraphClient,
-        JSScripts: []
+        paragraphClientPrototype: DataExploreParagraphClient
     },
     markdown: {
         displayName: 'Markdown',
         templateLink: 'markdown.html',
-        paragraphClientPrototype: MarkdownParagraphClient,
-        JSScripts: []
+        paragraphClientPrototype: MarkdownParagraphClient
     },
     preprocessor: {
         displayName: 'Preprocessor',
         templateLink: 'preprocessor.html',
-        paragraphClientPrototype: PreprocessorParagraphClient,
-        JSScripts: []
+        paragraphClientPrototype: PreprocessorParagraphClient
     }
 };
 
@@ -44,91 +39,82 @@ function Note() {
     noteSelf.paragraphs = [];
     noteSelf.uniqueParagraphIDCounter = 0;
 
-    /**
-     * Initialize the note
+    var paragraphs = $('#paragraphs');
+
+    /*
+     * Initializing
      */
-    noteSelf.initialize = function() {
-        var paragraphs = $('#paragraphs');
+    utils.showLoadingOverlay(paragraphs);
+    $.ajax({
+        type: 'GET',
+        url: constants.API_URI + 'notes/' + noteSelf.name,
+        success: function(response) {
+            if (response.status == constants.response.SUCCESS) {
+                // Server sends the value of key "note" as a string encoded into JSON
+                var noteObject = JSON.parse(response.note);
+                loadNextParagraphForLoadAllTask(noteObject);
+            } else if (response.status == constants.response.NOT_LOGGED_IN) {
+                window.location.href = 'sign-in.html';
+            } else {
+                utils.handlePageNotification('error', 'Error', response.message);
+            }
+            utils.hideLoadingOverlay($('#paragraphs'));
+        },
+        error: function(response) {
+            utils.handlePageNotification('error', 'Error',
+                utils.generateErrorMessageFromStatusCode(response.readyState)
+            );
+            utils.hideLoadingOverlay($('#paragraphs'));
+        }
+    });
+    $('#note-name').html(noteSelf.name);
 
-        // Loading the note content
-        utils.showLoadingOverlay(paragraphs);
-        $.ajax({
-            type: 'GET',
-            url: constants.API_URI + 'notes/' + noteSelf.name,
-            success: function(response) {
-                if (response.status == constants.response.SUCCESS) {
-                    // Server sends the value of key "note" as a string encoded into JSON
-                    var noteObject = JSON.parse(response.note);
-                    loadNextParagraphForLoadAllTask(noteObject);
-                } else if (response.status == constants.response.NOT_LOGGED_IN) {
-                    window.location.href = 'sign-in.html';
-                } else {
-                    utils.handlePageNotification('error', 'Error', response.message);
-                }
-                utils.hideLoadingOverlay($('#paragraphs'));
-            },
-            error: function(response) {
-                utils.handlePageNotification('error', 'Error',
-                    utils.generateErrorMessageFromStatusCode(response.readyState)
-                );
-                utils.hideLoadingOverlay($('#paragraphs'));
+    // Making the paragraphs sortable
+    paragraphs.sortable({
+        start: function(event, ui) {
+            ui.item.data('startPosition', ui.item.index());
+        },
+        update: function(event, ui) {
+            // Reordering the paragraph array according to the new arrangement in the page
+            var oldPosition = ui.item.data('startPosition');
+            var newPosition = ui.item.index();
+            var movedParagraph = noteSelf.paragraphs[oldPosition];
+            noteSelf.paragraphs.splice(oldPosition, 1);
+            noteSelf.paragraphs.splice(newPosition, 0, movedParagraph);
+        }
+    });
+
+    /*
+     * Registering event listeners
+     */
+    $('#run-all-paragraphs-button').click(function() {
+        runAllParagraphs();
+    });
+    $('#toggle-all-source-views-button').click(function() {
+        toggleVisibilityOfMultipleViews('source');
+    });
+    $('#toggle-all-output-views-button').click(function() {
+        toggleVisibilityOfMultipleViews('output');
+    });
+    $('#add-paragraph-button').click(function() {
+        addParagraph();
+    });
+    $('#save-note-button').click(function() {
+        saveNote();
+    });
+    $('#sign-out').click(function() {
+        utils.signOut('./');
+    });
+    $(window).on('beforeunload', function() {
+        // Checking if there are any unsaved changes
+        $.each(noteSelf.paragraphs, function(index, paragraph) {
+            if (paragraph.paragraphClient != undefined &&
+                paragraph.paragraphClient.unsavedContentAvailable) {
+                event.returnValue = true;
+                return true;
             }
         });
-
-        // Initializing note
-        $('#note-name').html(noteSelf.name);
-
-        // Making the paragraphs sortable
-        paragraphs.sortable({
-            start: function(event, ui) {
-                ui.item.data('startPosition', ui.item.index());
-            },
-            update: function(event, ui) {
-                // Reordering the paragraph array according to the new arrangement in the page
-                var oldPosition = ui.item.data('startPosition');
-                var newPosition = ui.item.index();
-                var movedParagraph = noteSelf.paragraphs[oldPosition];
-                noteSelf.paragraphs.splice(oldPosition, 1);
-                noteSelf.paragraphs.splice(newPosition, 0, movedParagraph);
-            }
-        });
-
-        // Registering event listeners
-        $('#run-all-paragraphs-button').click(function() {
-            runAllParagraphs();
-        });
-
-        $('#toggle-all-source-views-button').click(function() {
-            toggleVisibilityOfMultipleViews('source');
-        });
-
-        $('#toggle-all-output-views-button').click(function() {
-            toggleVisibilityOfMultipleViews('output');
-        });
-
-        $('#add-paragraph-button').click(function() {
-            addParagraph();
-        });
-
-        $('#save-note-button').click(function() {
-            saveNote();
-        });
-
-        $('#sign-out').click(function() {
-            utils.signOut('./');
-        });
-
-        $(window).on('beforeunload', function() {
-            // Checking if there are any unsaved changes
-            $.each(noteSelf.paragraphs, function(index, paragraph) {
-                if (paragraph.paragraphClient != undefined &&
-                        paragraph.paragraphClient.unsavedContentAvailable) {
-                    event.returnValue = true;
-                    return true;
-                }
-            });
-        });
-    };
+    });
 
     /**
      * Run all paragraphs in the current note
@@ -365,28 +351,37 @@ function Note() {
          */
         paragraphSelf.getContent = function() {
             var paragraph = {};
-            if (paragraphSelf.paragraphClient != undefined &&
-                    paragraphSelf.paragraphClient.getSourceContent != undefined) {
-                var source = paragraphSelf.paragraphClient.getSourceContent();
-                if (source != undefined) {
-                    paragraph.content = {};
-                    paragraph.content.source = source;
-                    paragraph.type = paragraphSelf.paragraphClient.type;
+            var saved = false;
+            if (paragraphSelf.paragraphClient != undefined) {
+                if (paragraphSelf.paragraphClient.getSourceContent != undefined) {
+                    var source = paragraphSelf.paragraphClient.getSourceContent();
+                    if (source != undefined) {
+                        paragraph.content = {};
+                        paragraph.content.source = source;
+                        paragraph.type = paragraphSelf.paragraphClient.type;
 
-                    // If source is not obtained output will not be added
-                    if (paragraphSelf.paragraphClient.getOutputContent != undefined) {
-                        var output = paragraphSelf.paragraphClient.getOutputContent();
-                        if (output != undefined) {
-                            paragraph.content.output = output;
+                        // If source is not obtained output will not be added
+                        if (paragraphSelf.paragraphClient.getOutputContent != undefined) {
+                            var output = paragraphSelf.paragraphClient.getOutputContent();
+                            if (output != undefined) {
+                                paragraph.content.output = output;
+                            }
                         }
+                        saved = true;
+                    } else {
+                        paragraphUtils.handleNotification('info', 'Info',
+                            'No paragraph content to be saved'
+                        );
                     }
                 } else {
                     paragraphUtils.handleNotification('info', 'Info',
-                        'No paragraph content to be saved'
+                        'Paragraph does not support saving'
                     );
                 }
             } else {
-                paragraphUtils.handleNotification('error', 'Error', 'Paragraph cannot be saved');
+                paragraphUtils.handleNotification('error', 'Error', 'Paragraph type not selected');
+            }
+            if (!saved) {
                 utils.handlePageNotification('error', 'Error',
                     'Some paragraphs could not be saved'
                 );
@@ -477,9 +472,9 @@ function Note() {
                     paragraphSelf.paragraphElement.find('.toggle-source-view-button').prop('disabled', false);
                     paragraphSelf.paragraphElement.find('.toggle-output-view-button').prop('disabled', true);
 
-                    paragraphSelf.paragraphClient =
-                        new paragraphClientInfo.paragraphClientPrototype(paragraphSelf.paragraphElement);
-                    paragraphSelf.paragraphClient.initialize(sourceContent);
+                    paragraphSelf.paragraphClient = new paragraphClientInfo.paragraphClientPrototype(
+                        paragraphSelf.paragraphElement, sourceContent
+                    );
                     outputView.css({ display: 'none' });
                     paragraphContent.slideDown();
                     utils.hideLoadingOverlay(paragraphSelf.paragraphElement);

@@ -2,47 +2,32 @@
  * Markdown paragraph client prototype constructor
  *
  * @param {jQuery} paragraph The paragraph in which the client resides in
+ * @param {Object} [content] Source content of the paragraph encoded into an object
  * @constructor
  */
-function MarkdownParagraphClient(paragraph) {
+function MarkdownParagraphClient(paragraph, content) {
     var self = this;
     var paragraphUtils = new ParagraphUtils(paragraph);
 
-    self.type = constants.paragraphs.markdown.key;
+    self.type = "markdown";
     self.unsavedContentAvailable = false;
 
-    /**
-     * Initialize the markdown paragraph
-     * If content is passed into this the source content will be set from it
-     *
-     * @param {Object} [content] Source content of the paragraph encoded into an object
+    /*
+     * Initializing
      */
-    self.initialize = function(content) {
-        // Load source content
-        if (content != undefined) {
-            paragraph.find('.markdown-source').val(content.text);
-            adjustRunButton();
-        }
+    // Load source content
+    if (content != undefined) {
+        paragraph.find('.markdown-source').val(content.text);
+        adjustRunButton();
+    }
 
-        paragraph.find('.markdown-source').keyup(function() {
-            self.unsavedContentAvailable = true;
-            adjustRunButton();
-        });
-
-        /**
-         * Update the paragraph run button disabled status
-         *
-         * @private
-         */
-        function adjustRunButton() {
-            var runButton = paragraph.find('.run-paragraph-button');
-            if (paragraph.find('.markdown-source').val().length > 0) {
-                runButton.prop('disabled', false);
-            } else {
-                runButton.prop('disabled', true);
-            }
-        }
-    };
+    /*
+     * Registering event listeners
+     */
+    paragraph.find('.markdown-source').keyup(function() {
+        self.unsavedContentAvailable = true;
+        adjustRunButton();
+    });
 
     /**
      * Run the markdown paragraph
@@ -68,4 +53,18 @@ function MarkdownParagraphClient(paragraph) {
         }
         return content;
     };
+
+    /**
+     * Update the paragraph run button disabled status
+     *
+     * @private
+     */
+    function adjustRunButton() {
+        var runButton = paragraph.find('.run-paragraph-button');
+        if (paragraph.find('.markdown-source').val().length > 0) {
+            runButton.prop('disabled', false);
+        } else {
+            runButton.prop('disabled', true);
+        }
+    }
 }   // End of MarkdownParagraphClient prototype constructor

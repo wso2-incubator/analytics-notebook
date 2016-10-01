@@ -4,39 +4,33 @@
  * @constructor
  */
 function Authenticator() {
-    var self = this;
     var utils = new Utils();
     var usernameField = $('#username');
     var passwordField = $('#password');
     var notificationContainer = $('#notification-container');
 
-    /**
-     * Initialize the sign in page
+    /*
+     * Registering event listeners
      */
-    self.initialize = function() {
-        // Registering event listeners
-        $('#sign-in').click(function() {
-            singIn();
-        });
-
-        $('.form-control').keyup(function(event) {
-            if (event.keyCode == 13) {
-                if ($.trim(usernameField.val()).length > 0 &&
-                        $.trim(passwordField.val()).length > 0) {
-                    singIn();
-                } else if ($.trim(usernameField.val()).length > 0) {
-                    passwordField.focus();
-                } else if ($.trim(passwordField.val()).length > 0) {
-                    usernameField.focus();
-                }
-            } else {
-                clearError();
+    $('#sign-in').click(function() {
+        singIn();
+    });
+    $('.form-control').keyup(function(event) {
+        if (event.keyCode == 13) {
+            if ($.trim(usernameField.val()).length > 0 &&
+                $.trim(passwordField.val()).length > 0) {
+                singIn();
+            } else if ($.trim(usernameField.val()).length > 0) {
+                passwordField.focus();
+            } else if ($.trim(passwordField.val()).length > 0) {
+                usernameField.focus();
             }
-        });
-
-        usernameField.focus();
-        utils.hideLoadingOverlay(notificationContainer);
-    };
+        } else {
+            clearError();
+        }
+    });
+    usernameField.focus();
+    utils.hideLoadingOverlay(notificationContainer);
 
     /**
      * Sign in using the credentials provided by the user

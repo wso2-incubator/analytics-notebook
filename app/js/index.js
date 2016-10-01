@@ -4,24 +4,19 @@
  * @constructor
  */
 function Notebook() {
-    var self = this;
     var utils = new Utils();
 
-    /**
-     * Initialize the home page
+    loadNoteNamesList();
+
+    /*
+     * Registering event listeners
      */
-    self.initialize = function() {
-        loadNoteNamesList();
-
-        // Registering event listeners
-        $('#sign-out').click(function() {
-            utils.signOut('./');
-        });
-
-        $('#create-note').click(function() {
-            showCreateNoteModal();
-        });
-    };
+    $('#sign-out').click(function() {
+        utils.signOut('./');
+    });
+    $('#create-note').click(function() {
+        showCreateNoteModal();
+    });
 
     /**
      * Load the notes list from the server

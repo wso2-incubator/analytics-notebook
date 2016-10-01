@@ -4,97 +4,81 @@
  * @param {jQuery} paragraph The paragraph in which the client resides in
  * @constructor
  */
-function PreprocessorParagraphClient(paragraph) {
+function PreprocessorParagraphClient(paragraph, content) {
     var self = this;
     var utils = new Utils();
     var paragraphUtils = new ParagraphUtils(paragraph);
     var table;
 
-    self.type = constants.paragraphs.preprocessor.key;
+    self.type = 'preprocessor';
     self.unsavedContentAvailable = false;
 
-    /**
-     * Initialize the preprocessor paragraph
-     * If content is passed into this the source content will be set from it
-     *
-     * @param {Object} [content] Source content of the paragraph encoded into an object
+    /*
+     * Initializing
      */
-    self.initialize = function(content) {
-        paragraphUtils.loadTableNames(function() {
-            // Load source content
-            if (content != undefined) {
-                // Loading the source content from the content object provided
-                if (content.inputTable != undefined) {
-                    paragraph.find('.input-table').val(content.inputTable);
-                    displayOutputTableContainer();
-                    loadPreprocessorTable(function() {
-                        if (content.features != undefined) {
-                            table.find('tbody > tr').each(function(index) {
-                                var feature = $(this);
-                                if (content.features[index].include == true) {
-                                    feature.find('.feature-include').prop('checked', true);
-                                } else {
-                                    feature.find('.feature-include').prop('checked', false);
-                                }
-                                feature.find('.feature-type').val(content.features[index].type);
-                                feature.find('.impute-option').val(content.features[index].imputeOption);
+    paragraphUtils.loadTableNames(function() {
+        // Load source content
+        if (content != undefined) {
+            // Loading the source content from the content object provided
+            if (content.inputTable != undefined) {
+                paragraph.find('.input-table').val(content.inputTable);
+                displayOutputTableContainer();
+                loadPreprocessorTable(function() {
+                    if (content.features != undefined) {
+                        table.find('tbody > tr').each(function(index) {
+                            var feature = $(this);
+                            if (content.features[index].include == true) {
+                                feature.find('.feature-include').prop('checked', true);
+                            } else {
+                                feature.find('.feature-include').prop('checked', false);
+                            }
+                            feature.find('.feature-type').val(content.features[index].type);
+                            feature.find('.impute-option').val(content.features[index].imputeOption);
 
-                            });
-                        }
-                        adjustRunButton();
-                    });
-                    if (content.outputTable != undefined) {
-                        paragraph.find('.output-table').val(content.outputTable);
-                        adjustRunButton();
+                        });
                     }
-
+                    adjustRunButton();
+                });
+                if (content.outputTable != undefined) {
+                    paragraph.find('.output-table').val(content.outputTable);
+                    adjustRunButton();
                 }
+
+            }
+        }
+    });
+
+    /*
+     * Registering event listeners
+     */
+    paragraph.find('.preprocessor-input.input-table').change(function() {
+        self.unsavedContentAvailable = true;
+        displayOutputTableContainer();
+        loadPreprocessorTable();
+    });
+    paragraph.find('.output-table').focusout(function() {
+        //generate alert message
+        var newTableName = $(paragraph.find('.output-table')).val().toUpperCase();
+        paragraph.find('.input-table > option').each(function(index, option) {
+            var existingTable = $(option).html();
+            if (newTableName == existingTable) {
+                var alertContainer = paragraph.find('.preprocessor-alert');
+                var alertMessage =
+                    'Table ' + existingTable + ' already exists.' +
+                    'Pre-processing will append the table';
+                var alert = utils.generateAlertMessage('info', 'Alert', alertMessage);
+                alertContainer.html(alert);
+                alertContainer.addClass('collapse');
+                alertContainer.slideDown();
             }
         });
-
-        // Registering event listeners
-        paragraph.find('.preprocessor-input.input-table').change(function() {
-            self.unsavedContentAvailable = true;
-            displayOutputTableContainer();
-            loadPreprocessorTable();
+    });
+    paragraph.find('.output-table').focusin(function() {
+        var alert = paragraph.find('.preprocessor-alert').children().first();
+        alert.slideUp(function() {
+            alert.remove();
         });
-
-        paragraph.find('.output-table').focusout(function() {
-            //generate alert message
-            var newTableName = $(paragraph.find('.output-table')).val().toUpperCase();
-            paragraph.find('.input-table > option').each(function(index, option) {
-                var existingTable = $(option).html();
-                if (newTableName == existingTable) {
-                    var alertContainer = paragraph.find('.preprocessor-alert');
-                    var alertMessage =
-                        'Table ' + existingTable + ' already exists.' +
-                        'Pre-processing will append the table';
-                    var alert = utils.generateAlertMessage('info', 'Alert', alertMessage);
-                    alertContainer.html(alert);
-                    alertContainer.addClass('collapse');
-                    alertContainer.slideDown();
-                }
-            });
-        });
-
-        paragraph.find('.output-table').focusin(function() {
-            var alert = paragraph.find('.preprocessor-alert').children().first();
-            alert.slideUp(function() {
-                alert.remove();
-            });
-        });
-
-        /**
-         * Generate the output table container when the input table is change
-         *
-         * @private
-         */
-        function displayOutputTableContainer() {
-            var outputTableContainer = paragraph.find('.output-table-container');
-            outputTableContainer.slideDown();
-
-        }
-    };
+    });
 
     /**
      * Run the preprocessor paragraph
@@ -196,6 +180,17 @@ function PreprocessorParagraphClient(paragraph) {
         }
         return content;
     };
+
+    /**
+     * Generate the output table container when the input table is change
+     *
+     * @private
+     */
+    function displayOutputTableContainer() {
+        var outputTableContainer = paragraph.find('.output-table-container');
+        outputTableContainer.slideDown();
+
+    }
 
     /**
      * Callback function for loading preprocessor parameters
