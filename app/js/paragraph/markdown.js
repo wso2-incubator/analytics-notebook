@@ -4,7 +4,7 @@
  * @param {jQuery} paragraph The paragraph in which the client resides in
  * @constructor
  */
-function Markdown(paragraph) {
+function MarkdownParagraphClient(paragraph) {
     var self = this;
     var paragraphUtils = new ParagraphUtils(paragraph);
 

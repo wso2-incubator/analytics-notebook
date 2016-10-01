@@ -1,9 +1,34 @@
 constants.paragraphs = {
-    batchAnalytics: { key: 'BATCH_ANALYTICS', displayName: 'Batch Analytics' },
-    interactiveAnalytics: { key: 'INTERACTIVE_ANALYTICS', displayName: 'Interactive Analytics' },
-    dataExplore: { key: 'DATA_EXPLORE', displayName: 'Data Explore' },
-    markdown: { key: 'MARKDOWN', displayName: 'Markdown' },
-    preprocessor: { key: 'PREPROCESSOR', displayName: 'Preprocessor' }
+    batchAnalytics: {
+        displayName: 'Batch Analytics',
+        templateLink: 'batch-analytics.html',
+        paragraphClientPrototype: BatchAnalyticsParagraphClient,
+        JSScripts: []
+    },
+    interactiveAnalytics: {
+        displayName: 'Interactive Analytics',
+        templateLink: 'interactive-analytics.html',
+        paragraphClientPrototype: InteractiveAnalyticsParagraphClient,
+        JSScripts: []
+    },
+    dataExplore: {
+        displayName: 'Data Explore',
+        templateLink: 'data-explore.html',
+        paragraphClientPrototype: DataExploreParagraphClient,
+        JSScripts: []
+    },
+    markdown: {
+        displayName: 'Markdown',
+        templateLink: 'markdown.html',
+        paragraphClientPrototype: MarkdownParagraphClient,
+        JSScripts: []
+    },
+    preprocessor: {
+        displayName: 'Preprocessor',
+        templateLink: 'preprocessor.html',
+        paragraphClientPrototype: PreprocessorParagraphClient,
+        JSScripts: []
+    }
 };
 
 /**
@@ -272,12 +297,11 @@ function Note() {
                 '<option disabled selected value> -- select an option --</option>'
             );
             for (var paragraphType in constants.paragraphs) {
-                if (constants.paragraphs.hasOwnProperty(paragraphType)) {
-                    var paragraph = constants.paragraphs[paragraphType];
-                    paragraphTypeSelectElement.append(
-                        "<option value='" + paragraph.key + "'>" + paragraph.displayName + '</option>'
-                    );
-                }
+                paragraphTypeSelectElement.append(
+                    "<option value='" + paragraphType + "'>" +
+                        constants.paragraphs[paragraphType].displayName +
+                    '</option>'
+                );
             }
 
             // CCreates a paragraph client of the type specified and loads the content into the paragraph
@@ -313,8 +337,8 @@ function Note() {
             });
 
             paragraphSelf.paragraphElement.find('.paragraph-type-select').change(function() {
-                loadSourceViewByType(paragraphSelf.paragraphElement.find(
-                    '.paragraph-type-select').val()
+                loadSourceViewByType(
+                    paragraphSelf.paragraphElement.find('.paragraph-type-select').val()
                 );
             });
         });
@@ -432,37 +456,9 @@ function Note() {
             var paragraphContent = paragraphSelf.paragraphElement.find('.paragraph-content');
             paragraphContent.slideUp(function() {
                 var sourceViewContent = $('<div>');
-                var paragraphTemplateLink;
-                switch (paragraphType) {
-                    case constants.paragraphs.preprocessor.key:
-                        paragraphSelf.paragraphClient =
-                            new PreprocessorParagraphClient(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = 'preprocessor.html';
-                        break;
-                    case constants.paragraphs.dataExplore.key:
-                        paragraphSelf.paragraphClient =
-                            new DataExploreParagraphClient(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = 'data-explore.html';
-                        break;
-                    case constants.paragraphs.batchAnalytics.key:
-                        paragraphSelf.paragraphClient =
-                            new BatchAnalyticsParagraphClient(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = 'batch-analytics.html';
-                        break;
-                    case constants.paragraphs.interactiveAnalytics.key:
-                        paragraphSelf.paragraphClient =
-                            new InteractiveAnalyticsParagraphClient(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = 'interactive-analytics.html';
-                        break;
-                    case constants.paragraphs.markdown.key:
-                        paragraphSelf.paragraphClient =
-                            new Markdown(paragraphSelf.paragraphElement);
-                        paragraphTemplateLink = 'markdown.html';
-                        break;
-                }
-
+                var paragraphClientInfo = constants.paragraphs[paragraphType];
                 utils.showLoadingOverlay(paragraphSelf.paragraphElement);
-                sourceViewContent.load('source-view-templates/' + paragraphTemplateLink, function() {
+                sourceViewContent.load('source-view-templates/' + paragraphClientInfo.templateLink, function() {
                     var sourceView = paragraphContent.find('.source');
                     var outputView = paragraphContent.find('.output');
 
@@ -481,6 +477,8 @@ function Note() {
                     paragraphSelf.paragraphElement.find('.toggle-source-view-button').prop('disabled', false);
                     paragraphSelf.paragraphElement.find('.toggle-output-view-button').prop('disabled', true);
 
+                    paragraphSelf.paragraphClient =
+                        new paragraphClientInfo.paragraphClientPrototype(paragraphSelf.paragraphElement);
                     paragraphSelf.paragraphClient.initialize(sourceContent);
                     outputView.css({ display: 'none' });
                     paragraphContent.slideDown();
