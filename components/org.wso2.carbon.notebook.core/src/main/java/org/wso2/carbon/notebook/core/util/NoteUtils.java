@@ -18,6 +18,7 @@
 
 package org.wso2.carbon.notebook.core.util;
 
+import org.apache.log4j.Logger;
 import org.wso2.carbon.notebook.commons.constants.NoteConstants;
 import org.wso2.carbon.notebook.core.ServiceHolder;
 import org.wso2.carbon.notebook.core.exception.NotePersistenceException;
@@ -32,6 +33,8 @@ import org.wso2.carbon.registry.core.utils.RegistryUtils;
  * General utility functions for the notebook
  */
 public class NoteUtils {
+    private static final Logger log = Logger.getLogger(NoteUtils.class);
+
     /**
      * Get the list of note names in the server
      *
@@ -58,25 +61,29 @@ public class NoteUtils {
     }
 
     /**
-     * Add a new note into the server
-     * Content is set to empty
+     * Add a new note into the server and add content
      *
      * @param tenantID Tenant ID
      * @param noteName Name of the note to be created
      */
-    public static void addNewNote(int tenantID, String noteName) throws NotePersistenceException, RegistryException {
+    public static void addNewNote(int tenantID, String noteName, String content) throws NotePersistenceException, RegistryException {
         UserRegistry userRegistry = ServiceHolder.getRegistryService().getConfigSystemRegistry(tenantID);
         createNotesCollectionIfNotExists(userRegistry);
         String noteLocation = getNoteLocation(noteName);
+        if (content == null) {
+            content = "[]";
+        }
 
         if (!userRegistry.resourceExists(noteLocation)) {
             Resource resource = userRegistry.newResource();
-            resource.setContent("[]");
+            resource.setContent(content);
             resource.setMediaType(NoteConstants.NOTE_MEDIA_TYPE);
             userRegistry.put(noteLocation, resource);
         } else {
-            throw new NotePersistenceException("Already a note exists with same name : " + noteName
-                    + " for tenantId :" + tenantID);
+            log.error("Cannot create new note with name " + noteName +
+                    " for tenant with tenant ID " + tenantID + " because note already exists");
+            throw new NotePersistenceException("Already a note exists with same name : " + noteName +
+                    " for tenantId :" + tenantID);
         }
     }
 
@@ -97,7 +104,9 @@ public class NoteUtils {
             resource.setMediaType(NoteConstants.NOTE_MEDIA_TYPE);
             userRegistry.put(noteLocation, resource);
         } else {
-            addNewNote(tenantID, noteName);
+            log.warn("Cannot update note with name " + noteName + " for tenant with tenant ID " + tenantID +
+                    " because it does not exist. Creating new note and adding the content.");
+            addNewNote(tenantID, noteName, content);
         }
     }
 
@@ -115,8 +124,10 @@ public class NoteUtils {
         if (userRegistry.resourceExists(noteLocation)) {
             return RegistryUtils.decodeBytes((byte[]) userRegistry.get(noteLocation).getContent());
         } else {
-            throw new NotePersistenceException("No note exists with name : "
-                    + noteName + " for tenantId : " + tenantID);
+            log.error("Cannot retrieve note because a note with name " + noteName +
+                    " for tenant with tenant ID " + tenantID + " does not exist");
+            throw new NotePersistenceException("Cannot get note with name : "
+                    + noteName + " for tenantId : " + tenantID + " beacause it does not exist");
         }
     }
 
@@ -132,6 +143,9 @@ public class NoteUtils {
 
         if (userRegistry.resourceExists(noteLocation)) {
             userRegistry.delete(noteLocation);
+        } else {
+            log.error("Cannot to delete note note with name " + noteName +
+                    " for tenant with tenant ID " + tenantID + " because it does not exist");
         }
     }
 

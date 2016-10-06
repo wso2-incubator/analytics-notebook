@@ -109,6 +109,11 @@
                 <artifactId>commons-csv</artifactId>
                 <version>${commons.csv.version}</version>
             </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
             <!-- Third party dependencies end here -->
         </dependencies>
     </dependencyManagement>
@@ -175,6 +180,7 @@
         <cxf.version>2.6.1</cxf.version>
         <gson.version>2.5</gson.version>
         <commons.csv.version>1.0</commons.csv.version>
+        <log4j.version>1.2.14</log4j.version>
         <!-- Dependency versions end here -->
 
         <!-- Plugin versions start here -->

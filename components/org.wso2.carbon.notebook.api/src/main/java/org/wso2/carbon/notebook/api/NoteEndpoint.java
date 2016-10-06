@@ -78,7 +78,7 @@ public class NoteEndpoint {
         String jsonString;
 
         try {
-            NoteUtils.addNewNote(tenantID, noteName);
+            NoteUtils.addNewNote(tenantID, noteName, null);
             jsonString = new Gson().toJson(new GeneralResponse(Status.SUCCESS));
         } catch (NotePersistenceException e) {
             jsonString = new Gson().toJson(new ErrorResponse(Status.AlREADY_EXISTS, "Note Already Exists"));

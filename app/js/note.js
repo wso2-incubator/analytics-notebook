@@ -321,7 +321,7 @@ function Note() {
             );
             paragraphContainer.append(paragraphSelf.paragraphElement);
             $('#paragraphs').append(paragraphContainer);
-            paragraphSelf.paragraphElement.slideDown();
+            paragraphSelf.paragraphElement.slideDown(utils.positionFooter);
 
             // Registering event listeners for the new paragraph main controls
             paragraphSelf.paragraphElement.find('.run-paragraph-button').click(function() {
@@ -454,6 +454,7 @@ function Note() {
                 } else {
                     paragraphUtils.handleNotification('error', 'Error', 'Error in deleting paragraph');
                 }
+                utils.positionFooter();
             });
             adjustNoteControls();
         }

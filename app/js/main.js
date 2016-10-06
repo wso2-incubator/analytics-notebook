@@ -62,6 +62,12 @@ $(document).ready(function() {
     $('.global-year').html((new Date().getFullYear()).toString());
 });
 
+$(window).bind("load", function() {
+    var utils = new Utils();
+    utils.positionFooter();
+    $(window).scroll(utils.positionFooter).resize(utils.positionFooter);
+});
+
 
 /**
  * General utilities prototype constructor
@@ -344,6 +350,31 @@ function Utils() {
                 );
             }
         });
+    };
+
+
+    /**
+     * Position the footer at the bottom of the window or page
+     */
+    self.positionFooter = function() {
+        var footer = $(".footer");
+        var footerHeight = footer.height();
+        var footerTop = ($(window).scrollTop() + $(window).height() - footerHeight) + "px";
+        var bodyChildrenHeight = 0;
+        $(document.body).children().each(function(){
+            bodyChildrenHeight = bodyChildrenHeight + $(this).outerHeight(true);
+        });
+
+        if (bodyChildrenHeight - footerHeight < $(window).height()) {
+            footer.css({
+                position: "absolute",
+                top: footerTop
+            })
+        } else {
+            footer.css({
+                position: "static"
+            })
+        }
     };
 
     /**
