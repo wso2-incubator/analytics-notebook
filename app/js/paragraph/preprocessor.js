@@ -24,8 +24,6 @@
  */
 function PreprocessorParagraphClient(paragraph, content) {
     var self = this;
-    var utils = new Utils();
-    var paragraphUtils = new ParagraphUtils(paragraph);
     var table;
 
     self.type = 'preprocessor';
@@ -34,7 +32,7 @@ function PreprocessorParagraphClient(paragraph, content) {
     /*
      * Initializing
      */
-    paragraphUtils.loadTableNames(function() {
+    paragraphUtils.loadTableNames(paragraph, function() {
         // Load source content
         if (content != undefined) {
             // Loading the source content from the content object provided
@@ -143,18 +141,18 @@ function PreprocessorParagraphClient(paragraph, content) {
                     output = $('<p><strong> Successful: </strong>' + tableName +
                         ' was successfully preprocessed and saved to table ' +
                         preprocessedTableName.toUpperCase() + '</p>');
-                    paragraphUtils.setOutput(output);
+                    paragraphUtils.setOutput(paragraph, output);
                     paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = 'sign-in.html';
                 } else {
-                    paragraphUtils.handleNotification('error', 'Error', response.message);
+                    paragraphUtils.handleNotification(paragraph, 'error', 'Error', response.message);
                 }
                 utils.hideLoadingOverlay(paragraph);
             },
             error: function(response) {
                 paragraphUtils.handleNotification(
-                    'error', 'Error', utils.generateErrorMessageFromStatusCode(response.readyState)
+                    paragraph, 'error', 'Error', utils.generateErrorMessageFromStatusCode(response.readyState)
                 );
                 utils.hideLoadingOverlay(paragraph);
             }
@@ -279,7 +277,7 @@ function PreprocessorParagraphClient(paragraph, content) {
                             self.unsavedContentAvailable = true;
                             adjustRunButton();
                         });
-                        paragraphUtils.clearNotification();
+                        paragraphUtils.clearNotification(paragraph);
 
                         paragraph.find('.output-table').keyup(function() {
                             self.unsavedContentAvailable = true;
@@ -289,16 +287,16 @@ function PreprocessorParagraphClient(paragraph, content) {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = 'sign-in.html';
                 } else {
-                    paragraphUtils.clearNotification();
+                    paragraphUtils.clearNotification(paragraph);
                     clearPreprocessorParameters();
-                    paragraphUtils.handleNotification('error', 'Error', response.message);
+                    paragraphUtils.handleNotification(paragraph, 'error', 'Error', response.message);
                 }
                 utils.hideLoadingOverlay(paragraph);
             },
             error: function(response) {
                 clearPreprocessorParameters();
                 paragraphUtils.handleNotification(
-                    'error', 'Error', utils.generateErrorMessageFromStatusCode(response.readyState)
+                    paragraph, 'error', 'Error', utils.generateErrorMessageFromStatusCode(response.readyState)
                 );
                 utils.hideLoadingOverlay(paragraph);
             }
@@ -332,6 +330,6 @@ function PreprocessorParagraphClient(paragraph, content) {
         } else {
             runButton.prop('disabled', true);
         }
-        paragraphUtils.clearNotification();
+        paragraphUtils.clearNotification(paragraph);
     }
 }   // End of PreprocessorParagraphClient prototype constructor

@@ -36,8 +36,6 @@ var constants = {
 
 // General Initializations
 $(document).ready(function() {
-    var utils = new Utils();
-
     $.ajax({
         type: 'GET',
         url: constants.API_URI + 'user/logged-in',
@@ -63,18 +61,15 @@ $(document).ready(function() {
 });
 
 $(window).bind("load", function() {
-    var utils = new Utils();
     utils.positionFooter();
     $(window).scroll(utils.positionFooter).resize(utils.positionFooter);
 });
 
 
 /**
- * General utilities prototype constructor
- *
- * @constructor
+ * General utilities
  */
-function Utils() {
+var utils = (function() {
     var self = this;
 
     /**
@@ -491,4 +486,6 @@ function Utils() {
         }
         return className;
     }
-}   // End of Utils prototype constructor
+
+    return self;
+})();   // End of utils

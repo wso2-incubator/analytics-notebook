@@ -25,8 +25,6 @@
  */
 function InteractiveAnalyticsParagraphClient(paragraph, content) {
     var self = this;
-    var utils = new Utils();
-    var paragraphUtils = new ParagraphUtils(paragraph);
 
     var timeFrom;
     var timeTo;
@@ -43,7 +41,7 @@ function InteractiveAnalyticsParagraphClient(paragraph, content) {
     /*
      * Initializing
      */
-    paragraphUtils.loadTableNames(function() {
+    paragraphUtils.loadTableNames(paragraph, function() {
         // Load source content
         if (content != undefined) {
             // Loading the source content from the content object provided
@@ -172,7 +170,7 @@ function InteractiveAnalyticsParagraphClient(paragraph, content) {
                         queryParameters.query = '';
                     }
 
-                    paragraphUtils.setOutput(utils.generateDataTableWithLazyLoading(
+                    paragraphUtils.setOutput(paragraph, utils.generateDataTableWithLazyLoading(
                         'POST',
                         constants.API_URI + 'interactive-analytics/' + searchMethod,
                         queryParameters,
@@ -182,13 +180,13 @@ function InteractiveAnalyticsParagraphClient(paragraph, content) {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = 'sign-in.html';
                 } else {
-                    paragraphUtils.handleNotification('error', 'Error', response.message);
+                    paragraphUtils.handleNotification(paragraph, 'error', 'Error', response.message);
                 }
                 utils.hideLoadingOverlay(paragraph);
             },
             error: function(response) {
                 paragraphUtils.handleNotification(
-                    'error', 'Error', utils.generateErrorMessageFromStatusCode(response.readyState)
+                    paragraph, 'error', 'Error', utils.generateErrorMessageFromStatusCode(response.readyState)
                 );
                 utils.hideLoadingOverlay(paragraph);
             }
@@ -270,7 +268,7 @@ function InteractiveAnalyticsParagraphClient(paragraph, content) {
      */
     function onSearchByTimeRangeRadioButtonClick() {
         runButton.prop('disabled', false);
-        paragraphUtils.clearNotification();
+        paragraphUtils.clearNotification(paragraph);
         primaryKeysContainer.slideUp();
         queryContainer.slideUp();
         timeRangeContainer.slideDown();
@@ -299,14 +297,14 @@ function InteractiveAnalyticsParagraphClient(paragraph, content) {
                         }
                         generatePrimaryKeySearchTable(primaryKeyValuePairs);
                     } else {
-                        paragraphUtils.handleNotification('info', 'Info',
+                        paragraphUtils.handleNotification(paragraph, 'info', 'Info',
                             tableName + ' does not have any primary keys'
                         );
                     }
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = 'sign-in.html';
                 } else {
-                    paragraphUtils.handleNotification('error', 'Error', response.message);
+                    paragraphUtils.handleNotification(paragraph, 'error', 'Error', response.message);
                 }
             },
             error: function (response) {
@@ -322,7 +320,7 @@ function InteractiveAnalyticsParagraphClient(paragraph, content) {
      */
     function onSearchByQueryRadioButtonClick() {
         runButton.prop('disabled', false);
-        paragraphUtils.clearNotification();
+        paragraphUtils.clearNotification(paragraph);
         timeRangeContainer.slideUp();
         primaryKeysContainer.slideUp();
         queryContainer.slideDown();

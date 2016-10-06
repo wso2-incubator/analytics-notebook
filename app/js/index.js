@@ -22,8 +22,6 @@
  * @constructor
  */
 function Notebook() {
-    var utils = new Utils();
-
     loadNoteNamesList();
 
     /*

@@ -25,8 +25,6 @@
  */
 function DataExploreParagraphClient(paragraph, content) {
     var self = this;
-    var utils = new Utils();
-    var paragraphUtils = new ParagraphUtils(paragraph);
 
     var chart;
     var markerSize = 2;
@@ -43,7 +41,7 @@ function DataExploreParagraphClient(paragraph, content) {
     /*
      * Initializing
      */
-    paragraphUtils.loadTableNames(function() {
+    paragraphUtils.loadTableNames(paragraph, function() {
         // Load source content
         if (content != undefined) {
             // Loading the source content from the content object provided
@@ -171,7 +169,7 @@ function DataExploreParagraphClient(paragraph, content) {
      */
     function onInputTableChange(sampleInfo) {
         var tableName = paragraph.find('.input-table').val();
-        paragraphUtils.clearNotification();
+        paragraphUtils.clearNotification(paragraph);
 
         if (sampleInfo == undefined) {
             // Loading sample information from server
@@ -185,12 +183,12 @@ function DataExploreParagraphClient(paragraph, content) {
                     } else if (response.status == constants.response.NOT_LOGGED_IN) {
                         window.location.href = 'sign-in.html';
                     } else {
-                        paragraphUtils.handleNotification('error', 'Error', response.message);
+                        paragraphUtils.handleNotification(paragraph, 'error', 'Error', response.message);
                     }
                     utils.hideLoadingOverlay(paragraph);
                 },
                 error: function(response) {
-                    paragraphUtils.handleNotification('error', 'Error',
+                    paragraphUtils.handleNotification(paragraph, 'error', 'Error',
                         utils.generateErrorMessageFromStatusCode(response.readyState)
                     );
                     utils.hideLoadingOverlay(paragraph);
@@ -229,7 +227,7 @@ function DataExploreParagraphClient(paragraph, content) {
      * @param {Object} [chartOptions] The chart options to be set
      */
     function onChartTypeChange(chartOptions) {
-        paragraphUtils.clearNotification(function() {
+        paragraphUtils.clearNotification(paragraph, function() {
             paragraph.find('.run-paragraph-button').prop('disabled', true);
             var chartType = paragraph.find('.chart-type').val();
             switch (chartType) {
@@ -309,7 +307,7 @@ function DataExploreParagraphClient(paragraph, content) {
                 }
             );
         } else {
-            paragraphUtils.handleNotification('info', 'Scatter plot cannot be drawn',
+            paragraphUtils.handleNotification(paragraph, 'info', 'Scatter plot cannot be drawn',
                 'Minimum of two numerical features and one categorical feature required to draw'
             );
         }
@@ -329,7 +327,7 @@ function DataExploreParagraphClient(paragraph, content) {
                     }
                 }
             );
-            paragraphUtils.clearNotification();
+            paragraphUtils.clearNotification(paragraph);
         }
 
         /**
@@ -456,7 +454,7 @@ function DataExploreParagraphClient(paragraph, content) {
                 adjustRunButton();
             });
         } else {
-            paragraphUtils.handleNotification('info', 'Parallel sets cannot be drawn',
+            paragraphUtils.handleNotification(paragraph, 'info', 'Parallel sets cannot be drawn',
                 'At least two categorical features required to draw'
             );
         }
@@ -473,7 +471,7 @@ function DataExploreParagraphClient(paragraph, content) {
             } else {
                 runButton.prop('disabled', true);
             }
-            paragraphUtils.clearNotification();
+            paragraphUtils.clearNotification(paragraph);
         }
 
         /**
@@ -498,7 +496,7 @@ function DataExploreParagraphClient(paragraph, content) {
                 .attr('height', chart.height())
                 .style('font-size', '12px');
             vis.datum(points).call(chart);
-            paragraphUtils.setOutput(chartElement);
+            paragraphUtils.setOutput(paragraph, chartElement);
 
             utils.hideLoadingOverlay(paragraph);
         };
@@ -571,7 +569,7 @@ function DataExploreParagraphClient(paragraph, content) {
                 adjustRunButton();
             });
         } else {
-            paragraphUtils.handleNotification('info', 'Trellis chart cannot be drawn',
+            paragraphUtils.handleNotification(paragraph, 'info', 'Trellis chart cannot be drawn',
                 'Minimum of one numerical features and one categorical feature required to draw'
             );
         }
@@ -589,7 +587,7 @@ function DataExploreParagraphClient(paragraph, content) {
             } else {
                 runButton.prop('disabled', true);
             }
-            paragraphUtils.clearNotification();
+            paragraphUtils.clearNotification(paragraph);
         }
 
         /**
@@ -751,7 +749,7 @@ function DataExploreParagraphClient(paragraph, content) {
             var chartContainer = $('<div>');
             chartContainer.append(chartElement);
             chartContainer.append(generateMarkerSizeCalibrator());
-            paragraphUtils.setOutput(chartContainer);
+            paragraphUtils.setOutput(paragraph, chartContainer);
             utils.hideLoadingOverlay(paragraph);
         };
     }   // End of TrellisChart prototype constructor
@@ -812,7 +810,7 @@ function DataExploreParagraphClient(paragraph, content) {
                 adjustRunButton();
             });
         } else {
-            paragraphUtils.handleNotification('info', 'Cluster diagram cannot be drawn',
+            paragraphUtils.handleNotification(paragraph, 'info', 'Cluster diagram cannot be drawn',
                 'At least two numerical features required to draw'
             );
         }
@@ -832,7 +830,7 @@ function DataExploreParagraphClient(paragraph, content) {
                     runButton.prop('disabled', true);
                 }
             });
-            paragraphUtils.clearNotification();
+            paragraphUtils.clearNotification(paragraph);
         }
 
         /**
@@ -890,11 +888,11 @@ function DataExploreParagraphClient(paragraph, content) {
                             clusterData, numericalFeatureIndependent, numericalFeatureDependent, false
                         );
                     } else {
-                        paragraphUtils.handleNotification('error', 'Error', response.message);
+                        paragraphUtils.handleNotification(paragraph, 'error', 'Error', response.message);
                     }
                 },
                 error: function(response) {
-                    paragraphUtils.handleNotification('error', 'Error',
+                    paragraphUtils.handleNotification(paragraph, 'error', 'Error',
                         utils.generateErrorMessageFromStatusCode(response.readyState)
                     );
                     paragraphUtils.hideLoadingOverlay(paragraph);
@@ -947,7 +945,7 @@ function DataExploreParagraphClient(paragraph, content) {
         var chartContainer = $('<div>');
         chartContainer.append(chartElement);
         chartContainer.append(generateMarkerSizeCalibrator());
-        paragraphUtils.setOutput(chartContainer);
+        paragraphUtils.setOutput(paragraph, chartContainer);
         utils.hideLoadingOverlay(paragraph);
     }
 

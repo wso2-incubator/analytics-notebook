@@ -51,7 +51,6 @@ constants.paragraphs = {
  */
 function Note() {
     var noteSelf = this;
-    var utils = new Utils();
 
     noteSelf.name = utils.getQueryParameters()['note'];
     noteSelf.paragraphs = [];
@@ -289,9 +288,6 @@ function Note() {
         paragraphSelf.paragraphClient = null;    // The client will be set when the paragraph type is selected
         paragraphSelf.id = noteSelf.uniqueParagraphIDCounter++;
 
-        var utils = new Utils();
-        var paragraphUtils = new ParagraphUtils(paragraphSelf.paragraphElement);
-
         paragraphSelf.paragraphElement.load('paragraph-template.html', function() {
             // Start loading the next paragraph
             loadNextParagraphForLoadAllTask(remainingParagraphs);
@@ -356,7 +352,7 @@ function Note() {
             if (paragraphSelf.paragraphClient.run != undefined) {
                 paragraphSelf.paragraphClient.run(paragraphs);
             } else {
-                paragraphUtils.handleNotification('error', 'Error', 'Cannot run paragraph');
+                paragraphUtils.handleNotification(paragraphSelf.paragraphElement, 'error', 'Error', 'Cannot run paragraph');
             }
         };
 
@@ -387,17 +383,17 @@ function Note() {
                         }
                         saved = true;
                     } else {
-                        paragraphUtils.handleNotification('info', 'Info',
+                        paragraphUtils.handleNotification(paragraphSelf.paragraphElement, 'info', 'Info',
                             'No paragraph content to be saved'
                         );
                     }
                 } else {
-                    paragraphUtils.handleNotification('info', 'Info',
+                    paragraphUtils.handleNotification(paragraphSelf.paragraphElement, 'info', 'Info',
                         'Paragraph does not support saving'
                     );
                 }
             } else {
-                paragraphUtils.handleNotification('error', 'Error', 'Paragraph type not selected');
+                paragraphUtils.handleNotification(paragraphSelf.paragraphElement, 'error', 'Error', 'Paragraph type not selected');
             }
             if (!saved) {
                 utils.handlePageNotification('error', 'Error',
@@ -452,7 +448,7 @@ function Note() {
                     noteSelf.paragraphs.splice(removeIndex, 1);
                     paragraphSelf.paragraphElement.remove();
                 } else {
-                    paragraphUtils.handleNotification('error', 'Error', 'Error in deleting paragraph');
+                    paragraphUtils.handleNotification(paragraphSelf.paragraphElement, 'error', 'Error', 'Error in deleting paragraph');
                 }
                 utils.positionFooter();
             });
@@ -478,7 +474,7 @@ function Note() {
 
                     sourceView.empty();
                     outputView.empty();
-                    paragraphUtils.clearNotification();
+                    paragraphUtils.clearNotification(paragraphSelf.paragraphElement);
                     sourceView.append($("<p class='add-padding-bottom-2x lead'>Source</p>"));
                     sourceView.append(sourceViewContent);
 
@@ -504,30 +500,10 @@ function Note() {
 }   // End of Note prototype constructor
 
 /**
- * Paragraph utilities prototype constructor
- *
- * @constructor
- * @param {jQuery} paragraph The paragraph for which the utilities will be used
+ * Paragraph utilities
  */
-function ParagraphUtils(paragraph) {
+var paragraphUtils = (function () {
     var self = this;
-    var utils = new Utils();
-
-    /**
-     * Loads all available output tables/streams/models into the paragraph in which this is located in
-     *
-     * @param {string} type One of ["table", "stream", "model"]
-     */
-    self.loadAvailableParagraphOutputsToInputElement = function(type) {
-        var inputSelectElement = paragraph.find('.input-table');
-        inputSelectElement.html($('<option disabled selected value> -- select an option -- </option>'));
-
-        $('.output-' + type).each(function(index, selectElement) {
-            if (selectElement.value.length > 0) {
-                inputSelectElement.append($('<option>' + selectElement.value + '</option>'));
-            }
-        });
-    };
 
     /**
      * Callback function for load tables method
@@ -537,10 +513,12 @@ function ParagraphUtils(paragraph) {
 
     /**
      * Load names of all the tables available in the server into the input table element in the paragraph
+     * The paragraph should contain a select element with the class 'input-table'
      *
+     * @param {jQuery} paragraph The paragraph in which the select element to which the table names should be loaded into
      * @param {LoadTablesCallback} [callback] Callback to be called after loading tables
      */
-    self.loadTableNames = function(callback) {
+    self.loadTableNames = function(paragraph, callback) {
         var inputTableSelectElement = paragraph.find('.input-table');
         utils.showLoadingOverlay(self.paragraphElement);
         $.ajax({
@@ -555,7 +533,7 @@ function ParagraphUtils(paragraph) {
                         inputTableSelectElement.append($('<option>' + table + '</option>'));
                     });
                 } else {
-                    self.handleNotification('error', 'Error', response.message);
+                    self.handleNotification(paragraph, 'error', 'Error', response.message);
                 }
                 if (callback != undefined) {
                     callback();
@@ -570,12 +548,14 @@ function ParagraphUtils(paragraph) {
 
     /**
      * Handles paragraph error messages in the paragraph
+     * The paragraph should contain an element with the class 'paragraph-notification-container'
      *
+     * @param {jQuery} paragraph The paragraph in which the element to which the notification should be added
      * @param {string} type The type of notification to be displayed. Should be one of ["success", "info", "warning", "error"]
      * @param {string} title The title of the notification
      * @param {string} message Message to be displayed in the notification area
      */
-    self.handleNotification = function(type, title, message) {
+    self.handleNotification = function(paragraph, type, title, message) {
         var notification = utils.generateAlertMessage(type, title, message);
         notification.addClass('collapse');
         paragraph.find('.paragraph-notification-container').html(notification);
@@ -590,10 +570,12 @@ function ParagraphUtils(paragraph) {
 
     /**
      * Clear the notifications in the paragraph
+     * The paragraph should contain an element with the class 'paragraph-notification-container'
      *
-     * @param {ClearNotificationsCallback} [callback] callback to be called after removing notification
+     * @param {jQuery} paragraph The paragraph in which the element containing notifications exist
+     * @param {ClearNotificationsCallback} [callback] Callback to be called after removing notification
      */
-    self.clearNotification = function(callback) {
+    self.clearNotification = function(paragraph, callback) {
         var notification = paragraph.find('.notification-container').children().first();
         if (notification.get(0) != undefined) {
             notification.slideUp(function() {
@@ -611,13 +593,15 @@ function ParagraphUtils(paragraph) {
 
     /**
      * Sets the output content into the paragraph
+     * The paragraph should contain a div with the class 'output'
      *
+     * @param {jQuery} paragraph The paragraph to which the output should be added
      * @param {jQuery|jQuery[]} output output content to be set into the paragraph
      */
-    self.setOutput = function(output) {
+    self.setOutput = function(paragraph, output) {
         var outputView = paragraph.find('.output');
         outputView.slideUp(function() {
-            self.clearNotification();
+            self.clearNotification(paragraph);
             var newOutputViewContent = $("<div class='fluid-container'>");
             newOutputViewContent.html(output);
             outputView.html(newOutputViewContent);
@@ -650,7 +634,9 @@ function ParagraphUtils(paragraph) {
             }, 0);
         }
     };
-}   // End of ParagraphUtils prototype constructor
+
+    return self;
+})();   // End of paragraphUtils
 
 /**
  * Callback function for paragraph client run

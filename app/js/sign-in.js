@@ -22,7 +22,6 @@
  * @constructor
  */
 function Authenticator() {
-    var utils = new Utils();
     var usernameField = $('#username');
     var passwordField = $('#password');
     var notificationContainer = $('#notification-container');
@@ -75,7 +74,7 @@ function Authenticator() {
                 success: function(response) {
                     if (response.status == constants.response.SUCCESS ||
                         response.status == constants.response.ALREADY_LOGGED_IN) {
-                        var redirectURI = new Utils().getQueryParameters().from;
+                        var redirectURI = utils.getQueryParameters().from;
                         if (redirectURI == undefined) {
                             redirectURI = 'index.html';
                         }

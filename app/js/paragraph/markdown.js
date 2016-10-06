@@ -25,7 +25,6 @@
  */
 function MarkdownParagraphClient(paragraph, content) {
     var self = this;
-    var paragraphUtils = new ParagraphUtils(paragraph);
 
     self.type = "markdown";
     self.unsavedContentAvailable = false;
@@ -53,8 +52,8 @@ function MarkdownParagraphClient(paragraph, content) {
      * @param {Object[]} [paragraphsLeftToRun] The array of paragraphs left to be run in run all paragraphs task
      */
     self.run = function(paragraphsLeftToRun) {
-        paragraphUtils.clearNotification();
-        paragraphUtils.setOutput(marked(paragraph.find('.markdown-source').val()));
+        paragraphUtils.clearNotification(paragraph);
+        paragraphUtils.setOutput(paragraph, marked(paragraph.find('.markdown-source').val()));
         paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
     };
 

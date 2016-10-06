@@ -25,8 +25,6 @@
  */
 function BatchAnalyticsParagraphClient(paragraph, content) {
     var self = this;
-    var utils = new Utils();
-    var paragraphUtils = new ParagraphUtils(paragraph);
 
     self.type = 'batchAnalytics';
     self.unsavedContentAvailable = false;
@@ -34,7 +32,7 @@ function BatchAnalyticsParagraphClient(paragraph, content) {
     /*
      * Initializing
      */
-    paragraphUtils.loadTableNames(function() {
+    paragraphUtils.loadTableNames(paragraph, function() {
         // Load source content
         if (content != undefined && content.query != undefined) {
             paragraph.find('.query').val(content.query);
@@ -96,12 +94,12 @@ function BatchAnalyticsParagraphClient(paragraph, content) {
                         window.location.href = 'sign-in.html';
                     }
                 });
-                paragraphUtils.setOutput(output);
+                paragraphUtils.setOutput(paragraph, output);
                 utils.hideLoadingOverlay(paragraph);
                 paragraphUtils.runNextParagraphForRunAllTask(paragraphsLeftToRun);
             },
             error: function(response) {
-                paragraphUtils.handleNotification('error', 'Error',
+                paragraphUtils.handleNotification(paragraph, 'error', 'Error',
                     utils.generateErrorMessageFromStatusCode(response.readyState)
                 );
                 utils.hideLoadingOverlay(paragraph);
@@ -193,14 +191,14 @@ function BatchAnalyticsParagraphClient(paragraph, content) {
                 } else if (response.status == constants.response.NOT_LOGGED_IN) {
                     window.location.href = 'sign-in.html';
                 } else {
-                    paragraphUtils.handleNotification('error', 'Error', response.message);
+                    paragraphUtils.handleNotification(paragraph, 'error', 'Error', response.message);
                 }
                 adjustRunButton();
                 utils.hideLoadingOverlay(paragraph);
             },
             error: function(response) {
                 paragraphUtils.handleNotification(
-                    'error', 'Error',
+                    paragraph, 'error', 'Error',
                     utils.generateErrorMessageFromStatusCode(response.readyState
                     )
                 );
