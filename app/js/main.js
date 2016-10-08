@@ -416,6 +416,131 @@ var utils = (function() {
     };
 
     /**
+     * Generate a directed graph using the links
+     *
+     * @param {Object[]} links Links between the graph nodes
+     * @private
+     */
+    self.generateDirectedGraph = function(links) {
+        var nodes = {};
+        // Compute the distinct nodes from the links.
+        $.each(links, function(index, link) {
+            link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
+            link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+        });
+
+        var width = 960,
+            height = 500,
+            padding = 5,
+            color = d3.scale.category20();
+
+        var force = d3.layout.force()
+            .nodes(d3.values(nodes))
+            .links(links)
+            .size([width, height])
+            .linkDistance(200)
+            .charge(-1000)
+            .on('tick', tick)
+            .start();
+
+        var zoom = d3.behavior.zoom()
+            .scaleExtent([1, 10])
+            .on("zoom", zoomed);
+
+        var drag = d3.behavior.drag()
+            .origin(function(d) { return d; })
+            .on("dragstart", dragStarted)
+            .on("drag", dragged)
+            .on("dragend", dragended);
+
+        var graphContainer = $('<div>');
+        var svg = d3.select(graphContainer.get(0)).append('svg')
+            .attr({
+                'width': width,
+                'height': height
+            })
+            .call(zoom);
+
+        var container = svg.append("g");
+
+        // Adding arrows
+        container.append("defs").append("marker")
+            .attr("id", "arrow")
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 15)
+            .attr("refY", -1.5)
+            .attr("markerWidth", 10)
+            .attr("markerHeight", 10)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5");
+
+        var path = container.append('g').selectAll('path')
+            .data(force.links())
+            .enter().append('path')
+            .attr('class', 'link')
+            .attr('stroke', '#fff')
+            .attr('stroke-width', 10)
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 4)
+            .attr("marker-mid", "url(#arrow)");
+
+        var nodeGroup = container.append('g');
+        var rect = nodeGroup.selectAll('rect')
+            .data(force.nodes())
+            .enter().append("rect")
+            .style("fill", function (d) { return color(d.name); })
+            .call(drag);
+        var text = nodeGroup.selectAll('text')
+            .data(force.nodes())
+            .enter().append('text')
+            .text(function(d) { return d.name; });
+
+        // Use elliptical arc path segments to doubly-encode directionality.
+        function tick() {
+            path.attr('d', linkArc);
+            rect.attr('transform', transform)
+                .attr('x', function(d) { return -1 * d3.select(text[0][d.index]).node().getBBox().width / 2 - padding; })
+                .attr('y', function(d) { return d3.select(text[0][d.index]).node().getBBox().y - padding; })
+                .attr('width', function(d) { return d3.select(text[0][d.index]).node().getBBox().width + padding * 2; })
+                .attr('height', function(d) { return d3.select(text[0][d.index]).node().getBBox().height + padding * 2; });
+            text.attr('transform', transform)
+                .attr('x', function(d) { return -1 * d3.select(text[0][d.index]).node().getBBox().width / 2; });
+        }
+
+        function linkArc(d) {
+            var dx = d.target.x - d.source.x,
+                dy = d.target.y - d.source.y,
+                dr = Math.sqrt(dx * dx + dy * dy);
+            return 'M' + d.source.x + ',' + d.source.y + 'A' + dr + ',' + dr + ' 0 0,1 ' + d.target.x + ',' + d.target.y;
+        }
+
+        function transform(d) {
+            return 'translate(' + d.x + ',' + d.y + ')';
+        }
+
+        function zoomed() {
+            container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+        }
+
+        function dragStarted() {
+            d3.event.sourceEvent.stopPropagation();
+            nodeGroup.classed("dragging", true);
+            force.start();
+        }
+
+        function dragged(d) {
+            nodeGroup.attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+        }
+
+        function dragended() {
+            nodeGroup.classed("dragging", false);
+        }
+
+        return graphContainer;
+    };
+
+    /**
      * Add null to the missing cell values in the table data array provided
      * Data Tables plugin throws error when data with missing cells are given
      * Server sends missing cell values for fields with nulls

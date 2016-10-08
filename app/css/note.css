@@ -45,3 +45,24 @@ label.checkbox {
     padding: 0;
     list-style-type: none;
 }
+
+/*
+ * Overview graph related CSS starts here
+ */
+
+.link {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1px;
+}
+
+text {
+    font: 1em sans-serif;
+    color: #000;
+    pointer-events: none;
+}
+
+#arrow {
+    fill: #fff;
+    stroke: #fff;
+}

@@ -116,6 +116,9 @@ function Note() {
     $('#add-paragraph-button').click(function() {
         addParagraph();
     });
+    $('#show-overview-button').click(function() {
+        showOverview();
+    });
     $('#save-note-button').click(function() {
         saveNote();
     });
@@ -185,6 +188,28 @@ function Note() {
             "<i class='fw fw-hide'></i> Hide Source"
         );
         adjustNoteControls();
+    }
+
+    /**
+     * Shows an overview of how the paragraphs are connected to each other according to the state of the note
+     *
+     * @private
+     */
+    function showOverview() {
+        var links = [];
+        $.each(noteSelf.paragraphs, function(index, paragraph) {
+            if (paragraph.paragraphClient.getDependencies != undefined) {
+                var dependencies = paragraph.paragraphClient.getDependencies();
+                $.each(dependencies.inputTables, function(index, inputTable) {
+                    links.push({ source: inputTable, target: dependencies.name });
+                });
+                $.each(dependencies.outputTables, function(index, outputTable) {
+                    links.push({ source: dependencies.name, target: outputTable });
+                });
+            }
+        });
+
+        utils.showModalPopup('Overview', utils.generateDirectedGraph(links), $());
     }
 
     /**
@@ -502,7 +527,7 @@ function Note() {
 /**
  * Paragraph utilities
  */
-var paragraphUtils = (function () {
+var paragraphUtils = (function() {
     var self = this;
 
     /**

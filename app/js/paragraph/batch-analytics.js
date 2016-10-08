@@ -123,6 +123,43 @@ function BatchAnalyticsParagraphClient(paragraph, content) {
     };
 
     /**
+     * Get the tables on which this paragraph depends on
+     * Tables used in this paragraph are returned as inputTables attribute in the return object
+     * Tables updates by this paragraph are returned as outputTables attribute in the return object
+     *
+     * @return {Object} tables on which this paragraph depends on
+     */
+    self.getDependencies = function () {
+        var queries = paragraph.find('.query').val().split(';');
+        var dependencies = {
+            name: constants.paragraphs.batchAnalytics.displayName,
+            inputTables: [],
+            outputTables: []
+        };
+        var tablesMap = {};
+
+        for (var i = 0; i < queries.length; i++) {
+            var query = queries[i].trim().replace(/\s\s+/g, ' ');
+            var querySubstring;
+            if (query.substring(0, 23).toUpperCase() == 'CREATE TEMPORARY TABLE ') {
+                var tempTableName = /CREATE TEMPORARY TABLE \w+ USING/i.exec(query)[0];
+                tempTableName = tempTableName.substring(23, tempTableName.length - 6);
+                querySubstring = /TABLENAME"\w+"/i.exec(query.replace(/ /g, ''))[0];
+                tablesMap[tempTableName] = querySubstring.substring(10, querySubstring.length - 1);
+            } else if (query.substring(0, 7).toUpperCase() == 'INSERT ') {
+                querySubstring = /TABLE \w+ /i.exec(query)[0];
+                var outputTableName = querySubstring.substring(6, querySubstring.length - 1);
+                dependencies.outputTables.push(tablesMap[outputTableName]);
+            } else if (query.substring(0, 7).toUpperCase() == 'SELECT ') {
+                querySubstring = /FROM \w+ /i.exec(query)[0];
+                var inputTableName = querySubstring.substring(5, querySubstring.length - 1);
+                dependencies.inputTables.push(tablesMap[inputTableName]);
+            }
+        }
+        return dependencies;
+    };
+
+    /**
      * Import the selected table generating the query
      *
      * @private

@@ -72,6 +72,21 @@ function MarkdownParagraphClient(paragraph, content) {
     };
 
     /**
+     * Get the tables on which this paragraph depends on
+     * Tables used in this paragraph are returned as inputTables attribute in the return object
+     * Tables updates by this paragraph are returned as outputTables attribute in the return object
+     *
+     * @return {Object} tables on which this paragraph depends on
+     */
+    self.getDependencies = function () {
+        return {
+            name: constants.paragraphs.markdown.displayName,
+            inputTables: [],
+            outputTables: []
+        };
+    };
+
+    /**
      * Update the paragraph run button disabled status
      *
      * @private
