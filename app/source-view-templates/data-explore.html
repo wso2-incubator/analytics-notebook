@@ -1,0 +1,118 @@
+<!--
+  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="row">
+    <div class="form-group col-sm-12 col-md-6 col-lg-3">
+        <label class="control-label">Table</label>
+        <select class="form-control input-table">
+            <option disabled selected value> -- select an option --</option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-12 col-md-6 col-lg-3 chart-type-container collapse">
+        <label class="control-label">Chart Type</label>
+        <select class="form-control chart-type">
+            <option disabled selected value> -- select an option -- </option>
+            <option>Scatter Plot</option>
+            <option>Parallel Sets</option>
+            <option>Trellis Chart</option>
+            <option>Cluster Diagram</option>
+        </select>
+    </div>
+</div>
+
+<div class="row scatter-plot-options collapse">
+    <div class="form-group col-sm-12 col-md-6 col-lg-3">
+        <label class="control-label">X-Axis</label>
+        <select class="form-control scatter-plot-x">
+            <option disabled selected value> -- select an option -- </option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-12 col-md-6 col-lg-3">
+        <label class="control-label">Y-Axis</label>
+        <select class="form-control scatter-plot-y">
+            <option disabled selected value> -- select an option -- </option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-12 col-md-6 col-lg-3">
+        <label class="control-label">Group By</label>
+        <select class="form-control scatter-plot-group">
+            <option disabled selected value> -- select an option -- </option>
+        </select>
+    </div>
+</div>
+
+<div class="row parallel-sets-options collapse">
+    <div class="form-group col-sm-12">
+        <label>Categorical Features</label>
+        <div class="col-sm-12 parallel-sets-feature-container"></div>
+    </div>
+</div>
+
+<div class="row trellis-chart-options collapse">
+    <div class="form-group col-sm-12 col-md-6 col-lg-3">
+        <label class="control-label">Categorical Feature</label>
+        <select class="form-control trellis-chart-categorical-feature">
+            <option disabled selected value> -- select an option -- </option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-12">
+        <label>Numerical Features</label>
+        <div class="col-sm-12 trellis-chart-numerical-feature-container"></div>
+    </div>
+</div>
+
+<div class="row cluster-diagram-options collapse">
+    <div class="form-group col-sm-12 col-md-6 col-lg-3">
+        <label class="control-label">Independent Numerical Feature</label>
+        <select class="form-control cluster-diagram-independent-feature">
+            <option disabled selected value> -- select an option -- </option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-12 col-md-6 col-lg-3">
+        <label class="control-label">Dependent Numerical Feature</label>
+        <select class="form-control cluster-diagram-dependent-feature">
+            <option disabled selected value> -- select an option -- </option>
+        </select>
+    </div>
+
+    <div class="form-group col-sm-12 col-md-6 col-lg-3">
+        <label class="control-label">Number of Clusters</label>
+        <select class="form-control cluster-diagram-features-count">
+            <option disabled selected value> -- select an option -- </option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+            <option>7</option>
+            <option>8</option>
+            <option>9</option>
+            <option>10</option>
+            <option>11</option>
+            <option>12</option>
+            <option>13</option>
+            <option>14</option>
+            <option>15</option>
+        </select>
+    </div>
+</div>

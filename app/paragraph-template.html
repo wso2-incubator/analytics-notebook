@@ -1,0 +1,72 @@
+<!--
+  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<!-- Paragraph Controls -->
+<div class="paragraph-controls input-group input-wrap">
+    <div class="row">
+        <div class="col-sm-2 text-left"
+             title="Click and drag paragraphs to rearrange" data-toggle="tooltip" data-placement="bottom">
+            <ul class="paragraph-reorder-icon">
+                <li><i class="fw fw-up"></i></li>
+                <li><i class="fw fw-down"></i></li>
+            </ul>
+        </div>
+
+        <!-- Paragraph controls -->
+        <div class="col-sm-10 text-right">
+            <div class="input-group-btn">
+                <button class="btn btn-primary run-paragraph-button" disabled>
+                    <i class="fw fw-right"></i> Run
+                </button>
+                <button class="btn btn-primary toggle-source-view-button" disabled>
+                    <i class="fw fw-hide"></i> Hide Source
+                </button>
+                <button class="btn btn-primary toggle-output-view-button" disabled>
+                    <i class="fw fw-hide"></i> Hide Output
+                </button>
+                <button class="btn btn-primary delete-paragraph-button">
+                    <i class="fw fw-delete"></i> Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group col-sm-12 col-md-6 col-lg-3 paragraph-type-select-container">
+        <label class="control-label">Type</label>
+        <select class="form-control paragraph-type-select">
+            <!-- Automatically updated by JS -->
+        </select>
+    </div>
+</div>
+
+<!-- Paragraph Body -->
+<div class="paragraph-content container-fluid collapse">
+    <!-- Source section -->
+    <div class="fluid-container source">
+        <!-- Automatically updated by JS -->
+    </div>
+
+    <span class="paragraph-notification-container">
+        <!-- Automatically updated by JS -->
+    </span>
+
+    <!-- Output section -->
+    <div class="fluid-container output collapse">
+        <!-- Automatically updated by JS -->
+    </div>
+</div>

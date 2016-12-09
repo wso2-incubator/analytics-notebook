@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2015, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+  ~
+  ~ WSO2 Inc. licenses this file to you under the Apache License,
+  ~ Version 2.0 (the "License"); you may not use this file except
+  ~ in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<html lang="en">
+<head>
+    <title>Notebook</title><!-- Automatically changed by main.js -->
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Favion -->
+    <link href="libs/theme-wso2_1.0.0/images/favicon.png" rel="icon" type="image/png" sizes="16x16"/>
+
+    <!-- Select2 CSS -->
+    <link href="libs/select2_4.0.0/css/select2.min.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Animate CSS -->
+    <link href="libs/animate/animate.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Font WSO2 CSS -->
+    <link href="libs/font-wso2_1.0.0/css/font-wso2.min.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Theme WSO2 CSS -->
+    <link href="libs/theme-wso2_1.0.0/css/theme.css" rel="stylesheet" type="text/css"/>
+    <!--[if IE]>
+    <link href="libs/theme-wso2_1.0.0/css/theme-ie.min.css" rel="stylesheet" type="text/css"/>
+    <![endif]-->
+
+    <!-- Custom CSS -->
+
+    <!--[if lt IE 9]>
+    <script src="libs/html5shiv_3.7.2/html5shiv.min.js"></script>
+    <script src="libs/respond_1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Custom CSS -->
+    <link href="css/sign-in.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Jquery/Jquery UI JS -->
+    <script src="libs/jquery_1.11.0/jquery-1.11.3.min.js"></script>
+
+    <!-- Jquery Resize JS -->
+    <script src="libs/jquery-resize_0.5.3/jquery.resize.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="libs/bootstrap_3.3.6/js/bootstrap.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="libs/select2_4.0.0/js/select2.full.min.js"></script>
+
+    <!-- Jquery Validation JS -->
+    <script src="libs/jquery-validation_1.14.0/jquery.validate.min.js"></script>
+
+    <!-- Noty JS -->
+    <script src="libs/noty_2.3.5/packaged/jquery.noty.packaged.min.js"></script>
+
+    <!-- Theme WSO2 JS -->
+    <script src="libs/theme-wso2_1.0.0/js/theme-wso2.js"></script>
+
+    <!-- Custom JS -->
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/sign-in.js"></script>
+
+</head>
+<body class="loading-overlay" data-toggle="loading" data-loading-style="overlay">
+    <header class="header header-default">
+        <div class="container-fluid">
+            <div class="pull-left brand float-remove-xs text-center-xs">
+                <a href="#">
+                    <img src="libs/theme-wso2_1.0.0/images/logo-inverse.svg" alt="wso2" title="wso2" class="logo">
+                    <h1 class="display-block-xs">
+                        <span class="global-product-name">
+                            <!-- Automatically updated by JS -->
+                        </span>
+                    </h1>
+                </a>
+            </div>
+        </div>
+    </header>
+    <!-- /header -->
+
+    <div class="page-content-wrapper">
+        <!-- page content -->
+        <div class="container-fluid">
+            <!-- login -->
+            <div class="container col-md-5 col-lg-3 col-centered">
+                <br class="spacer-lg">
+
+                <h1>Login</h1>
+                <p>Use your loginRequest to login.</p>
+
+                <span id="notification-container"></span>
+
+                <br class="spacer">
+
+                <div class="form-group">
+                    <label for="username" class="control-label">Username</label>
+                    <input class="form-control" id="username" type="text" placeholder="Enter your username"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="control-label">Password</label>
+                    <input class="form-control" id="password" type="password" placeholder="Enter your password"/>
+                </div>
+
+                <div class="form-group">
+                    <button id="sign-in" class="btn btn-primary btn-login">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            new Authenticator();
+        });
+    </script>
+</body>
+</html>

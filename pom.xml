@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.wso2</groupId>
+        <artifactId>wso2</artifactId>
+        <version>1</version>
+    </parent>
+
+    <groupId>org.wso2.carbon.notebook</groupId>
+    <artifactId>notebook</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Notebook</name>
+
+    <modules>
+        <module>components/org.wso2.carbon.notebook.api</module>
+        <module>components/org.wso2.carbon.notebook.core</module>
+        <module>components/org.wso2.carbon.notebook.commons</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal dependencies start here -->
+            <dependency>
+                <groupId>org.wso2.carbon.notebook</groupId>
+                <artifactId>org.wso2.carbon.notebook.core</artifactId>
+                <version>${carbon.notebook.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.notebook</groupId>
+                <artifactId>org.wso2.carbon.notebook.commons</artifactId>
+                <version>${carbon.notebook.version}</version>
+            </dependency>
+            <!-- Internal dependencies end here -->
+
+            <!-- WSO2 dependencies start here -->
+            <dependency>
+                <groupId>org.wso2.carbon.analytics-common</groupId>
+                <artifactId>org.wso2.carbon.event.receiver.core</artifactId>
+                <version>${carbon.analytics.common.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.dataservice.core</artifactId>
+                <version>${carbon.analytics.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.datasource.commons</artifactId>
+                <version>${carbon.analytics.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.analytics</groupId>
+                <artifactId>org.wso2.carbon.analytics.spark.core</artifactId>
+                <version>${carbon.analytics.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.commons</groupId>
+                <artifactId>org.wso2.carbon.identity.authentication</artifactId>
+                <version>${carbon.commons.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.ml</groupId>
+                <artifactId>org.wso2.carbon.ml.commons</artifactId>
+                <version>${carbon.ml.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon.ml</groupId>
+                <artifactId>org.wso2.carbon.ml.core</artifactId>
+                <version>${carbon.ml.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <!-- WSO2 dependencies end here -->
+
+            <!-- Third party dependencies start here -->
+            <dependency>
+                <groupId>javax.ws.rs</groupId>
+                <artifactId>javax.ws.rs-api</artifactId>
+                <version>${javax.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>${apache.httpcore.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${commons.csv.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <!-- Third party dependencies end here -->
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>wso2-nexus</id>
+            <name>WSO2 internal Repository</name>
+            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>wso2.snapshots</id>
+            <name>WSO2 Snapshot Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>wso2.releases</id>
+            <name>WSO2 internal Repository</name>
+            <url>http://maven.wso2.org/nexus/content/repositories/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+        </repository>
+    </repositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${maven-war-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <properties>
+        <!-- Notebook version -->
+        <carbon.notebook.version>1.0-SNAPSHOT</carbon.notebook.version>
+
+        <!-- Dependency versions start here -->
+        <carbon.commons.version>4.3.4</carbon.commons.version>
+        <carbon.analytics.common.version>5.1.3</carbon.analytics.common.version>
+        <carbon.analytics.version>1.2.4-SNAPSHOT</carbon.analytics.version>
+        <carbon.ml.version>1.1.3-SNAPSHOT</carbon.ml.version>
+
+        <javax.version>2.0</javax.version>
+        <apache.httpcore.version>4.3.3</apache.httpcore.version>
+        <cxf.version>2.6.1</cxf.version>
+        <gson.version>2.5</gson.version>
+        <commons.csv.version>1.0</commons.csv.version>
+        <log4j.version>1.2.14</log4j.version>
+        <!-- Dependency versions end here -->
+
+        <!-- Plugin versions start here -->
+        <maven-war-plugin.version>2.6</maven-war-plugin.version>
+        <!-- Plugin versions end here -->
+    </properties>
+</project>
